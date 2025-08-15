@@ -42,11 +42,6 @@ namespace Systems.Audibility.Debugging
             float[] averagedAudioLevels = new float[audioLevels.Length];
             for (int n = 0; n < averagedAudioLevels.Length; n++)
             {
-                if (Mathf.Approximately(audioLevels[n], float.MaxValue))
-                {
-                    audioLevels[n] = 0;
-                    continue;;
-                }
                 float inverseNormalizedAudioLevel = audioLevels[n] / maxAudioLevel;
                 averagedAudioLevels[n] = 1 - inverseNormalizedAudioLevel;
             }

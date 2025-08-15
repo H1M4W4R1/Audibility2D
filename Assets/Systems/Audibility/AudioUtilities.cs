@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Systems.Audibility.Jobs;
 using Unity.Burst;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -40,12 +42,18 @@ namespace Systems.Audibility
             }
 
             // Prepare output table
-            NativeArray<float> outputAudioLevels = new(samplingPositions.Length, Allocator.Temp);
+            NativeArray<float> outputAudioLevels = new(samplingPositions.Length, Allocator.TempJob);
             for (int n = 0; n < outputAudioLevels.Length; n++) outputAudioLevels[n] = float.MaxValue;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             GetAudibility2D(samplingPositions, audioSourcePositions, audioSourceVolumes, audioSourceRanges,
                 ref outputAudioLevels,
                 AudibilityPlane.PlaneXZ);
+
+            sw.Stop();
+            Debug.Log($"Execution took {sw.ElapsedMilliseconds}ms");
 
             // Copy data
             float[] results = new float[outputAudioLevels.Length];
@@ -103,8 +111,6 @@ namespace Systems.Audibility
             ref NativeArray<float> audioLevels,
             AudibilityPlane plane)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             NativeArray<float3> directionArray = new(RAYS_PER_CIRCLE, Allocator.TempJob);
 
             // Compute directions for all desired scan points
@@ -133,9 +139,6 @@ namespace Systems.Audibility
 
             // Clean-up this mess
             directionArray.Dispose();
-            sw.Stop();
-            
-            Debug.Log(nameof(GetAudibility2D) + $" took {sw.ElapsedMilliseconds}ms");
         }
 
         [BurstDiscard] private static void PerformAudioReflectionCalculations(
@@ -162,6 +165,7 @@ namespace Systems.Audibility
 
             NativeArray<RaycastCommand> commands = new(nCommands, Allocator.TempJob);
             NativeArray<RaycastHit> results = new(nCommands, Allocator.TempJob);
+            NativeArray<float> rayLengths = new(nCommands, Allocator.TempJob);
 
             int reflectionsRemaining = MAX_REFLECTIONS;
 
@@ -182,11 +186,27 @@ namespace Systems.Audibility
             while (reflectionsRemaining > 0)
             {
                 JobHandle handle = RaycastCommand.ScheduleBatch(commands, results, 1);
-                handle.Complete();
 
-                // Handle result for all scanning directions
-                HandleResults(audioSourcePositions, audioSourceVolumes, audioSourceRanges, ref commands, results,
-                    ref audioLevels, plane, directions.Length);
+                handle.Complete();
+                HandleResults(audioSourcePositions, audioSourceVolumes, audioSourceRanges,
+                    ref commands, ref rayLengths, results, ref audioLevels, plane, directions.Length);
+
+                /*PostprocessAudibilityHitscanResultsJob postprocessAudibilityJob =
+                    new()
+                    {
+                        audioSourcePositions = audioSourcePositions,
+                        audioSourceVolumes = audioSourceVolumes,
+                        audioSourceRanges = audioSourceRanges,
+                        audioLevels = audioLevels,
+                        plane = plane,
+                        commands = commands,
+                        results = results,
+                        nDirections = directions.Length,
+                        rayLengths = rayLengths
+                    };
+
+                JobHandle postprocessHandle = postprocessAudibilityJob.Schedule(commands.Length, math.min(64, commands.Length), handle);
+                postprocessHandle.Complete();*/
 
                 // Reduce reflection count
                 reflectionsRemaining--;
@@ -202,6 +222,7 @@ namespace Systems.Audibility
             in NativeArray<float> audioSourceVolumes,
             in NativeArray<float> audioSourceRanges,
             ref NativeArray<RaycastCommand> commands,
+            ref NativeArray<float> rayLengths,
             in NativeArray<RaycastHit> results,
             ref NativeArray<float> audioLevels,
             AudibilityPlane plane,
@@ -223,6 +244,7 @@ namespace Systems.Audibility
                 if (detectedHit.point == default)
                 {
                     endPosition = command.from + command.direction * MAX_RAY_DISTANCE;
+                    rayLengths[commandIndex] += MAX_RAY_DISTANCE;
                 }
                 else
                 {
@@ -240,12 +262,13 @@ namespace Systems.Audibility
 
                     // Update command data
                     command.direction = newDirection;
+                    rayLengths[commandIndex] += detectedHit.distance;
                 }
 
                 // Compute and update audio level based on positioning
                 float audioLevel = ComputeInverseAudioLevelNearRay(audioSourcePositions,
                     audioSourceVolumes, audioSourceRanges, command.from,
-                    endPosition);
+                    endPosition, rayLengths[commandIndex]);
                 if (audioLevel < audioLevels[sampleIndex]) audioLevels[sampleIndex] = audioLevel;
 
                 command.from = endPosition;
@@ -258,7 +281,8 @@ namespace Systems.Audibility
             in NativeArray<float> audioSourceVolumesDecibels,
             in NativeArray<float> audioSourceRanges,
             in float3 rayStartPoint,
-            in float3 rayEndPoint)
+            in float3 rayEndPoint,
+            float totalRayLength)
         {
             if (worldAudioSourceLocations.Length == 0) return float.PositiveInfinity;
 
@@ -285,7 +309,8 @@ namespace Systems.Audibility
                 // Closest point on segment
                 float3 closestPoint = rayStartPoint + t * lineVec;
 
-                float audioLevel = GetInverseAudioLevel(audioLocation, closestPoint, audioVolume, audioRange);
+                float audioLevel = GetInverseAudioLevel(audioLocation, closestPoint, audioVolume, audioRange,
+                    totalRayLength);
                 if (audioLevel < minAudioLevel) minAudioLevel = audioLevel;
             }
 
@@ -294,17 +319,14 @@ namespace Systems.Audibility
 
         [BurstCompile] public static float GetInverseAudioLevel(
             in float3 worldAudioSourceLocation,
-            in float3 worldPoint,
+            in float3 rayHitPoint,
             float audioVolumeDecibels,
-            float audioSourceRange)
+            float audioSourceRange,
+            float totalRayLength)
         {
-            float distanceSq = math.distancesq(worldAudioSourceLocation, worldPoint);
-            if (distanceSq > audioSourceRange) return float.MaxValue;
-            
             // Distance to point, affected by sqrt of volume
             // Calculated using square version to improve performance
-            return distanceSq /
-                   audioVolumeDecibels;
+            return math.distancesq(worldAudioSourceLocation, rayHitPoint) / audioVolumeDecibels;
         }
     }
 }
