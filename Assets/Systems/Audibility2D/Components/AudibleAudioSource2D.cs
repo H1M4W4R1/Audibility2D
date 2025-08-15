@@ -1,5 +1,7 @@
-﻿using Systems.Audibility.Common.Data;
+﻿using System.Runtime.CompilerServices;
+using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
+using Unity.Burst;
 using UnityEngine;
 
 namespace Systems.Audibility2D.Components
@@ -44,6 +46,6 @@ namespace Systems.Audibility2D.Components
         /// <param name="newDecibelLevel">Decibel level of this source</param>
         public void SetDecibelLevel(DecibelLevel newDecibelLevel) => decibelLevel = newDecibelLevel;
 
-        public DecibelLevel GetDecibelLevel() => decibelLevel;
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel GetDecibelLevel() => decibelLevel;
     }
 }

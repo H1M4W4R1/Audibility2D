@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
+using Unity.Burst;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -17,7 +19,7 @@ namespace Systems.Audibility2D.Tiles
         /// <summary>
         ///     Get tile muffle levels
         /// </summary>
-        public DecibelLevel GetMufflingData()
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel GetMufflingData()
         {
             if (ReferenceEquals(audioMaterialData, null)) return Muffling.NONE;
             return audioMaterialData.MuffleLevel;
