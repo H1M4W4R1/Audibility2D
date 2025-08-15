@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Data;
+using Systems.Audibility3D.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
-namespace Systems.Audibility.Jobs
+namespace Systems.Audibility3D.Jobs
 {
     [BurstCompile]
     public struct ResetScannedAudioLevelsJob : IJobParallelFor

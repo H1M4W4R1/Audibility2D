@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Systems.Audibility.Components;
-using Systems.Audibility.Data;
-using Systems.Audibility.Utility;
+﻿using Systems.Audibility3D.Components;
+using Systems.Audibility3D.Data;
+using Systems.Audibility3D.Utility;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
-namespace Systems.Audibility.Debugging
+namespace Systems.Audibility3D.Debugging
 {
     public sealed class AudioSampler : MonoBehaviour
     {

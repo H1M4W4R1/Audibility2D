@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Systems.Audibility.Data;
+using Systems.Audibility3D.Data;
 using UnityEngine;
 
-namespace Systems.Audibility.Components
+namespace Systems.Audibility3D.Components
 {
     /// <summary>
     ///     Obstacle that reduces audibility by muffling it via specified amount

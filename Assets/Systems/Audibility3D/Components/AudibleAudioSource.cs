@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Systems.Audibility.Data;
-using Systems.Audibility.Utility;
+﻿using Systems.Audibility3D.Data;
+using Systems.Audibility3D.Utility;
 using UnityEngine;
 
-namespace Systems.Audibility.Components
+namespace Systems.Audibility3D.Components
 {
     /// <summary>
     ///     Represents audible audio source - audio source that affects audibility maps.

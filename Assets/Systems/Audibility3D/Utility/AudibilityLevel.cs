@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Components;
-using Systems.Audibility.Data;
-using Systems.Audibility.Jobs;
+using Systems.Audibility3D.Components;
+using Systems.Audibility3D.Data;
+using Systems.Audibility3D.Jobs;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -9,7 +9,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Systems.Audibility.Utility
+namespace Systems.Audibility3D.Utility
 {
     public static class AudibilityLevel
     {

@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Systems.Audibility.Jobs
+namespace Systems.Audibility3D.Jobs
 {
     [BurstCompile]
     public struct ResetRaycastResultTableJob : IJobParallelFor

@@ -1,4 +1,4 @@
-﻿namespace Systems.Audibility.Utility
+﻿namespace Systems.Audibility3D.Utility
 {
     public static class Loudness
     {

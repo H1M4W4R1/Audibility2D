@@ -1,6 +1,6 @@
-﻿using Systems.Audibility.Data;
+﻿using Systems.Audibility3D.Data;
 
-namespace Systems.Audibility.Utility
+namespace Systems.Audibility3D.Utility
 {
     public static class Muffling
     {

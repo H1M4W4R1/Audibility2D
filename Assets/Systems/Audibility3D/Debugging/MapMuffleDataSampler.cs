@@ -1,11 +1,11 @@
-﻿using Systems.Audibility.Components;
-using Systems.Audibility.Data;
-using Systems.Audibility.Utility;
+﻿using Systems.Audibility3D.Components;
+using Systems.Audibility3D.Data;
+using Systems.Audibility3D.Utility;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Systems.Audibility.Debugging
+namespace Systems.Audibility3D.Debugging
 {
     public sealed class MapMuffleDataSampler : MonoBehaviour
     {

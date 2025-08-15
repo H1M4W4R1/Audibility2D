@@ -5,7 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Systems.Audibility.Jobs
+namespace Systems.Audibility3D.Jobs
 {
     [BurstCompile] public struct CreateAudioSamplingRaycastsJob : IJobParallelFor
     {
