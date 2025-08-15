@@ -85,7 +85,6 @@ namespace Systems.Audibility.Utility
             jobAwaiter.Complete();
             resetScannedAudioLevelsHandle.Complete();
 
-            // TODO: Move to a job to improve performance of this section?
             FastSimpleAudibilityLevelCalculatorJob simpleAudibilityLevelCalculatorJobJob =
                 new()
                 {
