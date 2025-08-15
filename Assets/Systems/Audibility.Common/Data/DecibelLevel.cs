@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Unity.Burst;
 using Unity.Mathematics;
 
 namespace Systems.Audibility.Common.Data
@@ -50,7 +51,9 @@ namespace Systems.Audibility.Common.Data
         /// <summary>
         ///     Compute muffled decibel level
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel MuffleAllFrequenciesBy(byte muffleLevelAllFrequencies)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        [BurstCompile]
+        public DecibelLevel MuffleAllFrequenciesBy(byte muffleLevelAllFrequencies)
         {
             int4 vectorizedMuffle = new(muffleLevelAllFrequencies, muffleLevelAllFrequencies,
                 muffleLevelAllFrequencies, muffleLevelAllFrequencies);
@@ -63,7 +66,7 @@ namespace Systems.Audibility.Common.Data
         /// <summary>
         ///     Compute muffled decibel level
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public DecibelLevel MuffleBy(DecibelLevel muffleLevel)
         {
             vectorized -= math.min(vectorized, muffleLevel.vectorized);
@@ -73,25 +76,36 @@ namespace Systems.Audibility.Common.Data
         /// <summary>
         ///     Get average decibel level from all frequencies
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte GetAverage()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
+        public int GetAverage()
         {
             int total = lowFrequency + mid0Frequency + mid1Frequency + highFrequency;
-            return (byte) (total / 4);
+            return total / 4;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static DecibelLevel Max(DecibelLevel a, DecibelLevel b)
         {
             return new DecibelLevel(math.max(a.vectorized, b.vectorized));
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static DecibelLevel Min(DecibelLevel a, DecibelLevel b)
         {
             return new DecibelLevel(math.min(a.vectorized, b.vectorized));
         }
         
-        public static implicit operator DecibelLevel(byte audioLevel) => new(audioLevel);
+        [BurstCompile] public static implicit operator DecibelLevel(byte audioLevel) => new(audioLevel);
+        
+        
+        [BurstCompile] public static bool operator ==(DecibelLevel a, DecibelLevel b)
+        {
+            return math.all(a.vectorized == b.vectorized);
+        }
+
+        [BurstCompile] public static bool operator !=(DecibelLevel a, DecibelLevel b)
+        {
+            return !(a == b);
+        }
     }
 }
