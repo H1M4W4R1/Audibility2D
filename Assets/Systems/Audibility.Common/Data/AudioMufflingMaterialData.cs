@@ -1,7 +1,5 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Systems.Audibility.Common.Utility;
-using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using UnityEngine;
 
@@ -18,8 +16,7 @@ namespace Systems.Audibility.Common.Data
 
         private void OnValidate()
         {
-            // TODO: Do something with this crap
-            AudibilitySystem2D.SetDirtyAll(true);
+            AudibilitySystem.NotifySystemDirty();
         }
     }
 }

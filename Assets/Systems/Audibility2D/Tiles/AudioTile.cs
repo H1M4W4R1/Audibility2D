@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
@@ -17,7 +16,13 @@ namespace Systems.Audibility2D.Tiles
      
         [field: SerializeField] public Sprite PreviewSprite { get; private set; }
         [field: SerializeField] public Color PreviewColor { get; private set; } = Color.gray;
-        
+
+        public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
+        {
+            AudibilitySystem2D.SetDirtyAll(true);
+            return base.StartUp(position, tilemap, go);
+        }
+
         /// <summary>
         ///     Get tile muffle levels
         /// </summary>

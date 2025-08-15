@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
+using Systems.Audibility.Common.Utility;
 using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
@@ -17,9 +19,10 @@ namespace Systems.Audibility2D.Utility
 
         public static void SetDirtyAll(bool value)
         {
-            foreach (KeyValuePair<Tilemap, bool> kvp in IsDirtyCache)
-            {
-                IsDirtyCache[kvp.Key] = value;
+            for (int i = IsDirtyCache.Count - 1; i >= 0; i--) {
+                KeyValuePair<Tilemap, bool> item = IsDirtyCache.ElementAt(i);
+                Tilemap key = item.Key;
+                IsDirtyCache[key] = value;
             }
         }
         
@@ -27,5 +30,12 @@ namespace Systems.Audibility2D.Utility
         {
             IsDirtyCache[tilemap] = value;
         }
+
+        static AudibilitySystem2D()
+        {
+            // This will be removed on domain reload, so I don't care it's here
+            AudibilitySystem.OnSystemDirty += () => SetDirtyAll(true);
+        }
+
     }
 }

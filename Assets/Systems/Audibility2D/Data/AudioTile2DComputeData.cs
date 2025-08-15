@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Systems.Audibility.Common.Data;
+﻿using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
 using Unity.Mathematics;
 using UnityEngine;

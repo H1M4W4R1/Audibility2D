@@ -8,6 +8,10 @@ namespace Systems.Audibility3D.Components
     /// <summary>
     ///     Obstacle that reduces audibility by muffling it via specified amount
     /// </summary>
+    /// <remarks>
+    ///     Intended to operate in 3D, but raycast hit-scanning is seriously laggy, so it's not used
+    ///     at this moment.
+    /// </remarks>
     public sealed class AudibleObstacle : MonoBehaviour
     {
         [SerializeField] private AudioMufflingMaterialData audioMaterialData;

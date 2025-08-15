@@ -13,7 +13,7 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
 {
-    [BurstCompile] public static class Audibility2DTools
+    [BurstCompile] public static class AudibilityTools2D
     {
         private static readonly Dictionary<Tilemap, NativeArray<DecibelLevel>> _tileMufflingLevels = new();
 
@@ -102,7 +102,8 @@ namespace Systems.Audibility2D.Utility
         )
         {
             // Refresh tilemap if dirty
-            if (AudibilitySystem2D.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
+            if (AudibilitySystem2D.IsDirty(audioTilemap)) 
+                RefreshTileData(audioTilemap);
             NativeArray<DecibelLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
 
             // Prepare tilemap data

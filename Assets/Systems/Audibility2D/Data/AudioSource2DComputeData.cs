@@ -1,6 +1,5 @@
 ﻿using Systems.Audibility.Common.Data;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Systems.Audibility2D.Data
 {

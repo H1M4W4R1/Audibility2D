@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Common.Data;
+﻿using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Jobs;
@@ -8,11 +7,10 @@ using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Systems.Audibility2D.Utility
 {
-    public static class AudibilityLevel
+    public static class AudibilityLevel2D
     {
         /// <summary>
         ///     Update audibility level

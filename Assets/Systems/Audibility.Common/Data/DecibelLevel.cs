@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Systems.Audibility.Common.Data
 {
@@ -14,10 +15,10 @@ namespace Systems.Audibility.Common.Data
     {
         [FieldOffset(0)] private int4 vectorized;
 
-        [FieldOffset(0)] public int lowFrequency; // 32-bit
-        [FieldOffset(4)] public int mid0Frequency; // 32-bit
-        [FieldOffset(8)] public int mid1Frequency; // 32-bit
-        [FieldOffset(12)] public int highFrequency; // 32-bit
+        [FieldOffset(0)] [Tooltip("About 20Hz")] public int lowFrequency; // 32-bit
+        [FieldOffset(4)] [Tooltip("About 200Hz")] public int mid0Frequency; // 32-bit
+        [FieldOffset(8)] [Tooltip("About 2kHz")] public int mid1Frequency; // 32-bit
+        [FieldOffset(12)] [Tooltip("About 20kHz")] public int highFrequency; // 32-bit
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DecibelLevel(int4 vectorized)

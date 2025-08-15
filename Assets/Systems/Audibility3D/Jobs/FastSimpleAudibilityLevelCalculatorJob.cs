@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
-using Systems.Audibility3D.Utility;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;

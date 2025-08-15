@@ -12,7 +12,7 @@ using UnityEngine.Assertions;
 
 namespace Systems.Audibility3D.Utility
 {
-    public static class AudibilityLevel
+    public static class AudibilityLevel3D
     {
         private static readonly RaycastHit[] _raycastHitsSingleCheck = new RaycastHit[8];
         private static NativeArray<DecibelLevel> _scannedLevels;

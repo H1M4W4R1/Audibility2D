@@ -1,7 +1,6 @@
-﻿using System;
-using Systems.Audibility.Common.Utility;
+﻿using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Tiles;
-using Systems.Audibility3D.Utility;
+using Systems.Audibility2D.Utility;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;

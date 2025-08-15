@@ -4,13 +4,13 @@ using Systems.Audibility.Common.Utility;
 using Unity.Burst;
 using UnityEngine;
 
-namespace Systems.Audibility2D.Components
+namespace Systems.Audibility.Common.Components
 {
     /// <summary>
     ///     Represents audible audio source - audio source that affects audibility maps.
     ///     In most cases this should be implemented on most Audio Sources in the game (maybe except music)
     /// </summary>
-    [RequireComponent(typeof(AudioSource))] public sealed class AudibleAudioSource2D : MonoBehaviour
+    [RequireComponent(typeof(AudioSource))] public sealed class AudibleAudioSource : MonoBehaviour
     {
         [SerializeField] private DecibelLevel decibelLevel = Loudness.MAX;
 

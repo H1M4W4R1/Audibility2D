@@ -1,6 +1,6 @@
-﻿using Systems.Audibility.Common.Data;
+﻿using Systems.Audibility.Common.Components;
+using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
-using Systems.Audibility3D.Components;
 using Systems.Audibility3D.Utility;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -24,8 +24,8 @@ namespace Systems.Audibility3D.Debugging
         private void OnDrawGizmos()
         {
             float3 objPos = transform.position;
-            AudibleAudioSource3D[] sources =
-                FindObjectsByType<AudibleAudioSource3D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            AudibleAudioSource[] sources =
+                FindObjectsByType<AudibleAudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             // Re-allocate arrays if necessary
             QuickArray.PerformEfficientAllocation(ref _samplePositionsArray, gridSize * gridSize,
@@ -60,7 +60,7 @@ namespace Systems.Audibility3D.Debugging
                 _sourceRangesArray[nSource] = sources[nSource].UnitySourceReference.maxDistance;
             }
 
-            AudibilityLevel.GetMultiPoint(_samplePositionsArray, _sourcesPositionsArray,
+            AudibilityLevel3D.GetMultiPoint(_samplePositionsArray, _sourcesPositionsArray,
                 _sourceRangesArray,
                 _sourceDecibelLevelsArray, audioRaycastLayers, ref _decibelLevelResultsArray);
 
