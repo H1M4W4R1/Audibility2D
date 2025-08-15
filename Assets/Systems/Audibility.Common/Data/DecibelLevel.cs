@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unity.Mathematics;
 
-namespace Systems.Audibility3D.Data
+namespace Systems.Audibility.Common.Data
 {
     /// <summary>
     ///     Represents decibel level across four different frequencies

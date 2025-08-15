@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Systems.Audibility3D.Data
+namespace Systems.Audibility.Common.Data
 {
     [CreateAssetMenu(menuName = "Systems/Audibility/MuffleMaterialData", fileName = "MuffleMaterialData")]
     public sealed class AudioMufflingMaterialData : ScriptableObject

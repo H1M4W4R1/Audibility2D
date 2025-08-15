@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility3D.Data;
+using Systems.Audibility.Common.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;

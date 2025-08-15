@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Systems.Audibility3D.Data;
+using Systems.Audibility.Common.Data;
 using UnityEngine;
 
 namespace Systems.Audibility3D.Components

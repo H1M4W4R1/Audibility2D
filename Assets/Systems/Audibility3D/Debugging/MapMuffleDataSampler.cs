@@ -1,5 +1,6 @@
-﻿using Systems.Audibility3D.Components;
-using Systems.Audibility3D.Data;
+﻿using Systems.Audibility.Common.Data;
+using Systems.Audibility.Common.Utility;
+using Systems.Audibility3D.Components;
 using Systems.Audibility3D.Utility;
 using Unity.Collections;
 using Unity.Mathematics;

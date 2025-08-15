@@ -1,7 +1,7 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
 
-namespace Systems
+namespace Systems.Audibility.Common.Utility
 {
     [BurstCompile]
     public static class QuickArray
