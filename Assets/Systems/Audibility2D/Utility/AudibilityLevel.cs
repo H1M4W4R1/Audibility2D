@@ -85,14 +85,13 @@ namespace Systems.Audibility2D.Utility
                 math.clamp(distanceSq / currentAudioSource.rangeSq, 0, 1)));
             newTileLevel = DecibelLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
-            bool levelChanged = neighbouringTile.currentAudioLevel != newTileLevel;
+            if (!Hint.Unlikely(neighbouringTile.currentAudioLevel != newTileLevel)) return;
 
             // Update audio level based on maximum between current level and new one calculated by muffling values
             neighbouringTile.currentAudioLevel = newTileLevel;
 
-
             // Notify to update neighbours
-            if (levelChanged && !tilesToUpdateNeighbours.Contains(neighbouringTile.index))
+            if (Hint.Likely(!tilesToUpdateNeighbours.Contains(neighbouringTile.index)))
                 tilesToUpdateNeighbours.Add(neighbouringTile.index);
         }
     }

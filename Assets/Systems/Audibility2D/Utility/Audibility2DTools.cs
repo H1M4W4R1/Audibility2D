@@ -2,6 +2,7 @@
 using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Tiles;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -39,10 +40,10 @@ namespace Systems.Audibility2D.Utility
                 {
                     // Compute index and tile location
                     int nIndex = x * tilemapSize.y + y;
-                    int northIndex = y + 1 < tilemapSize.y ? x * tilemapSize.y + y + 1 : -1;
-                    int southIndex = y - 1 >= 0 ? x * tilemapSize.y + y - 1 : -1;
-                    int westIndex = x - 1 >= 0 ? (x - 1) * tilemapSize.y + y : -1;
-                    int eastIndex = x + 1 < tilemapSize.x ? (x + 1) * tilemapSize.y + y : -1;
+                    int northIndex = Hint.Likely(y + 1 < tilemapSize.y) ? x * tilemapSize.y + y + 1 : -1;
+                    int southIndex = Hint.Likely(y - 1 >= 0) ? x * tilemapSize.y + y - 1 : -1;
+                    int westIndex = Hint.Likely(x - 1 >= 0) ? (x - 1) * tilemapSize.y + y : -1;
+                    int eastIndex = Hint.Likely(x + 1 < tilemapSize.x) ? (x + 1) * tilemapSize.y + y : -1;
  
                     Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
 

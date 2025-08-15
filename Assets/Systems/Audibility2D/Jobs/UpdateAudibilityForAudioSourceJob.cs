@@ -1,6 +1,7 @@
 ﻿using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -19,7 +20,7 @@ namespace Systems.Audibility2D.Jobs
             AudioSource2DComputeData audioSourceData = audioSourcesData[nAudioSource];
 
             // Skip if tile is outside of map
-            if (audioSourceData.tileIndex >= audioTilesData.Length || audioSourceData.tileIndex < 0) return;
+            if (Hint.Unlikely(audioSourceData.tileIndex >= audioTilesData.Length || audioSourceData.tileIndex < 0)) return;
             
             // Get start tile and initialize with audio value
             AudioTile2DComputeData startTile = audioTilesData[audioSourceData.tileIndex];
@@ -28,7 +29,7 @@ namespace Systems.Audibility2D.Jobs
             audioTilesData[audioSourceData.tileIndex] = startTile;
 
             // Perform update sequence
-            while (tilesToUpdateNeighbours.Length > 0)
+            while (Hint.Likely(tilesToUpdateNeighbours.Length > 0))
             {
                 // Perform update sequence
                 int tileIndex = tilesToUpdateNeighbours[0];
