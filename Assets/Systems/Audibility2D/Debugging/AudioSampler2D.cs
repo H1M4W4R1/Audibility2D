@@ -25,14 +25,16 @@ namespace Systems.Audibility2D.Debugging
         {
             // Initialize tilemap arrays
             Audibility2DTools.TilemapToArray(audioTilemap, ref _tileComputeData);
-
+    
             // Prepare array of audio sources
             AudibleAudioSource2D[] sources =
                 FindObjectsByType<AudibleAudioSource2D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             QuickArray.PerformEfficientAllocation(ref _audioSourceComputeData, sources.Length,
                 Allocator.Persistent);
-
+            
+            
+            // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
             {
                 // Get basic information
@@ -49,7 +51,7 @@ namespace Systems.Audibility2D.Debugging
                     worldPosition + 0.5f * (float3) audioTilemap.cellSize,
                     source.GetDecibelLevel(), source.UnitySourceReference.maxDistance);
             }
-
+            
             // Handle computation
             AudibilityLevel.UpdateAudibilityLevel(_audioSourceComputeData, ref _tileComputeData);
 

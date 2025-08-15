@@ -16,7 +16,7 @@ namespace Systems.Audibility2D.Jobs
         [BurstCompile]
         public void Execute(int nAudioSource)
         {
-            NativeList<int> tilesToUpdateNeighbours = new(64, Allocator.TempJob);
+            NativeList<int> tilesToUpdateNeighbours = new(64, Allocator.Temp);
             AudioSource2DComputeData audioSourceData = audioSourcesData[nAudioSource];
 
             // Skip if tile is outside of map
@@ -41,6 +41,8 @@ namespace Systems.Audibility2D.Jobs
                 // Remove tiles from update
                 tilesToUpdateNeighbours.RemoveAt(0);
             }
+
+            tilesToUpdateNeighbours.Dispose();
         }
     }
 }

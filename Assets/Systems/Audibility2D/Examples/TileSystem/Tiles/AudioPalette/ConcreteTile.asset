@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioMaterialData: {fileID: 11400000, guid: 8a035d8d46552be4ea62ac1d54cd818e, type: 2}
   <PreviewSprite>k__BackingField: {fileID: 21300000, guid: 2966d46e4d599574a8d58ad907a058f7, type: 3}
-  <PreviewColor>k__BackingField: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  <PreviewColor>k__BackingField: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}

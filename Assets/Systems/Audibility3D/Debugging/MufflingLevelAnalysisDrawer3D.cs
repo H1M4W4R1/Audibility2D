@@ -47,7 +47,6 @@ namespace Systems.Audibility3D.Debugging
                 ? _samplePositionsArray.Length
                 : -1);
 
-            // TODO: Verify if no obstacle modification was performed
             if (Mathf.Approximately(math.distancesq(_lastPosition, objPos), 0.0f) && !arraySizeChanged) return;
 
             float distance = 100;

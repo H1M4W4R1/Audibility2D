@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Systems.Audibility.Common.Utility
+namespace Systems.Audibility3D.Utility
 {
     public static class TilemapExtensions
     {

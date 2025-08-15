@@ -1,6 +1,8 @@
+using System;
 using System.Runtime.CompilerServices;
 using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
+using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -43,6 +45,11 @@ namespace Systems.Audibility2D.Tiles
             //tileData.flags = TileFlags.LockTransform;
             tileData.transform = Matrix4x4.identity;
             tileData.colliderType = Tile.ColliderType.None;
+        }
+
+        private void OnValidate()
+        {
+           AudibilitySystem2D.SetDirtyAll(true);
         }
     }
 }
