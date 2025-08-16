@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
-using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Jobs;
 using Systems.Audibility2D.Tiles;

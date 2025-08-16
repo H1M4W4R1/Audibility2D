@@ -1,15 +1,12 @@
 ﻿using JetBrains.Annotations;
-using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Tiles;
 using Systems.Audibility2D.Utility;
 using Unity.Collections;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-
-namespace Systems.Audibility2D.Debugging
+namespace Systems.Audibility2D.Components.Debugging
 {
     /// <summary>
     ///     Debug script used to sample 2D audio for specified tilemap

@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Systems.Audibility2D.Debugging
+namespace Systems.Audibility2D.Components.Debugging
 {
     /// <summary>
     ///     Debug script used to draw muffling level for all tiles on specific tilemap,

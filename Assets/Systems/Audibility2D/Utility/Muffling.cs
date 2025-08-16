@@ -1,5 +1,4 @@
-﻿using Systems.Audibility2D.Data;
-using Systems.Audibility2D.Data.Native;
+﻿using Systems.Audibility2D.Data.Native;
 
 namespace Systems.Audibility2D.Utility
 {
