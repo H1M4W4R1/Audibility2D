@@ -5,7 +5,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Systems.Audibility.Common.Data
+namespace Systems.Audibility2D.Data
 {
     /// <summary>
     ///     Represents decibel level across four different frequencies

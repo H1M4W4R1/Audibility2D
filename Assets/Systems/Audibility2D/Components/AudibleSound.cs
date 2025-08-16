@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Common.Data;
-using Systems.Audibility.Common.Utility;
+using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Systems.Audibility.Common.Components
+namespace Systems.Audibility2D.Components
 {
     /// <summary>
     ///     Represents audible sound - one that can be received by any audibility sampler method.

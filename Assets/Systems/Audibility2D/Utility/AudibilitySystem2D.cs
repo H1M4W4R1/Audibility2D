@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Systems.Audibility.Common.Utility;
 using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility

@@ -1,4 +1,4 @@
-﻿namespace Systems.Audibility.Common.Utility
+﻿namespace Systems.Audibility2D.Utility
 {
     /// <summary>
     ///     Internal class used to reference AudibilitySystem2D and 3D using shared events

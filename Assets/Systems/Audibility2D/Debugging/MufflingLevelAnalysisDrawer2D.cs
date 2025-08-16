@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Tiles;
 using Systems.Audibility2D.Utility;
 using Unity.Mathematics;

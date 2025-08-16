@@ -1,4 +1,4 @@
-namespace Systems.Audibility.Common.Settings
+namespace Systems.Audibility2D.Settings
 {
     /// <summary>
     ///     Global audibility settings for all known audibility solutions

@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Common.Utility;
+using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using UnityEngine;
 
-namespace Systems.Audibility.Common.Data
+namespace Systems.Audibility2D.Data
 {
     /// <summary>
     ///     Object storing data about muffling effect of specific material. Used to easily modify muffling settings

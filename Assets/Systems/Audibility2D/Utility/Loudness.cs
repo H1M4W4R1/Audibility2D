@@ -1,4 +1,4 @@
-﻿namespace Systems.Audibility.Common.Utility
+﻿namespace Systems.Audibility2D.Utility
 {
     /// <summary>
     ///     Universal collection of loudness values for reference

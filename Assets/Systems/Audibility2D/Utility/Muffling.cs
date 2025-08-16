@@ -1,6 +1,6 @@
-﻿using Systems.Audibility.Common.Data;
+﻿using Systems.Audibility2D.Data;
 
-namespace Systems.Audibility.Common.Utility
+namespace Systems.Audibility2D.Utility
 {
     /// <summary>
     ///     Universal collection of muffling values for reference

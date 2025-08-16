@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Systems.Audibility.Common.Data;
-using Systems.Audibility.Common.Utility;
+using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;

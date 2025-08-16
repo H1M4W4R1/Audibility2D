@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Systems.Audibility.Common.Components;
-using Systems.Audibility.Common.Data;
-using Systems.Audibility.Common.Utility;
+using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Tiles;
 using Unity.Burst;
