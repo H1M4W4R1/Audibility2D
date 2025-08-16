@@ -55,15 +55,16 @@ namespace Systems.Audibility3D.Debugging
 
         private void SampleData()
         {
+            const float RAYTRACE_DISTANCE = 100;
+            
             float3 objPos = transform.position;
             bool arraySizeChanged = gridSize * gridSize != (_samplePositionsArray.IsCreated
                 ? _samplePositionsArray.Length
                 : -1);
 
             if (Mathf.Approximately(math.distancesq(_lastPosition, objPos), 0.0f) && !arraySizeChanged) return;
-
-            float distance = 100;
-            float3 vectorDistance = new(0, distance, 0);
+            
+            float3 vectorDistance = new(0, RAYTRACE_DISTANCE, 0);
             float3 vectorDown = new(0, -1, 0);
 
             // Ensure tables are properly initialized
@@ -85,7 +86,7 @@ namespace Systems.Audibility3D.Debugging
 
                     // Sample muffling strength
                     int nCollisions = Physics.RaycastNonAlloc(position + vectorDistance,
-                        vectorDown, _hits, distance, audioRaycastLayers, QueryTriggerInteraction.Ignore);
+                        vectorDown, _hits, RAYTRACE_DISTANCE, audioRaycastLayers, QueryTriggerInteraction.Ignore);
 
                     _muffleStrengthArray[nIndex] = Loudness.SILENCE;
                     for (int collisionIndex = 0; collisionIndex < nCollisions; collisionIndex++)
