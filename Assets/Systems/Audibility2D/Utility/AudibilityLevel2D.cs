@@ -41,36 +41,19 @@ namespace Systems.Audibility2D.Utility
             ref AudioTile2DComputeData currentTile,
             in AudioSource2DComputeData currentAudioSource)
         {
-            if (Hint.Likely(currentTile.northIndex >= 0))
+            for (int neighbourId = 0; neighbourId <= Tile2DNeighbourIndexData.MAX_INDEX; neighbourId++)
             {
-                AudioTile2DComputeData neighbourTile = audioTilesData[currentTile.northIndex];
+                // Get tile index
+                int neighbourTileIndex = currentTile.neighbourData[neighbourId];
+                
+                // Early return
+                if (neighbourTileIndex == -1) break;
+                
+                // Process tile
+                AudioTile2DComputeData neighbourTile = audioTilesData[neighbourTileIndex];
                 UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource,
                     currentTile.currentAudioLevel);
-                audioTilesData[currentTile.northIndex] = neighbourTile;
-            }
-
-            if (Hint.Likely(currentTile.southIndex >= 0))
-            {
-                AudioTile2DComputeData neighbourTile = audioTilesData[currentTile.southIndex];
-                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource,
-                    currentTile.currentAudioLevel);
-                audioTilesData[currentTile.southIndex] = neighbourTile;
-            }
-
-            if (Hint.Likely(currentTile.eastIndex >= 0))
-            {
-                AudioTile2DComputeData neighbourTile = audioTilesData[currentTile.eastIndex];
-                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource,
-                    currentTile.currentAudioLevel);
-                audioTilesData[currentTile.eastIndex] = neighbourTile;
-            }
-
-            if (Hint.Likely(currentTile.westIndex >= 0))
-            {
-                AudioTile2DComputeData neighbourTile = audioTilesData[currentTile.westIndex];
-                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource,
-                    currentTile.currentAudioLevel);
-                audioTilesData[currentTile.westIndex] = neighbourTile;
+                audioTilesData[neighbourTileIndex] = neighbourTile;
             }
         }
 

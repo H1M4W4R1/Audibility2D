@@ -1,5 +1,7 @@
-﻿using Systems.Audibility.Common.Data;
+﻿using System.Runtime.CompilerServices;
+using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
+using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -34,39 +36,29 @@ namespace Systems.Audibility2D.Data
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
         /// </summary>
         public readonly DecibelLevel mufflingStrength;
-        
-        /// <summary>
-        ///     North neighbour index in tile array
-        /// </summary>
-        public readonly int northIndex;
-        
-        /// <summary>
-        ///     East neighbour index in tile array
-        /// </summary>
-        public readonly int eastIndex;
-        
-        /// <summary>
-        ///     South neighbour index in tile array
-        /// </summary>
-        public readonly int southIndex;
-        
-        /// <summary>
-        ///     West neighbour index in tile array
-        /// </summary>
-        public readonly int westIndex;
 
-        public AudioTile2DComputeData(int index, float3 worldPosition, Vector3Int tilemapPosition, DecibelLevel mufflingStrength, int northIndex, int eastIndex, int southIndex, int westIndex)
+        /// <summary>
+        ///     Node neighbours data
+        /// </summary>
+        public Tile2DNeighbourIndexData neighbourData;
+
+        public AudioTile2DComputeData(int index, float3 worldPosition, Vector3Int tilemapPosition, DecibelLevel mufflingStrength)
         {
             this.index = index;
             this.worldPosition = worldPosition;
             this.tilemapPosition = tilemapPosition;
             this.mufflingStrength = mufflingStrength;
-            this.northIndex = northIndex;
-            this.eastIndex = eastIndex;
-            this.southIndex = southIndex;
-            this.westIndex = westIndex;
 
             currentAudioLevel = Loudness.SILENCE;
+            neighbourData = Tile2DNeighbourIndexData.New();
+        }
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddNeighbour(int neighbourIndex)
+        {
+            if (neighbourData.length >= Tile2DNeighbourIndexData.MAX_INDEX) return;
+            neighbourData[neighbourData.length] = neighbourIndex;
+            neighbourData.length++;
         }
     }
 }

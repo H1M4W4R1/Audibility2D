@@ -101,9 +101,11 @@ namespace Systems.Audibility2D.Utility
                     float3 worldPosition = worldOrigin + new float3(x * cellSize.x, y * cellSize.y, 0);
 
 
-                    AudioTile2DComputeData tileData = new(
-                        nIndex, worldPosition, cellPosition, mufflingStrength,
-                        northIndex, eastIndex, southIndex, westIndex);
+                    AudioTile2DComputeData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
+                    tileData.AddNeighbour(northIndex);
+                    tileData.AddNeighbour(southIndex);
+                    tileData.AddNeighbour(westIndex);
+                    tileData.AddNeighbour(eastIndex);
                     audioTileData[nIndex] = tileData;
                 }
             }
