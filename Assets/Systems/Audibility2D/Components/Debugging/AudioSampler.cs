@@ -21,22 +21,32 @@ namespace Systems.Audibility2D.Components.Debugging
 
         private NativeArray<AudioTileData> _tileComputeData;
         private NativeArray<AudioSourceData> _audioSourceComputeData;
+        private NativeArray<int> _tileLoudnessData;
 
         private void OnDrawGizmos()
         {
             // Ensure tilemap is set
             if (!audioTilemap) return;
 
+            Vector3Int tilemapSize = audioTilemap.size;
+            int tilesCount = tilemapSize.x * tilemapSize.y;
+            QuickArray.PerformEfficientAllocation(ref _tileLoudnessData, tilesCount, Allocator.TempJob);
+
             // Compute audibility in 2D space
             AudibilityLevel.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
-
+            
+            // Compute average tile loudness
+            AudibilityTools.GetAverageLoudnessData(in _tileComputeData, ref _tileLoudnessData);
+            
             // Draw gizmos
             for (int n = 0; n < _tileComputeData.Length; n++)
             {
-                float averageAudioLevel = _tileComputeData[n].currentAudioLevel.GetAverage();
-                Gizmos.color = Color.Lerp(Color.red, Color.green, averageAudioLevel / AudibilityLevel.LOUDNESS_MAX);
+                Gizmos.color = Color.Lerp(Color.red, Color.green,
+                    _tileLoudnessData[n] / (float) AudibilityLevel.LOUDNESS_MAX);
                 Gizmos.DrawSphere(_tileComputeData[n].worldPosition, 0.2f);
             }
+
+            _tileLoudnessData.Dispose();
         }
     }
 }

@@ -15388,7 +15388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18926ad815b24a4fbf9e48080df24292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decibelLevel:
+  audioLoudnessLevel:
     lowFrequency: 160
     mid0Frequency: 160
     mid1Frequency: 160
@@ -15405,7 +15405,6 @@ GameObject:
   - component: {fileID: 1518747563}
   - component: {fileID: 1518747565}
   - component: {fileID: 1518747564}
-  - component: {fileID: 1518747566}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -18478,19 +18477,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!114 &1518747566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518747562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d4753d60f0b42c1a3ce7073068b674a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioTilemap: {fileID: 1518747565}
 --- !u!1 &1966819181
 GameObject:
   m_ObjectHideFlags: 0

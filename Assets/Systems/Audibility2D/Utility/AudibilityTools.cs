@@ -2,12 +2,15 @@
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
+using Systems.Audibility2D.Jobs;
 using Systems.Audibility2D.Tiles;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
@@ -21,6 +24,113 @@ namespace Systems.Audibility2D.Utility
         ///     Data about tile muffling levels, cached to improve performance
         /// </summary>
         private static readonly Dictionary<Tilemap, NativeArray<AudioLoudnessLevel>> _tileMufflingLevels = new();
+
+        /// <summary>
+        ///     Get average loudness data from results array
+        /// </summary>
+        /// <param name="tileDataAfterComputing">Array with computed tile data</param>
+        /// <param name="averageLoudnessArray">
+        ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
+        /// </param>
+        public static void GetAverageLoudnessData(
+            in NativeArray<AudioTileData> tileDataAfterComputing,
+            ref NativeArray<int> averageLoudnessArray)
+        {
+            Assert.IsTrue(tileDataAfterComputing.IsCreated);
+            Assert.IsTrue(averageLoudnessArray.IsCreated);
+            Assert.AreEqual(averageLoudnessArray.Length, tileDataAfterComputing.Length);
+            
+            GetAverageAudioLoudnessDataJob averageAudioLoudnessDataJob = new()
+            {
+                tileData = tileDataAfterComputing,
+                averageTileLoudnessData = averageLoudnessArray
+            };
+
+            JobHandle waitHandle = averageAudioLoudnessDataJob.Schedule(tileDataAfterComputing.Length,
+                math.min(tileDataAfterComputing.Length, 64));
+            waitHandle.Complete();
+        }
+
+        /// <summary>
+        ///     Converts tilemap to array of tile data for computation 
+        /// </summary>
+        /// <param name="audioTilemap">
+        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
+        /// </param>
+        /// <param name="tileComputeData">
+        ///     Reference to handle for Tile Data array, automatically allocated as PERSISTENT
+        ///     Also your output array.
+        ///     Output value.
+        /// </param>
+        [BurstDiscard] public static void TilemapToArray(
+            [NotNull] Tilemap audioTilemap,
+            ref NativeArray<AudioTileData> tileComputeData
+        )
+        {
+            Assert.IsNotNull(audioTilemap);
+            
+            // Refresh tilemap if dirty
+            if (AudibilitySystem.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
+            NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
+
+            // Prepare tilemap data
+            Vector3Int tilemapOrigin = audioTilemap.origin;
+            Vector3Int tilemapSize = audioTilemap.size;
+            int tilesCount = tilemapSize.x * tilemapSize.y;
+
+            // Ensure arrays are initialized 
+            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, Allocator.Persistent);
+      
+            float3 cellSize = audioTilemap.cellSize;
+            float3 worldOrigin = (float3) audioTilemap.CellToWorld(audioTilemap.origin) + 0.5f * cellSize;
+
+            // Perform conversion
+            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels,
+                ref tileComputeData);
+            
+            Assert.AreEqual(tileComputeData.Length, tilesCount);
+        }
+
+        /// <summary>
+        ///     Converts tilemap and audio sources array of audio source data for computation
+        /// </summary>
+        /// <param name="audioTilemap">
+        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
+        /// </param>
+        /// <param name="sources">All audio sources to include in data array</param>
+        /// <param name="audioSourceComputeData">
+        ///     Reference to handle for Audio Source Data array, automatically allocated as PERSISTENT
+        ///     Output value.
+        /// </param>
+        [BurstDiscard] public static void AudioSourcesToArray(
+            [NotNull] Tilemap audioTilemap,
+            [NotNull] AudibleSound[] sources,
+            ref NativeArray<AudioSourceData> audioSourceComputeData)
+        {
+            Assert.IsNotNull(audioTilemap);
+            Assert.IsNotNull(sources);
+            
+            // This should be pretty performant
+            for (int nIndex = 0; nIndex < sources.Length; nIndex++)
+            {
+                // Get basic information
+                AudibleSound source = sources[nIndex];
+                float3 worldPosition = source.transform.position;
+
+                // Compute tilemap index
+                Vector3Int tileMapPosition =
+                    audioTilemap.WorldToCell(worldPosition) - audioTilemap.origin;
+                int tileIndex = tileMapPosition.x * audioTilemap.size.y + tileMapPosition.y;
+
+                // Assign value
+                audioSourceComputeData[nIndex] = new AudioSourceData(tileIndex,
+                    worldPosition + 0.5f * (float3) audioTilemap.cellSize,
+                    source.GetDecibelLevel(), source.GetRange());
+            }
+            
+            Assert.AreEqual(sources.Length, audioSourceComputeData.Length);
+        }
+
 
         /// <summary>
         ///     Refreshes tile data, called when tilemap is dirty
@@ -111,77 +221,6 @@ namespace Systems.Audibility2D.Utility
                     // Copy new tile data into array
                     audioTileData[nIndex] = tileData;
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Converts tilemap to array of tile data for computation 
-        /// </summary>
-        /// <param name="audioTilemap">
-        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
-        /// </param>
-        /// <param name="tileComputeData">
-        ///     Reference to handle for Tile Data array, automatically allocated as PERSISTENT
-        ///     Also your output array.
-        ///     Output value.
-        /// </param>
-        [BurstDiscard] public static void TilemapToArray(
-            [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioTileData> tileComputeData
-        )
-        {
-            // Refresh tilemap if dirty
-            if (AudibilitySystem.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
-            NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
-
-            // Prepare tilemap data
-            Vector3Int tilemapOrigin = audioTilemap.origin;
-            Vector3Int tilemapSize = audioTilemap.size;
-            int tilesCount = tilemapSize.x * tilemapSize.y;
-
-            // Ensure arrays are initialized 
-            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, Allocator.Persistent);
-
-            float3 cellSize = audioTilemap.cellSize;
-            float3 worldOrigin = (float3) audioTilemap.CellToWorld(audioTilemap.origin) + 0.5f * cellSize;
-
-            // Perform conversion
-            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels,
-                ref tileComputeData);
-        }
-
-        /// <summary>
-        ///     Converts tilemap and audio sources array of audio source data for computation
-        /// </summary>
-        /// <param name="audioTilemap">
-        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
-        /// </param>
-        /// <param name="sources">All audio sources to include in data array</param>
-        /// <param name="audioSourceComputeData">
-        ///     Reference to handle for Audio Source Data array, automatically allocated as PERSISTENT
-        ///     Output value.
-        /// </param>
-        [BurstDiscard] public static void AudioSourcesToArray(
-            [NotNull] Tilemap audioTilemap,
-            [NotNull] AudibleSound[] sources,
-            ref NativeArray<AudioSourceData> audioSourceComputeData)
-        {
-            // This should be pretty performant
-            for (int nIndex = 0; nIndex < sources.Length; nIndex++)
-            {
-                // Get basic information
-                AudibleSound source = sources[nIndex];
-                float3 worldPosition = source.transform.position;
-
-                // Compute tilemap index
-                Vector3Int tileMapPosition =
-                    audioTilemap.WorldToCell(worldPosition) - audioTilemap.origin;
-                int tileIndex = tileMapPosition.x * audioTilemap.size.y + tileMapPosition.y;
-
-                // Assign value
-                audioSourceComputeData[nIndex] = new AudioSourceData(tileIndex,
-                    worldPosition + 0.5f * (float3) audioTilemap.cellSize,
-                    source.GetDecibelLevel(), source.GetRange());
             }
         }
     }
