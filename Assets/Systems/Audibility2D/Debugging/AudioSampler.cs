@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Tiles;
 using Systems.Audibility2D.Utility;
 using Unity.Collections;
@@ -13,7 +14,7 @@ namespace Systems.Audibility2D.Debugging
     /// <summary>
     ///     Debug script used to sample 2D audio for specified tilemap
     /// </summary>
-    public sealed class AudioSampler2D : MonoBehaviour
+    public sealed class AudioSampler : MonoBehaviour
     {
         /// <summary>
         ///     Audio tilemap that will be used to compute data
@@ -21,8 +22,8 @@ namespace Systems.Audibility2D.Debugging
         /// </summary>
         [SerializeField] [CanBeNull] private Tilemap audioTilemap;
 
-        private NativeArray<AudioTile2DComputeData> _tileComputeData;
-        private NativeArray<AudioSource2DComputeData> _audioSourceComputeData;
+        private NativeArray<AudioTileData> _tileComputeData;
+        private NativeArray<AudioSourceData> _audioSourceComputeData;
 
         private void OnDrawGizmos()
         {
@@ -30,7 +31,7 @@ namespace Systems.Audibility2D.Debugging
             if (!audioTilemap) return;
 
             // Compute audibility in 2D space
-            AudibilityLevel2D.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
+            AudibilityLevel.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
 
             // Draw gizmos
             for (int n = 0; n < _tileComputeData.Length; n++)

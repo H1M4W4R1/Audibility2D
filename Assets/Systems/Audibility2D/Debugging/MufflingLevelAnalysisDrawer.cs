@@ -11,7 +11,7 @@ namespace Systems.Audibility2D.Debugging
     ///     Debug script used to draw muffling level for all tiles on specific tilemap,
     ///     pretty inefficient but does its job, rarely used.
     /// </summary>
-    public sealed class MufflingLevelAnalysisDrawer2D : MonoBehaviour
+    public sealed class MufflingLevelAnalysisDrawer : MonoBehaviour
     {
         /// <summary>
         ///     Audio tilemap that will be used to compute data

@@ -1,4 +1,5 @@
 ﻿using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 
 namespace Systems.Audibility2D.Utility
 {
@@ -8,7 +9,7 @@ namespace Systems.Audibility2D.Utility
     public static class Muffling
     {
         public const byte NONE = 0;
-        public static readonly DecibelLevel CONCRETE = new(45, 52, 62, 75);
+        public static readonly AudioLoudnessLevel CONCRETE = new(45, 52, 62, 75);
 
     }
 }

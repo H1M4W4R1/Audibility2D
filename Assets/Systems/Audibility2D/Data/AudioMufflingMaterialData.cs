@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Systems.Audibility2D.Data
         ///     Muffle level - how much sound will be dampened when reaching object made of this material.
         /// </summary>
         [field: SerializeField] [Tooltip("Sound loudness will be reduced by this value when reaching this material")] 
-        public DecibelLevel MuffleLevel
+        public AudioLoudnessLevel MuffleLevel
         {
             [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] get;
             [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] private set;
@@ -24,7 +25,7 @@ namespace Systems.Audibility2D.Data
 
         private void OnValidate()
         {
-            AudibilitySystem.NotifySystemDirty();
+            AudibilitySystem.SetDirtyAll(true);
         }
     }
 }

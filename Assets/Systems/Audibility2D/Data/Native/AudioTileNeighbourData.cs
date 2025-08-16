@@ -4,11 +4,11 @@ using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Mathematics;
 
-namespace Systems.Audibility2D.Data
+namespace Systems.Audibility2D.Data.Native
 {
     [StructLayout(LayoutKind.Explicit)]
     [BurstCompile]
-    public struct Tile2DNeighbourIndexData
+    public struct AudioTileNeighbourData
     {
         public const int MAX_INDEX = 8;
         
@@ -50,9 +50,13 @@ namespace Systems.Audibility2D.Data
             }
         }
 
-        public static Tile2DNeighbourIndexData New()
+        /// <summary>
+        ///     Creates new instance of this class and sets-up all tiles to be -1 (not existing).
+        ///     
+        /// </summary>
+        public static AudioTileNeighbourData New()
         {
-            return new Tile2DNeighbourIndexData()
+            return new AudioTileNeighbourData()
             {
                 tile0 = -1,
                 tile1 = -1,

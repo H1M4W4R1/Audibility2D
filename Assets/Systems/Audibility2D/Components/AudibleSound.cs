@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Mathematics;
@@ -19,7 +20,7 @@ namespace Systems.Audibility2D.Components
         ///     than regular whispering.
         /// </summary>
         [SerializeField] [Tooltip("How loud is this audio source (dB)")] 
-        private DecibelLevel decibelLevel = Loudness.MAX;
+        private AudioLoudnessLevel audioLoudnessLevel = Loudness.MAX;
 
         /// <summary>
         ///     Range of audio sound in 3D space
@@ -55,12 +56,12 @@ namespace Systems.Audibility2D.Components
         /// <summary>
         ///     Change decibel level of this source
         /// </summary>
-        /// <param name="newDecibelLevel">Decibel level of this source</param>
-        public void SetDecibelLevel(DecibelLevel newDecibelLevel) => decibelLevel = newDecibelLevel;
+        /// <param name="newAudioLoudnessLevel">Decibel level of this source</param>
+        public void SetDecibelLevel(AudioLoudnessLevel newAudioLoudnessLevel) => audioLoudnessLevel = newAudioLoudnessLevel;
 
         /// <summary>
         ///     Get loudness of this audio source in dB (for four basic frequencies)
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel GetDecibelLevel() => decibelLevel;
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetDecibelLevel() => audioLoudnessLevel;
     }
 }

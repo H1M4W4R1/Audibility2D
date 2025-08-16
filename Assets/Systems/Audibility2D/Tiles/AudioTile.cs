@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using UnityEngine;
@@ -31,14 +32,14 @@ namespace Systems.Audibility2D.Tiles
 
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
         {
-            AudibilitySystem2D.SetDirtyAll(true);
+            AudibilitySystem.SetDirtyAll(true);
             return base.StartUp(position, tilemap, go);
         }
 
         /// <summary>
         ///     Get tile muffle levels
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel GetMufflingData()
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetMufflingData()
         {
             if (ReferenceEquals(audioMaterialData, null)) return Muffling.NONE;
             return audioMaterialData.MuffleLevel;
@@ -66,7 +67,7 @@ namespace Systems.Audibility2D.Tiles
 
         private void OnValidate()
         {
-           AudibilitySystem2D.SetDirtyAll(true);
+           AudibilitySystem.SetDirtyAll(true);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
@@ -18,25 +19,25 @@ namespace Systems.Audibility2D.Jobs
         /// <summary>
         ///     Audio sources information for computation
         /// </summary>
-        [ReadOnly] public NativeArray<AudioSource2DComputeData> audioSourcesData;
+        [ReadOnly] public NativeArray<AudioSourceData> audioSourcesData;
         
         /// <summary>
         ///     Audio tiles data, can be written (hope it won't cause race conditions)
         /// </summary>
-        [NativeDisableParallelForRestriction] public NativeArray<AudioTile2DComputeData> audioTilesData;
+        [NativeDisableParallelForRestriction] public NativeArray<AudioTileData> audioTilesData;
         
         [BurstCompile]
         public void Execute(int nAudioSource)
         {
             NativeList<int> tilesToUpdateNeighbours = new(64, Allocator.Temp);
-            AudioSource2DComputeData audioSourceData = audioSourcesData[nAudioSource];
+            AudioSourceData audioSourceData = audioSourcesData[nAudioSource];
 
             // Skip if tile is outside of map
             if (Hint.Unlikely(audioSourceData.tileIndex >= audioTilesData.Length || audioSourceData.tileIndex < 0)) return;
             
             // Get start tile and initialize with audio value
-            AudioTile2DComputeData startTile = audioTilesData[audioSourceData.tileIndex];
-            AudibilityLevel2D.UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, 
+            AudioTileData startTile = audioTilesData[audioSourceData.tileIndex];
+            AudibilityLevel.UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, 
                 startTile, ref startTile, audioSourceData,
                 audioSourceData.audioLevel);
             audioTilesData[audioSourceData.tileIndex] = startTile;
@@ -46,8 +47,8 @@ namespace Systems.Audibility2D.Jobs
             {
                 // Perform update sequence
                 int tileIndex = tilesToUpdateNeighbours[0];
-                AudioTile2DComputeData tile = audioTilesData[tileIndex];
-                AudibilityLevel2D.UpdateNeighbourAudioLevelsForTile(
+                AudioTileData tile = audioTilesData[tileIndex];
+                AudibilityLevel.UpdateNeighbourAudioLevelsForTile(
                     ref tilesToUpdateNeighbours,
                     ref audioTilesData, ref tile, audioSourceData);
 

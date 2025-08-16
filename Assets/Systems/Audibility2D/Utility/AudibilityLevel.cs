@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Jobs;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
@@ -16,7 +17,7 @@ namespace Systems.Audibility2D.Utility
     ///     Utility class to calculate audibility level from provided data
     /// </summary>
     [BurstCompile]
-    public static class AudibilityLevel2D
+    public static class AudibilityLevel
     {
         /// <summary>
         ///     Simpler version to handle audibility calculations
@@ -24,11 +25,11 @@ namespace Systems.Audibility2D.Utility
         [BurstDiscard]
         public static void UpdateAudibilityLevel(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioSource2DComputeData> audioSourceComputeData,
-            ref NativeArray<AudioTile2DComputeData> tileComputeData)
+            ref NativeArray<AudioSourceData> audioSourceComputeData,
+            ref NativeArray<AudioTileData> tileComputeData)
         {
             // Initialize tilemap arrays
-            AudibilityTools2D.TilemapToArray(audioTilemap, ref tileComputeData);
+            AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData);
 
             // Prepare array of audio sources
             AudibleSound[] sources =
@@ -38,18 +39,18 @@ namespace Systems.Audibility2D.Utility
                 Allocator.Persistent);
 
             // Get audio sources data
-            AudibilityTools2D.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
+            AudibilityTools.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
 
             // Handle computation
             UpdateAudibilityLevel(audioSourceComputeData, ref tileComputeData);
         }
         
         /// <summary>
-        ///     Update audibility level
+        ///     Update audibility level for entire map
         /// </summary>
         [BurstCompile] public static void UpdateAudibilityLevel(
-            in NativeArray<AudioSource2DComputeData> audioSourcesData,
-            ref NativeArray<AudioTile2DComputeData> audioTilesData)
+            in NativeArray<AudioSourceData> audioSourcesData,
+            ref NativeArray<AudioTileData> audioTilesData)
         {
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {
@@ -66,11 +67,11 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
             ref NativeList<int> tilesToUpdateNeighbours,
-            ref NativeArray<AudioTile2DComputeData> audioTilesData,
-            ref AudioTile2DComputeData currentTile,
-            in AudioSource2DComputeData currentAudioSource)
+            ref NativeArray<AudioTileData> audioTilesData,
+            ref AudioTileData currentTile,
+            in AudioSourceData currentAudioSource)
         {
-            for (int neighbourId = 0; neighbourId <= Tile2DNeighbourIndexData.MAX_INDEX; neighbourId++)
+            for (int neighbourId = 0; neighbourId <= AudioTileNeighbourData.MAX_INDEX; neighbourId++)
             {
                 // Get tile index
                 int neighbourTileIndex = currentTile.GetNeighbourIndex(neighbourId);
@@ -79,7 +80,7 @@ namespace Systems.Audibility2D.Utility
                 if (Hint.Unlikely(neighbourTileIndex == -1)) break;
                 
                 // Process tile
-                AudioTile2DComputeData neighbourTile = audioTilesData[neighbourTileIndex];
+                AudioTileData neighbourTile = audioTilesData[neighbourTileIndex];
                 UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, 
                     currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
                 audioTilesData[neighbourTileIndex] = neighbourTile;
@@ -91,10 +92,10 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             ref NativeList<int> tilesToUpdateNeighbours,
-            in AudioTile2DComputeData originalTile,
-            ref AudioTile2DComputeData neighbouringTile,
-            in AudioSource2DComputeData currentAudioSource,
-            in DecibelLevel currentAudioLevel)
+            in AudioTileData originalTile,
+            ref AudioTileData neighbouringTile,
+            in AudioSourceData currentAudioSource,
+            in AudioLoudnessLevel currentAudioLevel)
         {
             // Compute distance between tiles to decrease audio level
             // Unfortunately we can't use distanceSq as it behaves poorly in division scenarios
@@ -104,11 +105,11 @@ namespace Systems.Audibility2D.Utility
             if (Hint.Likely(distance > currentAudioSource.range)) return;
 
             // Copy current audio level and compute muffling 
-            DecibelLevel newTileLevel = currentAudioLevel;
+            AudioLoudnessLevel newTileLevel = currentAudioLevel;
             newTileLevel = newTileLevel.MuffleBy(neighbouringTile.mufflingStrength); // Current tile muffling
             newTileLevel = newTileLevel.MuffleAllFrequenciesBy((byte) math.lerp(0, Loudness.MAX,
                 math.clamp(distance / currentAudioSource.range, 0, 1)));
-            newTileLevel = DecibelLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
+            newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
             // Detect audio changes to prevent infinite loop
             if (!Hint.Unlikely(neighbouringTile.currentAudioLevel != newTileLevel)) return;

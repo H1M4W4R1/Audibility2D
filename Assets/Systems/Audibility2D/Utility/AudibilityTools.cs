@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data;
+using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Tiles;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
@@ -13,14 +14,14 @@ using UnityEngine.Tilemaps;
 namespace Systems.Audibility2D.Utility
 {
     /// <summary>
-    ///     Additional class to reduce mess in <see cref="AudibilityLevel2D"/>
+    ///     Additional class to reduce mess in <see cref="AudibilityLevel"/>
     /// </summary>
-    [BurstCompile] public static class AudibilityTools2D
+    [BurstCompile] public static class AudibilityTools
     {
         /// <summary>
         ///     Data about tile muffling levels, cached to improve performance
         /// </summary>
-        private static readonly Dictionary<Tilemap, NativeArray<DecibelLevel>> _tileMufflingLevels = new();
+        private static readonly Dictionary<Tilemap, NativeArray<AudioLoudnessLevel>> _tileMufflingLevels = new();
 
         /// <summary>
         ///     Refreshes tile data, called when tilemap is dirty
@@ -32,7 +33,7 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y;
 
             // Try to get value and update array if necessary
-            if (!_tileMufflingLevels.TryGetValue(audioTilemap, out NativeArray<DecibelLevel> mufflingLevelsArray))
+            if (!_tileMufflingLevels.TryGetValue(audioTilemap, out NativeArray<AudioLoudnessLevel> mufflingLevelsArray))
             {
                 QuickArray.PerformEfficientAllocation(ref mufflingLevelsArray, tilesCount,
                     Allocator.Persistent);
@@ -55,13 +56,13 @@ namespace Systems.Audibility2D.Utility
                     AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
 
                     // ReSharper disable once Unity.NoNullPropagation
-                    DecibelLevel mufflingStrength = audioTile?.GetMufflingData() ?? Muffling.NONE;
+                    AudioLoudnessLevel mufflingStrength = audioTile?.GetMufflingData() ?? Muffling.NONE;
                     mufflingLevelsArray[nIndex] = mufflingStrength;
                 }
             }
 
             // System is no longer dirty
-            AudibilitySystem2D.SetDirty(audioTilemap, false);
+            AudibilitySystem.SetDirty(audioTilemap, false);
         }
 
         /// <summary>
@@ -73,8 +74,8 @@ namespace Systems.Audibility2D.Utility
             in Vector3Int tilemapSize,
             in float3 cellSize,
             in float3 worldOrigin,
-            in NativeArray<DecibelLevel> mufflingLevels,
-            ref NativeArray<AudioTile2DComputeData> audioTileData
+            in NativeArray<AudioLoudnessLevel> mufflingLevels,
+            ref NativeArray<AudioTileData> audioTileData
         )
         {
             // Prepare analysis data
@@ -87,7 +88,7 @@ namespace Systems.Audibility2D.Utility
 
                     // Pre-compute Unity-based data
                     Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
-                    DecibelLevel mufflingStrength = mufflingLevels[nIndex];
+                    AudioLoudnessLevel mufflingStrength = mufflingLevels[nIndex];
 
                     int northIndex = Hint.Likely(y + 1 < tilemapSize.y) ? x * tilemapSize.y + y + 1 : -1;
                     int southIndex = Hint.Likely(y - 1 >= 0) ? x * tilemapSize.y + y - 1 : -1;
@@ -100,7 +101,7 @@ namespace Systems.Audibility2D.Utility
 
                     // Register node neighbours taking limit into account
                     int nNeighbours = 0;
-                    AudioTile2DComputeData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
+                    AudioTileData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
                     nNeighbours += tileData.SetNeighbour(northIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(southIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
@@ -117,13 +118,13 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstDiscard] public static void TilemapToArray(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioTile2DComputeData> audioTileData
+            ref NativeArray<AudioTileData> audioTileData
         )
         {
             // Refresh tilemap if dirty
-            if (AudibilitySystem2D.IsDirty(audioTilemap)) 
+            if (AudibilitySystem.IsDirty(audioTilemap)) 
                 RefreshTileData(audioTilemap);
-            NativeArray<DecibelLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
+            NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
 
             // Prepare tilemap data
             Vector3Int tilemapOrigin = audioTilemap.origin;
@@ -146,7 +147,7 @@ namespace Systems.Audibility2D.Utility
         [BurstDiscard] public static void AudioSourcesToArray(
             [NotNull] Tilemap audioTilemap,
             [NotNull] AudibleSound[] sources,
-            ref NativeArray<AudioSource2DComputeData> audioSourceComputeData)
+            ref NativeArray<AudioSourceData> audioSourceComputeData)
         {
             // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
@@ -161,7 +162,7 @@ namespace Systems.Audibility2D.Utility
                 int tileIndex = tileMapPosition.x * audioTilemap.size.y + tileMapPosition.y;
 
                 // Assign value
-                audioSourceComputeData[nIndex] = new AudioSource2DComputeData(tileIndex,
+                audioSourceComputeData[nIndex] = new AudioSourceData(tileIndex,
                     worldPosition + 0.5f * (float3) audioTilemap.cellSize,
                     source.GetDecibelLevel(), source.GetRange());
             }

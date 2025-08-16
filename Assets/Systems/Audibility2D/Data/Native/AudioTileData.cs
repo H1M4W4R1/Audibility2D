@@ -4,17 +4,17 @@ using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Systems.Audibility2D.Data
+namespace Systems.Audibility2D.Data.Native
 {
     /// <summary>
     ///     Object to store computation data of audio-receiving tile for 2D audibility system
     /// </summary>
-    public struct AudioTile2DComputeData
+    public struct AudioTileData
     {
         /// <summary>
         ///     Current audio level on this tile, output value
         /// </summary>
-        public DecibelLevel currentAudioLevel;
+        public AudioLoudnessLevel currentAudioLevel;
 
         /// <summary>
         ///     Index of this tile in array
@@ -34,18 +34,18 @@ namespace Systems.Audibility2D.Data
         /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
         /// </summary>
-        public readonly DecibelLevel mufflingStrength;
+        public readonly AudioLoudnessLevel mufflingStrength;
 
         /// <summary>
         ///     Node neighbours data
         /// </summary>
-        public Tile2DNeighbourIndexData neighbourData;
+        public AudioTileNeighbourData neighbourData;
 
-        public AudioTile2DComputeData(
+        public AudioTileData(
             int index,
             float3 worldPosition,
             Vector3Int tilemapPosition,
-            DecibelLevel mufflingStrength)
+            AudioLoudnessLevel mufflingStrength)
         {
             this.index = index;
             this.worldPosition = worldPosition;
@@ -53,7 +53,7 @@ namespace Systems.Audibility2D.Data
             this.mufflingStrength = mufflingStrength;
 
             currentAudioLevel = Loudness.SILENCE;
-            neighbourData = Tile2DNeighbourIndexData.New();
+            neighbourData = AudioTileNeighbourData.New();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Systems.Audibility2D.Data
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int SetNeighbour(int neighbourIndex, int neighbourPosition)
         {
-            if (neighbourPosition is < 0 or > Tile2DNeighbourIndexData.MAX_INDEX) return 0;
+            if (neighbourPosition is < 0 or > AudioTileNeighbourData.MAX_INDEX) return 0;
             neighbourData[neighbourPosition] = neighbourIndex;
             return 1;
         }

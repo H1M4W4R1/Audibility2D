@@ -3,7 +3,7 @@
 namespace Systems.Audibility2D.Components
 {
     /// <summary>
-    ///     Script to enforce object to be always in world origin position (0,0,0)
+    ///     Utility script to enforce object to be always in world origin position (0,0,0)
     ///     Works only in Editor.
     /// </summary>
     [ExecuteInEditMode] public sealed class AlwaysInWorldOrigin : MonoBehaviour
