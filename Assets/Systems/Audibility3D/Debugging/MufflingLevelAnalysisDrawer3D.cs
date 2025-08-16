@@ -45,8 +45,7 @@ namespace Systems.Audibility3D.Debugging
                     int nIndex = xIndex * gridSize + yIndex;
 
                     float percentage = _muffleStrengthArray[nIndex].GetAverage() / (float) Loudness.MAX;
-                    Gizmos.color = Color.Lerp(Color.white, Color.blue,
-                        _muffleStrengthArray[nIndex].GetAverage() > 5 ? 0 : 1);
+                    Gizmos.color = Color.Lerp(Color.green, Color.red, percentage);
                     Gizmos.DrawSphere(_samplePositionsArray[nIndex], sphereSize);
                 }
             }
