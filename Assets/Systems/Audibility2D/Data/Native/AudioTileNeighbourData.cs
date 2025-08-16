@@ -10,18 +10,18 @@ namespace Systems.Audibility2D.Data.Native
     [BurstCompile]
     public struct AudioTileNeighbourData
     {
-        public const int MAX_INDEX = 8;
+        public const int MAX_INDEX = 4;
         
-        [FieldOffset(0)] public int4x2 vectorized;
+        [FieldOffset(0)] public int4 vectorized;
         
         [FieldOffset(0)] public int tile0;
         [FieldOffset(4)] public int tile1;
         [FieldOffset(8)] public int tile2;
         [FieldOffset(12)] public int tile3;
-        [FieldOffset(16)] public int tile4;
+        /*[FieldOffset(16)] public int tile4;
         [FieldOffset(20)] public int tile5;
         [FieldOffset(24)] public int tile6;
-        [FieldOffset(28)] public int tile7;
+        [FieldOffset(28)] public int tile7;*/
      
         public unsafe int this[int index]
         {
@@ -62,10 +62,10 @@ namespace Systems.Audibility2D.Data.Native
                 tile1 = -1,
                 tile2 = -1,
                 tile3 = -1,
-                tile4 = -1,
+                /*tile4 = -1,
                 tile5 = -1,
                 tile6 = -1,
-                tile7 = -1
+                tile7 = -1*/
             };
         }
         
