@@ -6,6 +6,9 @@ namespace Systems.Audibility.Common.Utility
     [BurstCompile]
     public static class QuickArray
     {
+        /// <summary>
+        ///     Allocates array if length has changed, otherwise leaves old array to be cleaned up.
+        /// </summary>
         [BurstCompile]
         public static void PerformEfficientAllocation<TDataType>(
             ref NativeArray<TDataType> source,

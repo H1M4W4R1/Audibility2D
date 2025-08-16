@@ -2,6 +2,9 @@
 
 namespace Systems.Audibility.Common.Utility
 {
+    /// <summary>
+    ///     Universal collection of muffling values for reference
+    /// </summary>
     public static class Muffling
     {
         public const byte NONE = 0;

@@ -7,10 +7,22 @@ using Unity.Jobs;
 
 namespace Systems.Audibility2D.Jobs
 {
+    /// <summary>
+    ///     Job used to efficiently update audibility level of all tiles
+    ///     looping for all audio sources in parallel to make it way faster
+    ///     than it should be.
+    /// </summary>
     [BurstCompile]
     public struct UpdateAudibilityForAudioSourceJob : IJobParallelFor
     {
+        /// <summary>
+        ///     Audio sources information for computation
+        /// </summary>
         [ReadOnly] public NativeArray<AudioSource2DComputeData> audioSourcesData;
+        
+        /// <summary>
+        ///     Audio tiles data, can be written (hope it won't cause race conditions)
+        /// </summary>
         [NativeDisableParallelForRestriction] public NativeArray<AudioTile2DComputeData> audioTilesData;
         
         [BurstCompile]

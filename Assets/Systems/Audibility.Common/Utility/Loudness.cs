@@ -1,5 +1,8 @@
 ﻿namespace Systems.Audibility.Common.Utility
 {
+    /// <summary>
+    ///     Universal collection of loudness values for reference
+    /// </summary>
     public static class Loudness
     {
         public const byte NONE = 0;

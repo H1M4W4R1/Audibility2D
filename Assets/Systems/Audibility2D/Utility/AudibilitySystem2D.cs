@@ -6,6 +6,9 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
 {
+    /// <summary>
+    ///     Utility class used to transfer system-wide notification for 2D API
+    /// </summary>
     public static class AudibilitySystem2D
     {
         private static Dictionary<Tilemap, bool> IsDirtyCache { get; } = new();

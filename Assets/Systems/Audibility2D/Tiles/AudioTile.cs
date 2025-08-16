@@ -8,13 +8,26 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Tiles
 {
+    /// <summary>
+    ///     Audio tile used to compute muffling / dampening properties at specific position
+    /// </summary>
     [CreateAssetMenu(menuName = "Systems/Audibility/AudioTile", fileName = "AudioTile")]
     public sealed class AudioTile : TileBase
     {
+        /// <summary>
+        ///     Sound loudness dampening material, see class for more information
+        /// </summary>
         [Tooltip("Tile material used to define muffling levels")]
         [SerializeField] private AudioMufflingMaterialData audioMaterialData;
      
+        /// <summary>
+        ///     Sprite used to render tile in editor
+        /// </summary>
         [field: SerializeField] public Sprite PreviewSprite { get; private set; }
+        
+        /// <summary>
+        ///     Color used to render sprite in editor
+        /// </summary>
         [field: SerializeField] public Color PreviewColor { get; private set; } = Color.gray;
 
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)

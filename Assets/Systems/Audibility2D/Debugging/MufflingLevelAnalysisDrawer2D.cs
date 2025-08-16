@@ -1,4 +1,5 @@
-﻿using Systems.Audibility.Common.Utility;
+﻿using JetBrains.Annotations;
+using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Tiles;
 using Systems.Audibility2D.Utility;
 using Unity.Mathematics;
@@ -7,36 +8,42 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Debugging
 {
+    /// <summary>
+    ///     Debug script used to draw muffling level for all tiles on specific tilemap,
+    ///     pretty inefficient but does its job, rarely used.
+    /// </summary>
     public sealed class MufflingLevelAnalysisDrawer2D : MonoBehaviour
     {
-        [SerializeField] private Tilemap audioTilemap;
+        /// <summary>
+        ///     Audio tilemap that will be used to compute data
+        ///     Must use <see cref="AudioTile"/> to modify audio behaviour
+        /// </summary>
+        [SerializeField] [CanBeNull] private Tilemap audioTilemap;
 
         private void OnDrawGizmos()
         {
             // Find tilemap
-            if (!audioTilemap)
-            {
-                Debug.LogError($"[{nameof(MufflingLevelAnalysisDrawer2D)}] No audioTilemap found!");
-                return;
-            }
-
-            Gizmos.color = Color.cyan;
+            if (!audioTilemap) return;
             
-            // Compute all cell positions
-            int3x2 corners = audioTilemap.FindTilemapCorners();
+            Gizmos.color = Color.cyan;
+
+            Vector3Int tilemapSize = audioTilemap.size;
+            Vector3Int tilemapOrigin = audioTilemap.origin;
+            
             float3 cellSize = audioTilemap.cellSize;
-
-            // Get cell center positions
-            float3 initialCellSpot = corners.c0 + 0.5f * cellSize;
-            float3 endCellSpot = corners.c1 - 0.5f * cellSize;
-
-            // Draw muffling gizmos on audio cells
-            for (float xPosition = initialCellSpot.x; xPosition <= endCellSpot.x; xPosition += cellSize.x)
+            float3 worldOrigin = (float3) audioTilemap.CellToWorld(tilemapOrigin) + 0.5f * cellSize;
+      
+            // Prepare analysis data
+            for (int x = 0; x < tilemapSize.x; x++)
             {
-                for (float yPosition = initialCellSpot.y; yPosition <= endCellSpot.y; yPosition += cellSize.y)
+                for (int y = 0; y < tilemapSize.y; y++)
                 {
-                    float3 worldPosition = new(xPosition, yPosition, 0);
-                    Vector3Int cellPosition = audioTilemap.WorldToCell(worldPosition);
+                    // Pre-compute Unity-based data
+                    Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
+                   
+                    // Get data from tile, we're pre-caching it early and using multiplication
+                    // to improve performance, as it's faster than casting external calls to Unity API
+                    float3 worldPosition = worldOrigin + new float3(x * cellSize.x, y * cellSize.y, 0);
                     
                     AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
                     if (ReferenceEquals(audioTile, null)) continue;

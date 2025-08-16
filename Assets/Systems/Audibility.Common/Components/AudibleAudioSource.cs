@@ -12,7 +12,13 @@ namespace Systems.Audibility.Common.Components
     /// </summary>
     [RequireComponent(typeof(AudioSource))] public sealed class AudibleAudioSource : MonoBehaviour
     {
-        [SerializeField] private DecibelLevel decibelLevel = Loudness.MAX;
+        /// <summary>
+        ///     Level of this audio source in four basic frequencies.
+        ///     Also known how loud this thing should relatively be - gunshots can be louder
+        ///     than regular whispering.
+        /// </summary>
+        [SerializeField] [Tooltip("How loud is this audio source (dB)")] 
+        private DecibelLevel decibelLevel = Loudness.MAX;
 
         /// <summary>
         ///     Audio source on this object
@@ -23,6 +29,10 @@ namespace Systems.Audibility.Common.Components
         ///     Cached transform to reduce computation time
         /// </summary>
         private Transform _transform;
+        
+        /// <summary>
+        ///     Reference to Unity audio source accessible from other scripts
+        /// </summary>
         public AudioSource UnitySourceReference
         {
             get
@@ -46,6 +56,9 @@ namespace Systems.Audibility.Common.Components
         /// <param name="newDecibelLevel">Decibel level of this source</param>
         public void SetDecibelLevel(DecibelLevel newDecibelLevel) => decibelLevel = newDecibelLevel;
 
+        /// <summary>
+        ///     Get loudness of this audio source in dB (for four basic frequencies)
+        /// </summary>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public DecibelLevel GetDecibelLevel() => decibelLevel;
     }
 }

@@ -11,7 +11,10 @@ namespace Systems.Audibility.Common.Data
     ///     Represents decibel level across four different frequencies
     ///     for better audio mapping
     /// </summary>
-    [Serializable] [StructLayout(LayoutKind.Explicit)] public struct DecibelLevel
+    /// <remarks>
+    /// Frequencies: 20Hz, 200Hz, 2kHz, 20kHz
+    /// </remarks>
+    [Serializable] [StructLayout(LayoutKind.Explicit)] public struct DecibelLevel : IEquatable<DecibelLevel>
     {
         [FieldOffset(0)] private int4 vectorized;
 
@@ -20,6 +23,9 @@ namespace Systems.Audibility.Common.Data
         [FieldOffset(8)] [Tooltip("About 2kHz")] public int mid1Frequency; // 32-bit
         [FieldOffset(12)] [Tooltip("About 20kHz")] public int highFrequency; // 32-bit
 
+        /// <summary>
+        ///     Internal constructor for vectorized creation of object
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DecibelLevel(int4 vectorized)
         {
@@ -84,29 +90,41 @@ namespace Systems.Audibility.Common.Data
             return total / 4;
         }
 
+        /// <summary>
+        ///     Get maximum of two loudness values
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static DecibelLevel Max(DecibelLevel a, DecibelLevel b)
         {
             return new DecibelLevel(math.max(a.vectorized, b.vectorized));
         }
         
+        /// <summary>
+        ///     Get minimum of two loudness values
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static DecibelLevel Min(DecibelLevel a, DecibelLevel b)
         {
             return new DecibelLevel(math.min(a.vectorized, b.vectorized));
         }
         
+        /// <summary>
+        ///     Convert number into loudness, all frequencies will be set to desired loudness
+        /// </summary>
         [BurstCompile] public static implicit operator DecibelLevel(byte audioLevel) => new(audioLevel);
         
-        
-        [BurstCompile] public static bool operator ==(DecibelLevel a, DecibelLevel b)
-        {
-            return math.all(a.vectorized == b.vectorized);
-        }
+        [BurstCompile] public static bool operator ==(DecibelLevel a, DecibelLevel b) => math.all(a.vectorized == b.vectorized);
 
-        [BurstCompile] public static bool operator !=(DecibelLevel a, DecibelLevel b)
-        {
-            return !(a == b);
-        }
+        [BurstCompile] public static bool operator !=(DecibelLevel a, DecibelLevel b) => !(a == b);
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(DecibelLevel other) => vectorized.Equals(other.vectorized);
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool Equals(object obj) => obj is DecibelLevel other && Equals(other);
+        
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetHashCode() => vectorized.GetHashCode();
+        
     }
 }

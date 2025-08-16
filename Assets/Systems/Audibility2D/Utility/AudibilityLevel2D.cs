@@ -10,6 +10,9 @@ using Unity.Mathematics;
 
 namespace Systems.Audibility2D.Utility
 {
+    /// <summary>
+    ///     Utility class to calculate audibility level from provided data
+    /// </summary>
     public static class AudibilityLevel2D
     {
         /// <summary>
@@ -29,6 +32,9 @@ namespace Systems.Audibility2D.Utility
                 .Complete();
         }
 
+        /// <summary>
+        ///     Method that computes audio updates for all neighboring tiles of specific tile
+        /// </summary>
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTile2DComputeData> audioTilesData,
@@ -68,6 +74,9 @@ namespace Systems.Audibility2D.Utility
             }
         }
 
+        /// <summary>
+        ///     Method used to update audio level of specific tile
+        /// </summary>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             ref NativeList<int> tilesToUpdateNeighbours,
             ref AudioTile2DComputeData neighbouringTile,
