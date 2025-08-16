@@ -60,7 +60,7 @@ namespace Systems.Audibility.Common.Data
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] 
         [BurstCompile]
-        public DecibelLevel MuffleAllFrequenciesBy(byte muffleLevelAllFrequencies)
+        public DecibelLevel MuffleAllFrequenciesBy(int muffleLevelAllFrequencies)
         {
             int4 vectorizedMuffle = new(muffleLevelAllFrequencies, muffleLevelAllFrequencies,
                 muffleLevelAllFrequencies, muffleLevelAllFrequencies);

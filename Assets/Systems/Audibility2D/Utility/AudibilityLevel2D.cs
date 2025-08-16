@@ -51,8 +51,8 @@ namespace Systems.Audibility2D.Utility
                 
                 // Process tile
                 AudioTile2DComputeData neighbourTile = audioTilesData[neighbourTileIndex];
-                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource,
-                    currentTile.currentAudioLevel);
+                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, 
+                    currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
                 audioTilesData[neighbourTileIndex] = neighbourTile;
             }
         }
@@ -62,17 +62,23 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             ref NativeList<int> tilesToUpdateNeighbours,
+            in AudioTile2DComputeData originalTile,
             ref AudioTile2DComputeData neighbouringTile,
             in AudioSource2DComputeData currentAudioSource,
-            in DecibelLevel localTileDecibelLevel)
+            in DecibelLevel currentAudioLevel)
         {
-            // Compute distance between tile and audio source (straight line)
-            float distanceSq = math.distancesq(neighbouringTile.worldPosition, currentAudioSource.worldPosition);
+            // Compute distance between tiles to decrease audio level
+            // Unfortunately we can't use distanceSq as it behaves poorly in division scenarios
+            float distance = math.distance(neighbouringTile.worldPosition, originalTile.worldPosition);
 
-            // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-            DecibelLevel newTileLevel = localTileDecibelLevel.MuffleBy(neighbouringTile.mufflingStrength);
+            // This will always result in silence, skip this trash ;)
+            if (Hint.Likely(distance > currentAudioSource.range)) return;
+
+            // Copy current audio level and compute muffling 
+            DecibelLevel newTileLevel = currentAudioLevel;
+            newTileLevel = newTileLevel.MuffleBy(neighbouringTile.mufflingStrength); // Current tile muffling
             newTileLevel = newTileLevel.MuffleAllFrequenciesBy((byte) math.lerp(0, Loudness.MAX,
-                math.clamp(distanceSq / currentAudioSource.rangeSq, 0, 1)));
+                math.clamp(distance / currentAudioSource.range, 0, 1)));
             newTileLevel = DecibelLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
             if (!Hint.Unlikely(neighbouringTile.currentAudioLevel != newTileLevel)) return;
