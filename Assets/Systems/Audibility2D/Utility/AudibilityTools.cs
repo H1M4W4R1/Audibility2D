@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
-using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Tiles;
 using Unity.Burst;
@@ -105,6 +104,7 @@ namespace Systems.Audibility2D.Utility
                     nNeighbours += tileData.SetNeighbour(northIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(southIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
+                    // ReSharper disable once RedundantAssignment
                     nNeighbours += tileData.SetNeighbour(eastIndex, nNeighbours);
                     
                     // Copy new tile data into array
@@ -116,9 +116,17 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Converts tilemap to array of tile data for computation 
         /// </summary>
+        /// <param name="audioTilemap">
+        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
+        /// </param>
+        /// <param name="tileComputeData">
+        ///     Reference to handle for Tile Data array, automatically allocated as PERSISTENT
+        ///     Also your output array.
+        ///     Output value.
+        /// </param>
         [BurstDiscard] public static void TilemapToArray(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioTileData> audioTileData
+            ref NativeArray<AudioTileData> tileComputeData
         )
         {
             // Refresh tilemap if dirty
@@ -132,18 +140,26 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y;
 
             // Ensure arrays are initialized 
-            QuickArray.PerformEfficientAllocation(ref audioTileData, tilesCount, Allocator.Persistent);
+            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, Allocator.Persistent);
 
             float3 cellSize = audioTilemap.cellSize;
             float3 worldOrigin = (float3) audioTilemap.CellToWorld(audioTilemap.origin) + 0.5f * cellSize;
 
             // Perform conversion
-            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels, ref audioTileData);
+            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels, ref tileComputeData);
         }
         
         /// <summary>
         ///     Converts tilemap and audio sources array of audio source data for computation
         /// </summary>
+        /// <param name="audioTilemap">
+        ///     Instance of tilemap to calculate audio data from, should contain <see cref="AudioTile"/> objects
+        /// </param>
+        /// <param name="sources">All audio sources to include in data array</param>
+        /// <param name="audioSourceComputeData">
+        ///     Reference to handle for Audio Source Data array, automatically allocated as PERSISTENT
+        ///     Output value.
+        /// </param>
         [BurstDiscard] public static void AudioSourcesToArray(
             [NotNull] Tilemap audioTilemap,
             [NotNull] AudibleSound[] sources,
