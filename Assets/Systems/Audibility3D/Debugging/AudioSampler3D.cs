@@ -42,14 +42,15 @@ namespace Systems.Audibility3D.Debugging
 
         private void OnDrawGizmos()
         {
+            int samplesSize = gridSize * gridSize * gridSize;
             float3 objPos = transform.position;
             AudibleSound[] sources =
                 FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             // Re-allocate arrays if necessary
-            QuickArray.PerformEfficientAllocation(ref _samplePositionsArray, gridSize * gridSize,
+            QuickArray.PerformEfficientAllocation(ref _samplePositionsArray, samplesSize,
                 Allocator.Persistent);
-            QuickArray.PerformEfficientAllocation(ref _decibelLevelResultsArray, gridSize * gridSize,
+            QuickArray.PerformEfficientAllocation(ref _decibelLevelResultsArray, samplesSize,
                 Allocator.Persistent);
 
             QuickArray.PerformEfficientAllocation(ref _sourcesPositionsArray, sources.Length, Allocator.Persistent);
@@ -63,11 +64,15 @@ namespace Systems.Audibility3D.Debugging
                 float xPosition = -gridSize / 2f * gridDistance + xIndex * gridDistance;
                 for (int yIndex = 0; yIndex < gridSize; yIndex++)
                 {
-                    int nIndex = xIndex * gridSize + yIndex;
-                    float zPosition = -gridSize / 2f * gridDistance + yIndex * gridDistance;
-                    float3 position = new float3(xPosition, 0, zPosition) + objPos;
-                    _samplePositionsArray[nIndex] = position;
-                    _decibelLevelResultsArray[nIndex] = Loudness.SILENCE;
+                    float yPosition = -gridSize / 2f * gridDistance + yIndex * gridDistance;
+                    for (int zIndex = 0; zIndex < gridSize; zIndex++)
+                    {
+                        int nIndex = xIndex * gridSize * gridSize + yIndex * gridSize + zIndex;
+                        float zPosition = -gridSize / 2f * gridDistance + zIndex * gridDistance;
+                        float3 position = new float3(xPosition, yPosition, zPosition) + objPos;
+                        _samplePositionsArray[nIndex] = position;
+                        _decibelLevelResultsArray[nIndex] = Loudness.SILENCE;
+                    }
                 }
             }
 
@@ -88,12 +93,14 @@ namespace Systems.Audibility3D.Debugging
             {
                 for (int yIndex = 0; yIndex < gridSize; yIndex++)
                 {
-                    int nIndex = xIndex * gridSize + yIndex;
-                    DecibelLevel currentLevel = _decibelLevelResultsArray[nIndex];
-
-                    Gizmos.color = Color.Lerp(Color.red, Color.green,
-                        currentLevel.GetAverage() / (float) Loudness.MAX);
-                    Gizmos.DrawSphere(_samplePositionsArray[nIndex], sphereSize);
+                    for (int zIndex = 0; zIndex < gridSize; zIndex++)
+                    {
+                        int nIndex = xIndex * gridSize * gridSize + yIndex * gridSize + zIndex;
+                        DecibelLevel currentLevel = _decibelLevelResultsArray[nIndex];
+                        Gizmos.color = Color.Lerp(Color.red, Color.green,
+                            currentLevel.GetAverage() / (float) Loudness.MAX);
+                        Gizmos.DrawSphere(_samplePositionsArray[nIndex], sphereSize);
+                    }
                 }
             }
         }
