@@ -16,22 +16,22 @@ namespace Systems.Audibility2D.Data
         ///     Current audio level on this tile, output value
         /// </summary>
         public DecibelLevel currentAudioLevel;
-        
+
         /// <summary>
         ///     Index of this tile in array
         /// </summary>
         public readonly int index;
-        
+
         /// <summary>
         ///     Position of center of this tile in world space
         /// </summary>
         public readonly float3 worldPosition;
-        
+
         /// <summary>
         ///     Position of this tile in tilemap
         /// </summary>
         public readonly Vector3Int tilemapPosition;
-        
+
         /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
         /// </summary>
@@ -42,7 +42,11 @@ namespace Systems.Audibility2D.Data
         /// </summary>
         public Tile2DNeighbourIndexData neighbourData;
 
-        public AudioTile2DComputeData(int index, float3 worldPosition, Vector3Int tilemapPosition, DecibelLevel mufflingStrength)
+        public AudioTile2DComputeData(
+            int index,
+            float3 worldPosition,
+            Vector3Int tilemapPosition,
+            DecibelLevel mufflingStrength)
         {
             this.index = index;
             this.worldPosition = worldPosition;
@@ -58,11 +62,23 @@ namespace Systems.Audibility2D.Data
         /// </summary>
         /// <returns>1 if neighbour was added, 0 if maximum count has been exceeded</returns>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int AddNeighbour(int neighbourIndex, int currentNeighbourCount)
+        public int SetNeighbour(int neighbourIndex, int neighbourPosition)
         {
-            if (currentNeighbourCount >= Tile2DNeighbourIndexData.MAX_INDEX) return 0;
-            neighbourData[currentNeighbourCount] = neighbourIndex;
+            if (neighbourPosition is < 0 or > Tile2DNeighbourIndexData.MAX_INDEX) return 0;
+            neighbourData[neighbourPosition] = neighbourIndex;
             return 1;
         }
+
+        /// <summary>
+        ///     Check if neighbour at specified index exists
+        /// </summary>
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool HasNeighbour(int neighbourPosition) => neighbourData[neighbourPosition] != -1;
+
+        /// <summary>
+        ///     Get neighbour at specified position in array
+        /// </summary>
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetNeighbourIndex(int neighbourPosition) => neighbourData[neighbourPosition];
     }
 }

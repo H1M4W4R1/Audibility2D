@@ -103,10 +103,10 @@ namespace Systems.Audibility2D.Utility
                     // Register node neighbours taking limit into account
                     int nNeighbours = 0;
                     AudioTile2DComputeData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
-                    nNeighbours += tileData.AddNeighbour(northIndex, nNeighbours);
-                    nNeighbours += tileData.AddNeighbour(southIndex, nNeighbours);
-                    nNeighbours += tileData.AddNeighbour(westIndex, nNeighbours);
-                    nNeighbours += tileData.AddNeighbour(eastIndex, nNeighbours);
+                    nNeighbours += tileData.SetNeighbour(northIndex, nNeighbours);
+                    nNeighbours += tileData.SetNeighbour(southIndex, nNeighbours);
+                    nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
+                    nNeighbours += tileData.SetNeighbour(eastIndex, nNeighbours);
                     
                     // Copy new tile data into array
                     audioTileData[nIndex] = tileData;

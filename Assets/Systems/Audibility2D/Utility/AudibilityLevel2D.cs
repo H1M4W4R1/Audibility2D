@@ -44,7 +44,7 @@ namespace Systems.Audibility2D.Utility
             for (int neighbourId = 0; neighbourId <= Tile2DNeighbourIndexData.MAX_INDEX; neighbourId++)
             {
                 // Get tile index
-                int neighbourTileIndex = currentTile.neighbourData[neighbourId];
+                int neighbourTileIndex = currentTile.GetNeighbourIndex(neighbourId);
                 
                 // Early return
                 if (Hint.Unlikely(neighbourTileIndex == -1)) break;
@@ -81,6 +81,7 @@ namespace Systems.Audibility2D.Utility
                 math.clamp(distance / currentAudioSource.range, 0, 1)));
             newTileLevel = DecibelLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
+            // Detect audio changes to prevent infinite loop
             if (!Hint.Unlikely(neighbouringTile.currentAudioLevel != newTileLevel)) return;
 
             // Update audio level based on maximum between current level and new one calculated by muffling values
