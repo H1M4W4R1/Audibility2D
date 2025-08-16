@@ -29,6 +29,32 @@ namespace Systems.Audibility2D.Utility
         ///     Get average loudness data from results array
         /// </summary>
         /// <param name="tileDataAfterComputing">Array with computed tile data</param>
+        /// <param name="debugDataArray">
+        ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
+        /// </param>
+        public static void GetTileDebugData(
+            in NativeArray<AudioTileData> tileDataAfterComputing,
+            ref NativeArray<AudioTileDebugData> debugDataArray)
+        {
+            Assert.IsTrue(tileDataAfterComputing.IsCreated);
+            Assert.IsTrue(debugDataArray.IsCreated);
+            Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length);
+            
+            GetDebugAudioTileDataJob job = new()
+            {
+                tileData = tileDataAfterComputing,
+                audioTileDebugData = debugDataArray
+            };
+
+            JobHandle waitHandle = job.Schedule(tileDataAfterComputing.Length,
+                math.min(tileDataAfterComputing.Length, 64));
+            waitHandle.Complete();
+        }
+        
+        /// <summary>
+        ///     Get average loudness data from results array
+        /// </summary>
+        /// <param name="tileDataAfterComputing">Array with computed tile data</param>
         /// <param name="averageLoudnessArray">
         ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
         /// </param>
