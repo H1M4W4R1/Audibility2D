@@ -22,7 +22,6 @@ namespace Systems.Audibility2D.Data
         [FieldOffset(20)] public int tile5;
         [FieldOffset(24)] public int tile6;
         [FieldOffset(28)] public int tile7;
-        [FieldOffset(32)] public int length;
      
         public unsafe int this[int index]
         {
@@ -55,7 +54,6 @@ namespace Systems.Audibility2D.Data
         {
             return new Tile2DNeighbourIndexData()
             {
-                length = 0,
                 tile0 = -1,
                 tile1 = -1,
                 tile2 = -1,

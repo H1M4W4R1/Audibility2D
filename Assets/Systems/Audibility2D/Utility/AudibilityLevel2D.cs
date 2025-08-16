@@ -47,7 +47,7 @@ namespace Systems.Audibility2D.Utility
                 int neighbourTileIndex = currentTile.neighbourData[neighbourId];
                 
                 // Early return
-                if (neighbourTileIndex == -1) break;
+                if (Hint.Unlikely(neighbourTileIndex == -1)) break;
                 
                 // Process tile
                 AudioTile2DComputeData neighbourTile = audioTilesData[neighbourTileIndex];

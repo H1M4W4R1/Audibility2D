@@ -100,12 +100,15 @@ namespace Systems.Audibility2D.Utility
                     // to improve performance, as it's faster than casting external calls to Unity API
                     float3 worldPosition = worldOrigin + new float3(x * cellSize.x, y * cellSize.y, 0);
 
-
+                    // Register node neighbours taking limit into account
+                    int nNeighbours = 0;
                     AudioTile2DComputeData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
-                    tileData.AddNeighbour(northIndex);
-                    tileData.AddNeighbour(southIndex);
-                    tileData.AddNeighbour(westIndex);
-                    tileData.AddNeighbour(eastIndex);
+                    nNeighbours += tileData.AddNeighbour(northIndex, nNeighbours);
+                    nNeighbours += tileData.AddNeighbour(southIndex, nNeighbours);
+                    nNeighbours += tileData.AddNeighbour(westIndex, nNeighbours);
+                    nNeighbours += tileData.AddNeighbour(eastIndex, nNeighbours);
+                    
+                    // Copy new tile data into array
                     audioTileData[nIndex] = tileData;
                 }
             }

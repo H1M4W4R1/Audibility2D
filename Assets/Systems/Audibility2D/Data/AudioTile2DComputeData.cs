@@ -53,12 +53,16 @@ namespace Systems.Audibility2D.Data
             neighbourData = Tile2DNeighbourIndexData.New();
         }
 
+        /// <summary>
+        ///     Adds neighbour to node
+        /// </summary>
+        /// <returns>1 if neighbour was added, 0 if maximum count has been exceeded</returns>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddNeighbour(int neighbourIndex)
+        public int AddNeighbour(int neighbourIndex, int currentNeighbourCount)
         {
-            if (neighbourData.length >= Tile2DNeighbourIndexData.MAX_INDEX) return;
-            neighbourData[neighbourData.length] = neighbourIndex;
-            neighbourData.length++;
+            if (currentNeighbourCount >= Tile2DNeighbourIndexData.MAX_INDEX) return 0;
+            neighbourData[currentNeighbourCount] = neighbourIndex;
+            return 1;
         }
     }
 }
