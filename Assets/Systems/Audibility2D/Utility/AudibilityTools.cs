@@ -32,7 +32,8 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y;
 
             // Try to get value and update array if necessary
-            if (!_tileMufflingLevels.TryGetValue(audioTilemap, out NativeArray<AudioLoudnessLevel> mufflingLevelsArray))
+            if (!_tileMufflingLevels.TryGetValue(audioTilemap,
+                    out NativeArray<AudioLoudnessLevel> mufflingLevelsArray))
             {
                 QuickArray.PerformEfficientAllocation(ref mufflingLevelsArray, tilesCount,
                     Allocator.Persistent);
@@ -55,7 +56,8 @@ namespace Systems.Audibility2D.Utility
                     AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
 
                     // ReSharper disable once Unity.NoNullPropagation
-                    AudioLoudnessLevel mufflingStrength = audioTile?.GetMufflingData() ?? Muffling.NONE;
+                    AudioLoudnessLevel mufflingStrength =
+                        audioTile?.GetMufflingData() ?? AudibilityLevel.LOUDNESS_NONE;
                     mufflingLevelsArray[nIndex] = mufflingStrength;
                 }
             }
@@ -67,8 +69,7 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Internal, burst-compatible method to compute all necessary data
         /// </summary>
-        [BurstCompile]
-        private static void _TilemapToArray(
+        [BurstCompile] private static void _TilemapToArray(
             in Vector3Int tilemapOrigin,
             in Vector3Int tilemapSize,
             in float3 cellSize,
@@ -106,13 +107,13 @@ namespace Systems.Audibility2D.Utility
                     nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
                     // ReSharper disable once RedundantAssignment
                     nNeighbours += tileData.SetNeighbour(eastIndex, nNeighbours);
-                    
+
                     // Copy new tile data into array
                     audioTileData[nIndex] = tileData;
                 }
             }
         }
-    
+
         /// <summary>
         ///     Converts tilemap to array of tile data for computation 
         /// </summary>
@@ -130,8 +131,7 @@ namespace Systems.Audibility2D.Utility
         )
         {
             // Refresh tilemap if dirty
-            if (AudibilitySystem.IsDirty(audioTilemap)) 
-                RefreshTileData(audioTilemap);
+            if (AudibilitySystem.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
             NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
 
             // Prepare tilemap data
@@ -146,9 +146,10 @@ namespace Systems.Audibility2D.Utility
             float3 worldOrigin = (float3) audioTilemap.CellToWorld(audioTilemap.origin) + 0.5f * cellSize;
 
             // Perform conversion
-            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels, ref tileComputeData);
+            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels,
+                ref tileComputeData);
         }
-        
+
         /// <summary>
         ///     Converts tilemap and audio sources array of audio source data for computation
         /// </summary>

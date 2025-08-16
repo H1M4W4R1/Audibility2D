@@ -34,7 +34,7 @@ namespace Systems.Audibility2D.Components.Debugging
             for (int n = 0; n < _tileComputeData.Length; n++)
             {
                 float averageAudioLevel = _tileComputeData[n].currentAudioLevel.GetAverage();
-                Gizmos.color = Color.Lerp(Color.red, Color.green, averageAudioLevel / Loudness.MAX);
+                Gizmos.color = Color.Lerp(Color.red, Color.green, averageAudioLevel / AudibilityLevel.LOUDNESS_MAX);
                 Gizmos.DrawSphere(_tileComputeData[n].worldPosition, 0.2f);
             }
         }

@@ -52,7 +52,7 @@ namespace Systems.Audibility2D.Data.Native
             this.tilemapPosition = tilemapPosition;
             this.mufflingStrength = mufflingStrength;
 
-            currentAudioLevel = Loudness.SILENCE;
+            currentAudioLevel = AudibilityLevel.LOUDNESS_NONE;
             neighbourData = AudioTileNeighbourData.New();
         }
 

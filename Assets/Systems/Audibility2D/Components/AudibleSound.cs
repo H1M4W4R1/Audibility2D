@@ -19,7 +19,7 @@ namespace Systems.Audibility2D.Components
         ///     than regular whispering.
         /// </summary>
         [SerializeField] [Tooltip("How loud is this audio source (dB)")] 
-        private AudioLoudnessLevel audioLoudnessLevel = Loudness.MAX;
+        private AudioLoudnessLevel audioLoudnessLevel = AudibilityLevel.LOUDNESS_MAX;
 
         /// <summary>
         ///     Range of audio sound in 3D space

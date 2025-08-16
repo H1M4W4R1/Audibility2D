@@ -41,7 +41,7 @@ namespace Systems.Audibility2D.Tiles
         /// </summary>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetMufflingData()
         {
-            if (ReferenceEquals(audioMaterialData, null)) return Muffling.NONE;
+            if (ReferenceEquals(audioMaterialData, null)) return AudibilityLevel.LOUDNESS_NONE;
             return audioMaterialData.MuffleLevel;
         }
 
