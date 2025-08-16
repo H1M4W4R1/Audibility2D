@@ -13,14 +13,14 @@ namespace Systems.Audibility2D.Utility
     {
         private static Dictionary<Tilemap, bool> IsDirtyCache { get; } = new();
 
-        public static bool IsDirty([NotNull] Tilemap tilemap)
+        internal static bool IsDirty([NotNull] Tilemap tilemap)
         {
             if (IsDirtyCache.TryGetValue(tilemap, out bool value)) return value;
             SetDirty(tilemap, true);
             return true;
         }
 
-        public static void SetDirtyAll(bool value)
+        internal static void SetDirtyAll(bool value)
         {
             for (int i = IsDirtyCache.Count - 1; i >= 0; i--) {
                 KeyValuePair<Tilemap, bool> item = IsDirtyCache.ElementAt(i);
@@ -29,7 +29,7 @@ namespace Systems.Audibility2D.Utility
             }
         }
         
-        public static void SetDirty([NotNull] Tilemap tilemap, bool value)
+        internal static void SetDirty([NotNull] Tilemap tilemap, bool value)
         {
             IsDirtyCache[tilemap] = value;
         }

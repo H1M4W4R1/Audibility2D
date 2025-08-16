@@ -31,21 +31,8 @@ namespace Systems.Audibility2D.Debugging
             // Ensure tilemap is set
             if (!audioTilemap) return;
 
-            // Initialize tilemap arrays
-            AudibilityTools2D.TilemapToArray(audioTilemap, ref _tileComputeData);
-
-            // Prepare array of audio sources
-            AudibleSound[] sources =
-                FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
-            QuickArray.PerformEfficientAllocation(ref _audioSourceComputeData, sources.Length,
-                Allocator.Persistent);
-
-            // Get audio sources data
-            AudibilityTools2D.AudioSourcesToArray(audioTilemap, sources, ref _audioSourceComputeData);
-
-            // Handle computation
-            AudibilityLevel2D.UpdateAudibilityLevel(_audioSourceComputeData, ref _tileComputeData);
+            // Compute audibility in 2D space
+            AudibilityLevel2D.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
 
             // Draw gizmos
             for (int n = 0; n < _tileComputeData.Length; n++)

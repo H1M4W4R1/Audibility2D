@@ -1,4 +1,6 @@
-﻿using Systems.Audibility.Common.Data;
+﻿using JetBrains.Annotations;
+using Systems.Audibility.Common.Components;
+using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Jobs;
@@ -7,14 +9,43 @@ using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
 {
     /// <summary>
     ///     Utility class to calculate audibility level from provided data
     /// </summary>
+    [BurstCompile]
     public static class AudibilityLevel2D
     {
+        /// <summary>
+        ///     Simpler version to handle audibility calculations
+        /// </summary>
+        [BurstDiscard]
+        public static void UpdateAudibilityLevel(
+            [NotNull] Tilemap audioTilemap,
+            ref NativeArray<AudioSource2DComputeData> audioSourceComputeData,
+            ref NativeArray<AudioTile2DComputeData> tileComputeData)
+        {
+            // Initialize tilemap arrays
+            AudibilityTools2D.TilemapToArray(audioTilemap, ref tileComputeData);
+
+            // Prepare array of audio sources
+            AudibleSound[] sources =
+                Object.FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
+                Allocator.Persistent);
+
+            // Get audio sources data
+            AudibilityTools2D.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
+
+            // Handle computation
+            UpdateAudibilityLevel(audioSourceComputeData, ref tileComputeData);
+        }
+        
         /// <summary>
         ///     Update audibility level
         /// </summary>
