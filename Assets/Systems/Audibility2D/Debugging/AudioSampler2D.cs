@@ -35,8 +35,8 @@ namespace Systems.Audibility2D.Debugging
             AudibilityTools2D.TilemapToArray(audioTilemap, ref _tileComputeData);
 
             // Prepare array of audio sources
-            AudibleAudioSource[] sources =
-                FindObjectsByType<AudibleAudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            AudibleSound[] sources =
+                FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             QuickArray.PerformEfficientAllocation(ref _audioSourceComputeData, sources.Length,
                 Allocator.Persistent);

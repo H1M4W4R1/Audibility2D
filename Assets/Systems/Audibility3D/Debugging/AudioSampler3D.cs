@@ -43,8 +43,8 @@ namespace Systems.Audibility3D.Debugging
         private void OnDrawGizmos()
         {
             float3 objPos = transform.position;
-            AudibleAudioSource[] sources =
-                FindObjectsByType<AudibleAudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            AudibleSound[] sources =
+                FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             // Re-allocate arrays if necessary
             QuickArray.PerformEfficientAllocation(ref _samplePositionsArray, gridSize * gridSize,
@@ -76,13 +76,12 @@ namespace Systems.Audibility3D.Debugging
             {
                 _sourcesPositionsArray[nSource] = sources[nSource].transform.position;
                 _sourceDecibelLevelsArray[nSource] = sources[nSource].GetDecibelLevel();
-                _sourceRangesArray[nSource] = sources[nSource].UnitySourceReference.maxDistance;
+                _sourceRangesArray[nSource] = sources[nSource].GetRange();
             }
 
             AudibilityLevel3D.GetMultiPoint(_samplePositionsArray, _sourcesPositionsArray,
                 _sourceRangesArray,
                 _sourceDecibelLevelsArray, audioRaycastLayers, ref _decibelLevelResultsArray);
-
 
             // Render data
             for (int xIndex = 0; xIndex < gridSize; xIndex++)

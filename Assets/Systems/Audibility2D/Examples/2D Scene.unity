@@ -15370,7 +15370,7 @@ Transform:
   m_GameObject: {fileID: 1183341319}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.31, y: 3.71, z: 0}
+  m_LocalPosition: {x: 1.57, y: 3.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15393,6 +15393,7 @@ MonoBehaviour:
     mid0Frequency: 160
     mid1Frequency: 160
     highFrequency: 160
+  range: 25
 --- !u!1 &1518747562
 GameObject:
   m_ObjectHideFlags: 0

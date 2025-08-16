@@ -15,14 +15,15 @@ Audio Tiles can have sound dampening material attached - this material describes
 System calculates dampening effects when audio enters tile by subtraction of muffling strength from previously-visited tile loudness. Also takes distance to audio source into account.
 You can use `MufflingLevelAnalysisDrawer2D` to draw current tile muffling levels.
 
-To enable computation you need also to add AudioSources with `AudibleAudioSource` attached to them. This component defines how loud audio is and serves as intermediate layer between Unity and Audibility System.
-If you've added you Audio Sources you should be able to previev loudness using `AudioSampler2D`.
+To enable computation you need also to add `AudibleSound` to desired GameObjects. This component defines how loud 
+audio is and serves as intermediate layer for defining sound source properties.
+If you've added your `AudibleSound`(s) you should be able to preview loudness using `AudioSampler2D`.
 
 # Audibility3D
 Do not use. Really. Do it on your own risk.
 
 Okay... This thing does not require pretty much anything as it's raycast-based. Unfortunately at this moment audio materials are not supported as they were very expensive to compute.
-You can simply add `AudibleAudioSource`(s) to your world and use `AudioSampler3D` to draw loudness levels. This sampler uses 2D grid in XZ-space, however you can move it's Y axis to check audio levels at different height.
+You can simply add `AudibleSound`(s) to your world and use `AudioSampler3D` to draw loudness levels. This sampler uses 2D grid in XZ-space, however you can move it's Y axis to check audio levels at different height.
 
 Any object that is in raycast mask for audio sources will muffle sound by specified amount (concrete values are used by default and must be changed in script).
 

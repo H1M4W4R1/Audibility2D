@@ -144,14 +144,14 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstDiscard] public static void AudioSourcesToArray(
             [NotNull] Tilemap audioTilemap,
-            [NotNull] AudibleAudioSource[] sources,
+            [NotNull] AudibleSound[] sources,
             ref NativeArray<AudioSource2DComputeData> audioSourceComputeData)
         {
             // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
             {
                 // Get basic information
-                AudibleAudioSource source = sources[nIndex];
+                AudibleSound source = sources[nIndex];
                 float3 worldPosition = source.transform.position;
 
                 // Compute tilemap index
@@ -162,7 +162,7 @@ namespace Systems.Audibility2D.Utility
                 // Assign value
                 audioSourceComputeData[nIndex] = new AudioSource2DComputeData(tileIndex,
                     worldPosition + 0.5f * (float3) audioTilemap.cellSize,
-                    source.GetDecibelLevel(), source.UnitySourceReference.maxDistance);
+                    source.GetDecibelLevel(), source.GetRange());
             }
         }
     }

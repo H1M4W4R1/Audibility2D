@@ -2,15 +2,16 @@
 using Systems.Audibility.Common.Data;
 using Systems.Audibility.Common.Utility;
 using Unity.Burst;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Systems.Audibility.Common.Components
 {
     /// <summary>
-    ///     Represents audible audio source - audio source that affects audibility maps.
+    ///     Represents audible sound - one that can be received by any audibility sampler method.
     ///     In most cases this should be implemented on most Audio Sources in the game (maybe except music)
     /// </summary>
-    [RequireComponent(typeof(AudioSource))] public sealed class AudibleAudioSource : MonoBehaviour
+    public sealed class AudibleSound : MonoBehaviour
     {
         /// <summary>
         ///     Level of this audio source in four basic frequencies.
@@ -21,35 +22,36 @@ namespace Systems.Audibility.Common.Components
         private DecibelLevel decibelLevel = Loudness.MAX;
 
         /// <summary>
-        ///     Audio source on this object
+        ///     Range of audio sound in 3D space
         /// </summary>
-        private AudioSource _audioSource;
-
+        [SerializeField] [Tooltip("Audio sound range")]
+        private float range;
+        
         /// <summary>
         ///     Cached transform to reduce computation time
         /// </summary>
         private Transform _transform;
-        
-        /// <summary>
-        ///     Reference to Unity audio source accessible from other scripts
-        /// </summary>
-        public AudioSource UnitySourceReference
-        {
-            get
-            {
-                // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
-                if (!_audioSource) _audioSource = GetComponent<AudioSource>();
-                return _audioSource;
-            }
-        }
 
         private void Awake()
         {
             _transform = transform;
-            _audioSource = GetComponent<AudioSource>();
-            _audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
         }
 
+        /// <summary>
+        ///     Get range of this audio source
+        /// </summary>
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public float GetRange() => range;
+        
+        /// <summary>
+        ///     Get position of this audio source
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float3 GetPosition()
+        {
+            if(ReferenceEquals(_transform, null)) _transform = transform;
+            return _transform.position;
+        }
+        
         /// <summary>
         ///     Change decibel level of this source
         /// </summary>
