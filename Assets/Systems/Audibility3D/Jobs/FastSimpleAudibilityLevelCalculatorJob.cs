@@ -10,14 +10,35 @@ using UnityEngine;
 
 namespace Systems.Audibility3D.Jobs
 {
+    /// <summary>
+    ///     Job used to calculate audio level based on performed raycast data
+    /// </summary>
     [BurstCompile]
     public struct FastSimpleAudibilityLevelCalculatorJob : IJobParallelFor
     {
+        /// <summary>
+        ///     Array of performed commands
+        /// </summary>
         [ReadOnly] public NativeArray<RaycastCommand> raycastCommands;
+        
+        /// <summary>
+        ///     Array of results (found objects)
+        /// </summary>
         [ReadOnly] public NativeArray<RaycastHit> raycastResults;
+        
+        /// <summary>
+        ///     Array of audio source max distances
+        /// </summary>
         [ReadOnly] public NativeArray<float> sourceRanges;
+        
+        /// <summary>
+        ///     Maximum hits per command
+        /// </summary>
         [ReadOnly] public int raycastMaxHits;
 
+        /// <summary>
+        ///     Array of scanned levels to perform update on
+        /// </summary>
         public NativeArray<DecibelLevel> scannedLevels;
 
         [BurstCompile]

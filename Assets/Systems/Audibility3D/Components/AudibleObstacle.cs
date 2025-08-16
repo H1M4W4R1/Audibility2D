@@ -14,6 +14,9 @@ namespace Systems.Audibility3D.Components
     /// </remarks>
     public sealed class AudibleObstacle : MonoBehaviour
     {
+        /// <summary>
+        ///     Material obstacle is made of, representing sound dampening properties
+        /// </summary>
         [SerializeField] private AudioMufflingMaterialData audioMaterialData;
 
         /// <summary>

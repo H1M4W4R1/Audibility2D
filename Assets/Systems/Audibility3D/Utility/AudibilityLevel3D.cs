@@ -12,8 +12,14 @@ using UnityEngine.Assertions;
 
 namespace Systems.Audibility3D.Utility
 {
+    /// <summary>
+    ///     System used to calculate audibility in 3D space,
+    ///     very inefficient, mostly proof of concept. Do not use in production... really...
+    ///     It will fry your player's PCs.
+    /// </summary>
     public static class AudibilityLevel3D
     {
+        // Local data storage
         private static readonly RaycastHit[] _raycastHitsSingleCheck = new RaycastHit[8];
         private static NativeArray<DecibelLevel> _scannedLevels;
         private static NativeArray<RaycastHit> _raycastResults;

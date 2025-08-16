@@ -9,12 +9,27 @@ namespace Systems.Audibility3D.Debugging
 {
     public sealed class MufflingLevelAnalysisDrawer3D : MonoBehaviour
     {
+        /// <summary>
+        ///     Layers to raycast for audio obstacles
+        /// </summary>
         [SerializeField] private LayerMask audioRaycastLayers;
+        /// <summary>
+        ///     Size of debug sphere
+        /// </summary>
         [SerializeField] private float sphereSize = 0.16f;
+        
+        /// <summary>
+        ///     Size of grid
+        /// </summary>
         [SerializeField] private int gridSize = 15;
+        
+        /// <summary>
+        ///     Distance between grid objects
+        /// </summary>
         [SerializeField] private float gridDistance = 1;
-
-        private RaycastHit[] _hits = new RaycastHit[8];
+        
+        // Local arrays to store all data
+        private readonly RaycastHit[] _hits = new RaycastHit[8];
         private NativeArray<float3> _samplePositionsArray;
         private NativeArray<DecibelLevel> _muffleStrengthArray;
         private float3 _lastPosition = float3.zero;

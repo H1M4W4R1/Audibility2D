@@ -8,13 +8,32 @@ using UnityEngine;
 
 namespace Systems.Audibility3D.Debugging
 {
+    /// <summary>
+    ///     Debug utility to render 3D sampling of audio data
+    /// </summary>
     public sealed class AudioSampler3D : MonoBehaviour
     {
+        /// <summary>
+        ///     Layers to raycast for audio obstacles
+        /// </summary>
         [SerializeField] private LayerMask audioRaycastLayers;
+        
+        /// <summary>
+        ///     Size of debug sphere
+        /// </summary>
         [SerializeField] private float sphereSize = 0.16f;
+        
+        /// <summary>
+        ///     Size of grid
+        /// </summary>
         [SerializeField] private int gridSize = 15;
+        
+        /// <summary>
+        ///     Distance between grid objects
+        /// </summary>
         [SerializeField] private float gridDistance = 1;
 
+        // Local arrays to store all data
         private NativeArray<float3> _samplePositionsArray;
         private NativeArray<float3> _sourcesPositionsArray;
         private NativeArray<DecibelLevel> _sourceDecibelLevelsArray;
