@@ -2,6 +2,8 @@
 This is a Unity3D package used to detect audibility levels of multiple audio sources in 2D (and possibly 3D) space.
 Main intent was to create efficient detection of enemy hearing mechanics with walls that dampen sound to make gameplay more engaging.
 
+![Showcase Image](https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/blob/master/Images/screenshot.png)
+
 # Current capabilities
 * Audibility2D - Unity Tileset-based system to detect audio propagation including tiles that may muffle sound.
 * Audibility3D - Proof of concept of RT-based audio calculation, very inefficient
