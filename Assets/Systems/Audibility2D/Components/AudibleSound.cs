@@ -14,9 +14,8 @@ namespace Systems.Audibility2D.Components
     public sealed class AudibleSound : MonoBehaviour
     {
         /// <summary>
-        ///     Level of this audio source in four basic frequencies.
-        ///     Also known how loud this thing should relatively be - gunshots can be louder
-        ///     than regular whispering.
+        ///     Level of this audio source also known how loud this thing should relatively be as
+        ///     gunshots can be louder than whispering.
         /// </summary>
         [SerializeField] [Tooltip("How loud is this audio source (dB)")] 
         private AudioLoudnessLevel audioLoudnessLevel = AudibilityLevel.LOUDNESS_MAX;
@@ -59,7 +58,7 @@ namespace Systems.Audibility2D.Components
         public void SetDecibelLevel(AudioLoudnessLevel newAudioLoudnessLevel) => audioLoudnessLevel = newAudioLoudnessLevel;
 
         /// <summary>
-        ///     Get loudness of this audio source in dB (for four basic frequencies)
+        ///     Get loudness of this audio source in dB
         /// </summary>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetDecibelLevel() => audioLoudnessLevel;
     }

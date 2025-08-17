@@ -20,7 +20,7 @@ namespace Systems.Audibility2D.Utility
     {
         public const int LOUDNESS_NONE = 0;
         public const int LOUDNESS_MAX = 160;
-        
+
         /// <summary>
         ///     Simpler version to handle audibility calculations
         /// </summary>
@@ -154,7 +154,7 @@ namespace Systems.Audibility2D.Utility
             // Copy current audio level and compute muffling 
             AudioLoudnessLevel newTileLevel = currentAudioLevel;
             newTileLevel = newTileLevel.MuffleBy(neighbouringTile.mufflingStrength); // Current tile muffling
-            newTileLevel = newTileLevel.MuffleAllFrequenciesBy((byte) math.lerp(0, LOUDNESS_MAX,
+            newTileLevel = newTileLevel.MuffleBy(math.lerp(0, LOUDNESS_MAX,
                 math.clamp(distance / currentAudioSource.range, 0, 1)));
             newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 

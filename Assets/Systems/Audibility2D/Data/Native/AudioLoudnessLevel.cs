@@ -3,70 +3,35 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Systems.Audibility2D.Data.Native
 {
     /// <summary>
-    ///     Represents decibel level across four different frequencies
-    ///     for better audio mapping
+    ///     Represents decibel level for easier audio mapping and falloff calculation
     /// </summary>
-    /// <remarks>
-    /// Frequencies: 20Hz, 200Hz, 2kHz, 20kHz
-    /// </remarks>
-    [Serializable] [StructLayout(LayoutKind.Explicit)] public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel>
+    [Serializable] [StructLayout(LayoutKind.Explicit)]
+    public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel>
     {
-        [FieldOffset(0)] private int4 vectorized;
-
-        [FieldOffset(0)] [Tooltip("About 20Hz")] public int lowFrequency; // 32-bit
-        [FieldOffset(4)] [Tooltip("About 200Hz")] public int mid0Frequency; // 32-bit
-        [FieldOffset(8)] [Tooltip("About 2kHz")] public int mid1Frequency; // 32-bit
-        [FieldOffset(12)] [Tooltip("About 20kHz")] public int highFrequency; // 32-bit
+        [FieldOffset(0)] public short value; // 32-bit
 
         /// <summary>
-        ///     Internal constructor for vectorized creation of object
+        ///     Create level from decibel value
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private AudioLoudnessLevel(int4 vectorized)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel(int loudnessDb)
         {
-            lowFrequency = mid0Frequency = mid1Frequency = highFrequency = 0; // This will be overriden
-            this.vectorized = vectorized;
-        }
-        
-        /// <summary>
-        ///     Create level from single value
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AudioLoudnessLevel(int allFrequencies) : this(allFrequencies, allFrequencies, allFrequencies,
-            allFrequencies)
-        {
-        }
-
-        /// <summary>
-        ///     Create level for all frequencies
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AudioLoudnessLevel(int lowFrequency, int mid0Frequency, int mid1Frequency, int highFrequency)
-        {
-            vectorized = 0; // Will be overriden anyway
-            this.lowFrequency = lowFrequency;
-            this.mid0Frequency = mid0Frequency;
-            this.mid1Frequency = mid1Frequency;
-            this.highFrequency = highFrequency;
+            loudnessDb = math.clamp(loudnessDb, short.MinValue, short.MaxValue);
+            value = (short) loudnessDb;
         }
 
         /// <summary>
         ///     Compute muffled decibel level
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-        [BurstCompile]
-        public AudioLoudnessLevel MuffleAllFrequenciesBy(int muffleLevelAllFrequencies)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
+        public AudioLoudnessLevel MuffleBy(float muffleLevel)
         {
-            int4 vectorizedMuffle = new(muffleLevelAllFrequencies, muffleLevelAllFrequencies,
-                muffleLevelAllFrequencies, muffleLevelAllFrequencies);
-            vectorizedMuffle = math.min(vectorized, vectorizedMuffle);
-
-            vectorized -= vectorizedMuffle;
+            // We convert it to non-decimal numbers to improve computation precision in desired range
+            // and get an insignificant boost performance
+            value -= (short) math.clamp((int) muffleLevel, short.MinValue, short.MaxValue);
             return this;
         }
         
@@ -76,55 +41,56 @@ namespace Systems.Audibility2D.Data.Native
         [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public AudioLoudnessLevel MuffleBy(AudioLoudnessLevel muffleLevel)
         {
-            vectorized -= math.min(vectorized, muffleLevel.vectorized);
+            value -= muffleLevel.value;
             return this;
         }
 
         /// <summary>
-        ///     Get average decibel level from all frequencies
+        ///     Get average decibel level, kept for compatibility
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
-        public int GetAverage()
-        {
-            int total = lowFrequency + mid0Frequency + mid1Frequency + highFrequency;
-            return total / 4;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile] public short GetAverage() => value;
 
         /// <summary>
         ///     Get maximum of two loudness values
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static AudioLoudnessLevel Max(AudioLoudnessLevel a, AudioLoudnessLevel b)
-        {
-            return new AudioLoudnessLevel(math.max(a.vectorized, b.vectorized));
-        }
-        
+            => math.max(a.value, b.value);
+
         /// <summary>
         ///     Get minimum of two loudness values
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] [BurstCompile]
         public static AudioLoudnessLevel Min(AudioLoudnessLevel a, AudioLoudnessLevel b)
-        {
-            return new AudioLoudnessLevel(math.min(a.vectorized, b.vectorized));
-        }
-        
+            => math.min(a.value, b.value);
+
         /// <summary>
-        ///     Convert number into loudness, all frequencies will be set to desired loudness
+        ///     Convert number into loudness
         /// </summary>
-        [BurstCompile] public static implicit operator AudioLoudnessLevel(byte audioLevel) => new(audioLevel);
-        
-        [BurstCompile] public static bool operator ==(AudioLoudnessLevel a, AudioLoudnessLevel b) => math.all(a.vectorized == b.vectorized);
-
-        [BurstCompile] public static bool operator !=(AudioLoudnessLevel a, AudioLoudnessLevel b) => !(a == b);
-
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(AudioLoudnessLevel other) => vectorized.Equals(other.vectorized);
+        public static implicit operator AudioLoudnessLevel(int audioLevel)
+        {
+            audioLevel = math.clamp(audioLevel, short.MinValue, short.MaxValue);
+            return new AudioLoudnessLevel((short) audioLevel);
+        }
 
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool Equals(object obj) => obj is AudioLoudnessLevel other && Equals(other);
-        
+        public static implicit operator short(AudioLoudnessLevel audioLoudnessLevel) => audioLoudnessLevel.value;
+
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode() => vectorized.GetHashCode();
-        
+        public static bool operator ==(AudioLoudnessLevel a, AudioLoudnessLevel b)
+            => a.value == b.value;
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(AudioLoudnessLevel a, AudioLoudnessLevel b) => !(a == b);
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(AudioLoudnessLevel other) => value == other.value;
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public override bool Equals(object obj)
+            => obj is AudioLoudnessLevel other && Equals(other);
+
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public override int GetHashCode()
+            => value.GetHashCode();
     }
 }

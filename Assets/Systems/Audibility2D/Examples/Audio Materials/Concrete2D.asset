@@ -13,7 +13,4 @@ MonoBehaviour:
   m_Name: Concrete2D
   m_EditorClassIdentifier: 
   <MuffleLevel>k__BackingField:
-    lowFrequency: 45
-    mid0Frequency: 52
-    mid1Frequency: 62
-    highFrequency: 75
+    value: 100
