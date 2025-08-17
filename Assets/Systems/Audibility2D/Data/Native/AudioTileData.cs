@@ -27,11 +27,6 @@ namespace Systems.Audibility2D.Data.Native
         public readonly float3 worldPosition;
 
         /// <summary>
-        ///     Position of this tile in tilemap
-        /// </summary>
-        public readonly Vector3Int tilemapPosition;
-
-        /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
         /// </summary>
         public readonly AudioLoudnessLevel mufflingStrength;
@@ -44,12 +39,10 @@ namespace Systems.Audibility2D.Data.Native
         public AudioTileData(
             int index,
             float3 worldPosition,
-            Vector3Int tilemapPosition,
             AudioLoudnessLevel mufflingStrength)
         {
             this.index = index;
             this.worldPosition = worldPosition;
-            this.tilemapPosition = tilemapPosition;
             this.mufflingStrength = mufflingStrength;
 
             currentAudioLevel = AudibilityLevel.LOUDNESS_NONE;

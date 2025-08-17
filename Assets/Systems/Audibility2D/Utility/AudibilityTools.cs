@@ -39,7 +39,7 @@ namespace Systems.Audibility2D.Utility
             Assert.IsTrue(tileDataAfterComputing.IsCreated);
             Assert.IsTrue(debugDataArray.IsCreated);
             Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length);
-            
+
             GetDebugAudioTileDataJob job = new()
             {
                 tileData = tileDataAfterComputing,
@@ -50,7 +50,7 @@ namespace Systems.Audibility2D.Utility
                 math.min(tileDataAfterComputing.Length, 64));
             waitHandle.Complete();
         }
-        
+
         /// <summary>
         ///     Get average loudness data from results array
         /// </summary>
@@ -65,7 +65,7 @@ namespace Systems.Audibility2D.Utility
             Assert.IsTrue(tileDataAfterComputing.IsCreated);
             Assert.IsTrue(averageLoudnessArray.IsCreated);
             Assert.AreEqual(averageLoudnessArray.Length, tileDataAfterComputing.Length);
-            
+
             GetAverageAudioLoudnessDataJob averageAudioLoudnessDataJob = new()
             {
                 tileData = tileDataAfterComputing,
@@ -94,26 +94,25 @@ namespace Systems.Audibility2D.Utility
         )
         {
             Assert.IsNotNull(audioTilemap);
-            
+
             // Refresh tilemap if dirty
             if (AudibilitySystem.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
             NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
 
             // Prepare tilemap data
-            Vector3Int tilemapOrigin = audioTilemap.origin;
             Vector3Int tilemapSize = audioTilemap.size;
             int tilesCount = tilemapSize.x * tilemapSize.y;
 
             // Ensure arrays are initialized 
             QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, Allocator.Persistent);
-      
+
             float3 cellSize = audioTilemap.cellSize;
             float3 worldOrigin = (float3) audioTilemap.CellToWorld(audioTilemap.origin) + 0.5f * cellSize;
 
             // Perform conversion
-            _TilemapToArray(tilemapOrigin, tilemapSize, cellSize, worldOrigin, mufflingLevels,
+            _TilemapToArray(tilemapSize, cellSize, worldOrigin, mufflingLevels,
                 ref tileComputeData);
-            
+
             Assert.AreEqual(tileComputeData.Length, tilesCount);
         }
 
@@ -135,7 +134,7 @@ namespace Systems.Audibility2D.Utility
         {
             Assert.IsNotNull(audioTilemap);
             Assert.IsNotNull(sources);
-            
+
             // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
             {
@@ -153,7 +152,7 @@ namespace Systems.Audibility2D.Utility
                     worldPosition + 0.5f * (float3) audioTilemap.cellSize,
                     source.GetDecibelLevel(), source.GetRange());
             }
-            
+
             Assert.AreEqual(sources.Length, audioSourceComputeData.Length);
         }
 
@@ -206,7 +205,6 @@ namespace Systems.Audibility2D.Utility
         ///     Internal, burst-compatible method to compute all necessary data
         /// </summary>
         [BurstCompile] private static void _TilemapToArray(
-            in Vector3Int tilemapOrigin,
             in Vector3Int tilemapSize,
             in float3 cellSize,
             in float3 worldOrigin,
@@ -223,7 +221,6 @@ namespace Systems.Audibility2D.Utility
                     int nIndex = x * tilemapSize.y + y;
 
                     // Pre-compute Unity-based data
-                    Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
                     AudioLoudnessLevel mufflingStrength = mufflingLevels[nIndex];
 
                     int northIndex = Hint.Likely(y + 1 < tilemapSize.y) ? x * tilemapSize.y + y + 1 : -1;
@@ -237,7 +234,7 @@ namespace Systems.Audibility2D.Utility
 
                     // Register node neighbours taking limit into account
                     int nNeighbours = 0;
-                    AudioTileData tileData = new(nIndex, worldPosition, cellPosition, mufflingStrength);
+                    AudioTileData tileData = new(nIndex, worldPosition, mufflingStrength);
                     nNeighbours += tileData.SetNeighbour(northIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(southIndex, nNeighbours);
                     nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
