@@ -24,7 +24,7 @@ namespace Systems.Audibility2D.Components.Debugging
 
         private NativeArray<AudioTileInfo> _tileComputeData;
         private NativeArray<AudioSourceInfo> _audioSourceComputeData;
-        private NativeArray<AudioTileDebugInfo> _tileDebugData;
+        private NativeArray<AudioLoudnessLevel> _loudnessData;
 
         private void OnDrawGizmos()
         {
@@ -38,37 +38,38 @@ namespace Systems.Audibility2D.Components.Debugging
 
             Vector3Int tilemapSize = audioTilemap.size;
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
-            QuickArray.PerformEfficientAllocation(ref _tileDebugData, tilesCount, Allocator.TempJob);
+            QuickArray.PerformEfficientAllocation(ref _loudnessData, tilesCount, Allocator.TempJob);
 
             // Compute audibility in 2D space
             AudibilityLevel.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
 
             // Compute average tile loudness
-            AudibilityTools.GetTileDebugData(audioTilemap, in _tileComputeData, ref _tileDebugData);
+            AudibilityTools.GetAverageLoudnessData(in _tileComputeData, ref _loudnessData);
 
             TilemapInfo tilemapInfo = new(audioTilemap);
-            
+
             // Compute camera planes
             NativeArray<float4> frustrumPlanes = new(6, Allocator.TempJob);
             gizmosCamera.ExtractFrustumPlanes(ref frustrumPlanes);
 
             // Draw gizmos
-            for (int n = 0; n < _tileDebugData.Length; n++)
+            for (int n = 0; n < _loudnessData.Length; n++)
             {
                 // Quickly compute tile position using tilemap
                 TileIndex index = new(n);
-                
+
                 // TODO: Improve perf of this line using some Black Magic F*$#ery
-                float3 worldTilePosition = index.GetWorldPosition(tilemapInfo); 
+                float3 worldTilePosition = index.GetWorldPosition(tilemapInfo);
 
                 // Quickly check camera point in view frustrum
                 if (!MakeGizmosFasterUtility.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
 
-                Gizmos.color = Color.Lerp(Color.red, Color.green, _tileDebugData[n].normalizedLoudness);
+                Gizmos.color = Color.Lerp(Color.red, Color.green,
+                    _loudnessData[n] / (float) AudibilityLevel.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
 
-            _tileDebugData.Dispose();
+            _loudnessData.Dispose();
             frustrumPlanes.Dispose();
         }
     }

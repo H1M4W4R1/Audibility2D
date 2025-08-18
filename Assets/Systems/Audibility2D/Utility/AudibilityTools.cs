@@ -135,7 +135,7 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         public static void GetAverageLoudnessData(
             in NativeArray<AudioTileInfo> tileDataAfterComputing,
-            ref NativeArray<int> averageLoudnessArray)
+            ref NativeArray<AudioLoudnessLevel> averageLoudnessArray)
         {
             Assert.IsTrue(tileDataAfterComputing.IsCreated, "Tile data results array is not created");
             Assert.IsTrue(averageLoudnessArray.IsCreated, "Average loudness array is not created");
@@ -163,9 +163,11 @@ namespace Systems.Audibility2D.Utility
         ///     Also your output array.
         ///     Output value.
         /// </param>
+        /// <param name="allocator">Allocation mode for <see cref="tileComputeData"/></param>
         [BurstDiscard] public static void TilemapToArray(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioTileInfo> tileComputeData
+            ref NativeArray<AudioTileInfo> tileComputeData,
+            Allocator allocator = Allocator.Persistent
         )
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -182,7 +184,7 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
 
             // Ensure arrays are initialized 
-            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, Allocator.Persistent);
+            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
 
             // Perform conversion
             _TilemapToArray(tilemapInfo, mufflingLevels,

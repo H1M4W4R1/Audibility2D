@@ -37,24 +37,26 @@ namespace Systems.Audibility2D.Utility
         ///     Reference to handle for Tile Data array, automatically allocated as PERSISTENT
         ///     Also your output array.
         /// </param>
+        /// <param name="allocator">Allocation mode for <see cref="tileComputeData"/> and <see cref="audioSourceComputeData"/></param>
         [BurstDiscard] public static void UpdateAudibilityLevel(
             [NotNull] Tilemap audioTilemap,
             ref NativeArray<AudioSourceInfo> audioSourceComputeData,
-            ref NativeArray<AudioTileInfo> tileComputeData)
+            ref NativeArray<AudioTileInfo> tileComputeData,
+            Allocator allocator = Allocator.Persistent)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
 
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // Initialize tilemap arrays
-            AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData);
+            AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData, allocator);
 
             // Prepare array of audio sources
             AudibleSound[] sources =
                 Object.FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
-                Allocator.Persistent);
+                allocator);
 
             // Get audio sources data
             AudibilityTools.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
@@ -83,6 +85,7 @@ namespace Systems.Audibility2D.Utility
             Assert.AreNotEqual(tilemapInfo, default, "Tilemap info is invalid");
             Assert.IsTrue(audioSourceComputeData.IsCreated, "Audio source data is invalid");
             Assert.IsTrue(tileComputeData.IsCreated, "Audio tile data is invalid");
+            Assert.AreEqual(tilemapInfo.size.x * tilemapInfo.size.y * tilemapInfo.size.z, tileComputeData.Length, "Invalid tile data length");
 
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {

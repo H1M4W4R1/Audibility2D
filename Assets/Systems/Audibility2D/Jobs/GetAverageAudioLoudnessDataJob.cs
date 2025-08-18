@@ -1,4 +1,5 @@
 using Systems.Audibility2D.Data.Native;
+using Systems.Audibility2D.Data.Native.Wrappers;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -13,7 +14,7 @@ namespace Systems.Audibility2D.Jobs
     public struct GetAverageAudioLoudnessDataJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<AudioTileInfo> tileData;
-        [WriteOnly] public NativeArray<int> averageTileLoudnessData;
+        [WriteOnly] public NativeArray<AudioLoudnessLevel> averageTileLoudnessData;
         
         [BurstCompile]
         public void Execute(int index)
