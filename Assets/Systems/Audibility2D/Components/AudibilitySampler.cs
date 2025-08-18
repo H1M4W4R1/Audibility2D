@@ -67,6 +67,10 @@ namespace Systems.Audibility2D.Components
             Camera gizmosCamera = Camera.current ? Camera.current : Camera.main;
             if (!gizmosCamera) return;
 
+            // Ensure that audio tile data exists in current context
+            // to prevent throwing assertion errors when recompiled in background
+            if (!_audioTileData.IsCreated) return;
+            
             // Create non-allocated array placement
             NativeArray<AudioLoudnessLevel> audioLoudnessData = new();
             
