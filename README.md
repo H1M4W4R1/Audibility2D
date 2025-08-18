@@ -15,9 +15,9 @@ To set up 2D mode:
 
 The system calculates dampening by subtracting the muffling strength of the current tile from the loudness of previously visited tiles, while also factoring in distance to the audio source. For visualization, you can use `MufflingLevelAnalysisDrawer` to display current tile muffling levels.
 
-To define sound sources, attach the `AudibleSound` component to desired GameObjects. This component specifies the source’s loudness. Once added, you can preview audibility levels using the `AudibilitySampler`. Beware that only Audibile Sounds that are located within tileset area will be considered for calculations.
+To define sound sources, attach the `AudibleSound` component to desired GameObjects. This component specifies the source’s loudness. Once added, you can preview audibility levels using the `AudibilityUpdater`. Beware that only Audibile Sounds that are located within tileset area will be considered for calculations.
 
-You can also base on the `OnDrawGizmos` method in `AudibilitySampler` to implement custom mechanics or visualization tools.
+You can also base on the `OnDrawGizmos` method in `AudibilityUpdater` to implement custom mechanics or visualization tools.
 
 # Known Limitations
 - Full-world computations are efficient, but rendering debug gizmos for all tiles can significantly impact performance. It is recommended to visualize only selected nodes.  
