@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Utility;
 using Systems.Audibility2D.Utility.Internal;
@@ -69,8 +70,12 @@ namespace Systems.Audibility2D.Components.Debugging
                                            AudibilityTools.LOUDNESS_MAX;
                         percentage = math.remap(-1, 1, 0f, 1f, percentage);
 
+                        Color mufflingNoneColor = AudibilitySettings.Instance.gizmosColorMinMuffling;
+                        Color mufflingFullColor = AudibilitySettings.Instance.gizmosColorMaxMuffling;
+
+                        
                         // Compute gizmo color
-                        Gizmos.color = Color.Lerp(Color.green, Color.red, percentage);
+                        Gizmos.color = Color.Lerp(mufflingNoneColor, mufflingFullColor, percentage);
 
                         Gizmos.DrawSphere(worldPosition, 0.15f);
                     }

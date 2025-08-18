@@ -10,7 +10,7 @@ namespace Systems.Audibility2D.Data.Settings
     internal static class AudibilitySettingsEditor
     {
         private const string EDITOR_NAME = "Audibility Settings";
-        
+
         [SettingsProvider] [NotNull] public static SettingsProvider CreateAudibilitySettingsProvider()
         {
             SettingsProvider provider = new($"Project/{EDITOR_NAME}", SettingsScope.Project)
@@ -22,14 +22,19 @@ namespace Systems.Audibility2D.Data.Settings
                     AudibilitySettings settings = AudibilitySettings.Instance;
 
                     SerializedObject so = new(settings);
-                    /*EditorGUILayout.PropertyField(so.FindProperty("masterVolume"));
-                    EditorGUILayout.PropertyField(so.FindProperty("enableOcclusion"));
-                    EditorGUILayout.PropertyField(so.FindProperty("maxHearingDistance"));
-                    EditorGUILayout.PropertyField(so.FindProperty("falloffCurve"));
-                    EditorGUILayout.PropertyField(so.FindProperty("showDebugGizmos"));*/
-                    
-                    // TODO: Implement settings
-                    
+                    EditorGUILayout.LabelField("Muffling Debug Settings", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.gizmosColorMinMuffling)));
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.gizmosColorMaxMuffling)));
+
+                    EditorGUILayout.LabelField("", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Audibility Debug Settings", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.gizmosColorMinAudibility)));
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.gizmosColorMaxAudibility)));
+
                     so.ApplyModifiedProperties();
                 }
             };

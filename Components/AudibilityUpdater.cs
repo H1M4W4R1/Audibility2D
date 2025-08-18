@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
+using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Utility;
 using Systems.Audibility2D.Utility.Internal;
 using Unity.Collections;
@@ -17,6 +18,11 @@ namespace Systems.Audibility2D.Components
     /// </summary>
     [RequireComponent(typeof(Tilemap))] [ExecuteInEditMode] public sealed class AudibilityUpdater : MonoBehaviour
     {
+        /// <summary>
+        ///     Enables debug drawing
+        /// </summary>
+        [SerializeField] private bool enableDebug = true;
+        
         private Tilemap _tilemap;
         private NativeArray<AudioTileInfo> _audioTileData;
         private NativeArray<AudioSourceInfo> _audioSourceData;
@@ -75,6 +81,9 @@ namespace Systems.Audibility2D.Components
 
         private void OnDrawGizmos()
         {
+            // If debug is not enabled skip
+            if (!enableDebug) return;
+            
             // Ensure tilemap is set
             if (!Tilemap) return;
 
@@ -102,7 +111,10 @@ namespace Systems.Audibility2D.Components
                 // Quickly check camera point in view frustrum
                 if (!MakeGizmosFasterUtility.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
 
-                Gizmos.color = Color.Lerp(Color.red, Color.green,
+                Color audibilityNoneColor = AudibilitySettings.Instance.gizmosColorMinAudibility;
+                Color audibilityFullColor = AudibilitySettings.Instance.gizmosColorMaxAudibility;
+                
+                Gizmos.color = Color.Lerp(audibilityNoneColor, audibilityFullColor,
                     audioTileInfo.currentAudioLevel / (float) AudibilityTools.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
