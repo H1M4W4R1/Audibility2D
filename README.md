@@ -6,6 +6,12 @@
 # About
 **Audibility2D** is a Unity3D package designed to detect audibility levels of multiple audio sources in 2D space. Its primary purpose is to enable efficient enemy-hearing mechanics, with walls and other obstacles that dampen sound, creating more engaging gameplay.
 
+# Requirements
+* Burst
+* Jobs
+* Mathematics
+* [My Utilities package](https://github.com/H1M4W4R1/Utilities-Unity3D)
+
 # Implementation
 To set up 2D mode:
 
