@@ -10,18 +10,18 @@ namespace Systems.Audibility2D.Jobs
     ///     Job used to quickly convert tile data after computation into loudness levels
     ///     Created because Unity API sucks
     /// </summary>
-    [BurstCompile]
-    public struct GetDebugAudioTileDataJob : IJobParallelFor
+    [BurstCompile] public struct GetDebugAudioTileDataJob : IJobParallelFor
     {
+        [ReadOnly] public TilemapInfo tilemapInfo;
         [ReadOnly] public NativeArray<AudioTileData> tileData;
         [WriteOnly] public NativeArray<AudioTileDebugData> audioTileDebugData;
-        
-        [BurstCompile]
-        public void Execute(int index)
+
+        [BurstCompile] public void Execute(int index)
         {
             AudioTileData tile = tileData[index];
             float normalizedLoudness = tile.currentAudioLevel.GetAverage() / (float) AudibilityLevel.LOUDNESS_MAX;
-            audioTileDebugData[index] = new AudioTileDebugData(tile.worldPosition, normalizedLoudness);
+            audioTileDebugData[index] =
+                new AudioTileDebugData(tile.index.GetWorldPosition(tilemapInfo), normalizedLoudness);
         }
     }
 }

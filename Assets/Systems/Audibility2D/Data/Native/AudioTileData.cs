@@ -19,12 +19,7 @@ namespace Systems.Audibility2D.Data.Native
         /// <summary>
         ///     Index of this tile in array
         /// </summary>
-        public readonly int index;
-
-        /// <summary>
-        ///     Position of center of this tile in world space
-        /// </summary>
-        public readonly float3 worldPosition;
+        public readonly TileIndex index;
 
         /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
@@ -37,12 +32,10 @@ namespace Systems.Audibility2D.Data.Native
         public AudioTileNeighbourData neighbourData;
 
         public AudioTileData(
-            int index,
-            float3 worldPosition,
+            TileIndex index,
             AudioLoudnessLevel mufflingStrength)
         {
             this.index = index;
-            this.worldPosition = worldPosition;
             this.mufflingStrength = mufflingStrength;
 
             currentAudioLevel = AudibilityLevel.LOUDNESS_NONE;

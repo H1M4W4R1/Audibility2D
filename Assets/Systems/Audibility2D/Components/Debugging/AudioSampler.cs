@@ -29,14 +29,14 @@ namespace Systems.Audibility2D.Components.Debugging
             if (!audioTilemap) return;
 
             Vector3Int tilemapSize = audioTilemap.size;
-            int tilesCount = tilemapSize.x * tilemapSize.y;
+            int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
             QuickArray.PerformEfficientAllocation(ref _tileDebugData, tilesCount, Allocator.TempJob);
 
             // Compute audibility in 2D space
             AudibilityLevel.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
             
             // Compute average tile loudness
-            AudibilityTools.GetTileDebugData(in _tileComputeData, ref _tileDebugData);
+            AudibilityTools.GetTileDebugData(audioTilemap, in _tileComputeData, ref _tileDebugData);
             
             // Draw gizmos
             for (int n = 0; n < _tileDebugData.Length; n++)

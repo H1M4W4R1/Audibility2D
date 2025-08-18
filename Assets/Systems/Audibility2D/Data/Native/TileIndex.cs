@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Systems.Audibility2D.Data.Native
 {
@@ -28,6 +29,15 @@ namespace Systems.Audibility2D.Data.Native
         }
 
         /// <summary>
+        ///     Create new tile index from position
+        /// </summary>
+        public TileIndex(int3 tilePosition, in TilemapInfo tilemapInfo) :
+            this(ToIndex(tilePosition.x, tilePosition.y, tilePosition.z, tilemapInfo))
+        {
+        }
+
+
+        /// <summary>
         ///     Get tilemap position from this index
         /// </summary>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,7 +59,7 @@ namespace Systems.Audibility2D.Data.Native
             // Convert into world position
             result -= tilemapInfo.originPoint; // We move by origin point to get offset of the tile from origin
             float3 worldLocation = tilemapInfo.worldOriginPoint + tilemapInfo.tileSize * (result +
-                                   new float3(0.5f, 0.5f, 0.5f)); // Move by offset and half tile
+                new float3(0.5f, 0.5f, 0.5f)); // Move by offset and half tile
 
             return worldLocation;
         }
@@ -91,5 +101,7 @@ namespace Systems.Audibility2D.Data.Native
                 z + tilemapInfo.originPoint.z
             );
         }
+
+        public static implicit operator int(TileIndex tileIndex) => tileIndex.value;
     }
 }

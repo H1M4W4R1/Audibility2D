@@ -39,6 +39,8 @@ namespace Systems.Audibility2D.Utility
             ref NativeArray<AudioSourceData> audioSourceComputeData,
             ref NativeArray<AudioTileData> tileComputeData)
         {
+            TilemapInfo tilemapInfo = new(audioTilemap);
+            
             // Initialize tilemap arrays
             AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData);
 
@@ -53,7 +55,7 @@ namespace Systems.Audibility2D.Utility
             AudibilityTools.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
 
             // Handle computation
-            UpdateAudibilityLevel(audioSourceComputeData, ref tileComputeData);
+            UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);
         }
 
         /// <summary>
@@ -67,11 +69,13 @@ namespace Systems.Audibility2D.Utility
         ///     Also your output array.
         /// </param>
         [BurstCompile] public static void UpdateAudibilityLevel(
+            in TilemapInfo tilemapInfo,
             in NativeArray<AudioSourceData> audioSourceComputeData,
             ref NativeArray<AudioTileData> tileComputeData)
         {
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {
+                tilemapInfo = tilemapInfo,
                 audioSourcesData = audioSourceComputeData,
                 audioTilesData = tileComputeData
             };
@@ -97,6 +101,7 @@ namespace Systems.Audibility2D.Utility
         ///     Current audio source that is being analyzed
         /// </param>
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
+            in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileData> audioTilesData,
             ref AudioTileData currentTile,
@@ -112,7 +117,8 @@ namespace Systems.Audibility2D.Utility
 
                 // Process tile
                 AudioTileData neighbourTile = audioTilesData[neighbourTileIndex];
-                UpdateAudioLevelForTile(ref tilesToUpdateNeighbours,
+                UpdateAudioLevelForTile(
+                    tilemapInfo, ref tilesToUpdateNeighbours,
                     currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
                 audioTilesData[neighbourTileIndex] = neighbourTile;
             }
@@ -138,15 +144,20 @@ namespace Systems.Audibility2D.Utility
         ///     Audio level in current tile, passed separately to handle source tiles correctly
         /// </param> 
         [BurstCompile] internal static void UpdateAudioLevelForTile(
+            in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             in AudioTileData originalTile,
             ref AudioTileData neighbouringTile,
             in AudioSourceData currentAudioSource,
             in AudioLoudnessLevel currentAudioLevel)
         {
+            // Get positions
+            float3 originalTilePosition = originalTile.index.GetWorldPosition(tilemapInfo);
+            float3 neighbouringTilePosition = neighbouringTile.index.GetWorldPosition(tilemapInfo);
+            
             // Compute distance between tiles to decrease audio level
             // Unfortunately we can't use distanceSq as it behaves poorly in division scenarios
-            float distance = math.distance(neighbouringTile.worldPosition, originalTile.worldPosition);
+            float distance = math.distance(originalTilePosition, neighbouringTilePosition);
 
             // This will always result in silence, skip this trash ;)
             if (Hint.Likely(distance > currentAudioSource.range)) return;
@@ -165,8 +176,8 @@ namespace Systems.Audibility2D.Utility
             neighbouringTile.currentAudioLevel = newTileLevel;
 
             // Notify to update neighbours
-            if (Hint.Likely(!tilesToUpdateNeighbours.Contains(neighbouringTile.index)))
-                tilesToUpdateNeighbours.Add(neighbouringTile.index);
+            if (Hint.Likely(!tilesToUpdateNeighbours.Contains(neighbouringTile.index.value)))
+                tilesToUpdateNeighbours.Add(neighbouringTile.index.value);
         }
     }
 }
