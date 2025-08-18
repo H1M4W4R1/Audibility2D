@@ -1,5 +1,6 @@
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
+using Systems.Utilities.Indexing.Grid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -12,7 +13,7 @@ namespace Systems.Audibility2D.Jobs
     /// </summary>
     [BurstCompile] public struct GetDebugAudioTileDataJob : IJobParallelFor
     {
-        [ReadOnly] public TilemapInfo tilemapInfo;
+        [ReadOnly] public GridInfo3D tilemapInfo;
         [ReadOnly] public NativeArray<AudioTileInfo> tileData;
         [WriteOnly] public NativeArray<AudioTileDebugInfo> audioTileDebugData;
 

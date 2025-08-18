@@ -1,15 +1,12 @@
-using System;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
-using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Object = System.Object;
 
 namespace Systems.Audibility2D.Data.Tiles
 {

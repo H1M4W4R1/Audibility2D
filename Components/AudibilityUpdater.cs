@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
-using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Utility;
-using Systems.Audibility2D.Utility.Internal;
+using Systems.Utilities.Frustum;
+using Systems.Utilities.Indexing.Grid;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -52,7 +52,7 @@ namespace Systems.Audibility2D.Components
         ///     Get info about tile at specified absolute location
         /// </summary>
         public AudioTileInfo GetTileInfo(int3 tileLocationAbsolute) => _audioTileData[
-            TileIndex.ToIndexAbsolute(tileLocationAbsolute, new TilemapInfo(Tilemap))
+            Index3D.ToIndexAbsolute(tileLocationAbsolute, Tilemap.AsGridInfo())
         ];
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Systems.Audibility2D.Components
             // to prevent throwing assertion errors when recompiled in background
             if (!_audioTileData.IsCreated) return;
 
-            TilemapInfo tilemapInfo = new(Tilemap);
+            GridInfo3D tilemapInfo = Tilemap.AsGridInfo();
 
             // Compute camera planes
             NativeArray<float4> frustrumPlanes = new(6, Allocator.TempJob);
@@ -106,7 +106,7 @@ namespace Systems.Audibility2D.Components
                 float3 worldTilePosition = audioTileInfo.index.GetWorldPosition(tilemapInfo);
 
                 // Quickly check camera point in view frustrum
-                if (!MakeGizmosFasterUtility.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
+                if (!FrustumUtil.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
 
                 Color audibilityNoneColor = AudibilitySettings.Instance.gizmosColorMinAudibility;
                 Color audibilityFullColor = AudibilitySettings.Instance.gizmosColorMaxAudibility;

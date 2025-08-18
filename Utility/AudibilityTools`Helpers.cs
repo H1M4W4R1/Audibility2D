@@ -1,11 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
-using Systems.Audibility2D.Utility.Internal;
+using Systems.Utilities.Collections;
+using Systems.Utilities.Indexing.Grid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -40,7 +40,7 @@ namespace Systems.Audibility2D.Utility
             Assert.IsTrue(debugDataArray.IsCreated, "Debug data array is not created");
             Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length, "Arrays length mismatch");
 
-            TilemapInfo tilemapInfo = new(audioTilemap);
+            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
 
             GetDebugAudioTileDataJob job = new()
             {
@@ -102,10 +102,10 @@ namespace Systems.Audibility2D.Utility
             Assert.IsNotNull(sources, "Sources array is null");
 
             // Create or update array if necessary
-            QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
+            ArrayUtil.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
                 allocator);
 
-            TilemapInfo tilemapInfo = new(audioTilemap);
+            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
 
             // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
@@ -116,7 +116,7 @@ namespace Systems.Audibility2D.Utility
 
                 // Compute tilemap index
                 Vector3Int tilePosition = audioTilemap.WorldToCell(worldPosition); // Do not subtract origin
-                TileIndex tileIndex = new(new int3(tilePosition.x, tilePosition.y, tilePosition.z), tilemapInfo);
+                Index3D tileIndex = new(new int3(tilePosition.x, tilePosition.y, tilePosition.z), tilemapInfo);
 
                 // Assign value
                 audioSourceComputeData[nIndex] =
@@ -145,8 +145,8 @@ namespace Systems.Audibility2D.Utility
             }
 
             // Convert tile data into proper helpers
-            TilemapInfo tilemapInfo = new(audioTilemap);
-            TileIndex tileIndex = new(TileIndex.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
+            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
+            Index3D tileIndex = new(Index3D.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
             
             // Skip some tiles
             if (tileIndex < 0 || tileIndex >= tileComputeData.Length) return;
@@ -181,9 +181,9 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
 
             // Ensure arrays are initialized 
-            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
+            ArrayUtil.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
 
-            TilemapInfo tilemapInfo = new(audioTilemap);
+            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
             
             for (int x = 0; x < tilemapSize.x; x++)
             {
@@ -194,8 +194,8 @@ namespace Systems.Audibility2D.Utility
                         // Pre-compute Unity-based data
                         Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, z);
                         AudioTile audioTile = audioTilemap.GetTile<AudioTile>(cellPosition);
-                        TileIndex tileIndex =
-                            new(TileIndex.ToIndexAbsolute(new int3(cellPosition.x, cellPosition.y, cellPosition.z),
+                        Index3D tileIndex =
+                            new(Index3D.ToIndexAbsolute(new int3(cellPosition.x, cellPosition.y, cellPosition.z),
                                 tilemapInfo));
 
                         // ReSharper disable once Unity.NoNullPropagation

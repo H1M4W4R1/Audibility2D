@@ -1,4 +1,5 @@
 ﻿using Systems.Audibility2D.Data.Native.Wrappers;
+using Systems.Utilities.Indexing.Grid;
 
 namespace Systems.Audibility2D.Data.Native
 {
@@ -10,7 +11,7 @@ namespace Systems.Audibility2D.Data.Native
         /// <summary>
         ///     Index of tile in array
         /// </summary>
-        public readonly TileIndex tileIndex; // 4B
+        public readonly Index3D tileIndex; // 4B
         
         /// <summary>
         ///     Loudness of this audio source
@@ -22,7 +23,7 @@ namespace Systems.Audibility2D.Data.Native
         /// </summary>
         public readonly float range; // 4B
 
-        public AudioSourceInfo(TileIndex tileIndex, AudioLoudnessLevel audioLevel, float range)
+        public AudioSourceInfo(Index3D tileIndex, AudioLoudnessLevel audioLevel, float range)
         {
             this.tileIndex = tileIndex;
             this.audioLevel = audioLevel;

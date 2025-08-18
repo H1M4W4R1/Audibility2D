@@ -1,5 +1,6 @@
 ﻿using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
+using Systems.Utilities.Indexing.Grid;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
@@ -18,7 +19,7 @@ namespace Systems.Audibility2D.Jobs
         /// <summary>
         ///     Tilemap being scanned
         /// </summary>
-        [ReadOnly] public TilemapInfo tilemapInfo;
+        [ReadOnly] public GridInfo3D tilemapInfo;
         
         /// <summary>
         ///     Audio sources information for computation
