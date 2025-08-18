@@ -41,7 +41,7 @@ namespace Systems.Audibility2D.Components.Debugging
             QuickArray.PerformEfficientAllocation(ref _loudnessData, tilesCount, Allocator.TempJob);
 
             // Compute audibility in 2D space
-            AudibilityTools.UpdateAudibilityTools(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
+            AudibilityTools.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
 
             // Compute average tile loudness
             AudibilityTools.GetAverageLoudnessData(in _tileComputeData, ref _loudnessData);

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Systems.Audibility2D.Components
+namespace Systems.Audibility2D.Components.Utility
 {
     /// <summary>
     ///     Utility script to enforce object to be always in world origin position (0,0,0)
