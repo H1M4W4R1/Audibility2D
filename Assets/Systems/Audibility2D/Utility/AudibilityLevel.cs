@@ -1,8 +1,10 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
+using Systems.Audibility2D.Data.Native.Wrappers;
+using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
-using Systems.Audibility2D.Tiles;
+using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
@@ -36,8 +38,8 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         [BurstDiscard] public static void UpdateAudibilityLevel(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioSourceData> audioSourceComputeData,
-            ref NativeArray<AudioTileData> tileComputeData)
+            ref NativeArray<AudioSourceInfo> audioSourceComputeData,
+            ref NativeArray<AudioTileInfo> tileComputeData)
         {
             TilemapInfo tilemapInfo = new(audioTilemap);
             
@@ -61,7 +63,9 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Update audibility level for entire map
         /// </summary>
-        ///  /// <param name="audioSourceComputeData">
+        ///  ///
+        ///  <param name="tilemapInfo">Tilemap info to update data for</param>
+        ///  <param name="audioSourceComputeData">
         ///     Handle for Audio Source Data array, must be filled with proper data
         /// </param>
         /// <param name="tileComputeData">
@@ -70,8 +74,8 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         [BurstCompile] public static void UpdateAudibilityLevel(
             in TilemapInfo tilemapInfo,
-            in NativeArray<AudioSourceData> audioSourceComputeData,
-            ref NativeArray<AudioTileData> tileComputeData)
+            in NativeArray<AudioSourceInfo> audioSourceComputeData,
+            ref NativeArray<AudioTileInfo> tileComputeData)
         {
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {
@@ -88,6 +92,7 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Method that computes audio updates for all neighboring tiles of specific tile
         /// </summary>
+        /// <param name="tilemapInfo">Tilemap info to compute data for</param>
         /// <param name="tilesToUpdateNeighbours">
         ///     Reference to list containing indices of tiles which should have their neighbours updated
         /// </param>
@@ -103,11 +108,11 @@ namespace Systems.Audibility2D.Utility
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
             in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
-            ref NativeArray<AudioTileData> audioTilesData,
-            ref AudioTileData currentTile,
-            in AudioSourceData currentAudioSource)
+            ref NativeArray<AudioTileInfo> audioTilesData,
+            ref AudioTileInfo currentTile,
+            in AudioSourceInfo currentAudioSource)
         {
-            for (int neighbourId = 0; neighbourId <= AudioTileNeighbourData.MAX_INDEX; neighbourId++)
+            for (int neighbourId = 0; neighbourId <= AudioTileNeighboursInfo.MAX_INDEX; neighbourId++)
             {
                 // Get tile index
                 int neighbourTileIndex = currentTile.GetNeighbourIndex(neighbourId);
@@ -116,7 +121,7 @@ namespace Systems.Audibility2D.Utility
                 if (Hint.Unlikely(neighbourTileIndex == -1)) break;
 
                 // Process tile
-                AudioTileData neighbourTile = audioTilesData[neighbourTileIndex];
+                AudioTileInfo neighbourTile = audioTilesData[neighbourTileIndex];
                 UpdateAudioLevelForTile(
                     tilemapInfo, ref tilesToUpdateNeighbours,
                     currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
@@ -127,6 +132,7 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Method used to update audio level of specific tile
         /// </summary>
+        /// <param name="tilemapInfo">Tilemap info to compute data for</param>
         /// <param name="tilesToUpdateNeighbours">
         ///     Reference to list containing indices of tiles which should have their neighbours updated
         /// </param>
@@ -146,9 +152,9 @@ namespace Systems.Audibility2D.Utility
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
-            in AudioTileData originalTile,
-            ref AudioTileData neighbouringTile,
-            in AudioSourceData currentAudioSource,
+            in AudioTileInfo originalTile,
+            ref AudioTileInfo neighbouringTile,
+            in AudioSourceInfo currentAudioSource,
             in AudioLoudnessLevel currentAudioLevel)
         {
             // Get positions

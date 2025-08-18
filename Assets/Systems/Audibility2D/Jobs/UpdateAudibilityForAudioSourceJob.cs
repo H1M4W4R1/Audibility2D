@@ -23,38 +23,38 @@ namespace Systems.Audibility2D.Jobs
         /// <summary>
         ///     Audio sources information for computation
         /// </summary>
-        [ReadOnly] public NativeArray<AudioSourceData> audioSourcesData;
+        [ReadOnly] public NativeArray<AudioSourceInfo> audioSourcesData;
         
         /// <summary>
         ///     Audio tiles data, can be written (hope it won't cause race conditions)
         /// </summary>
-        [NativeDisableParallelForRestriction] public NativeArray<AudioTileData> audioTilesData;
+        [NativeDisableParallelForRestriction] public NativeArray<AudioTileInfo> audioTilesData;
         
         [BurstCompile]
         public void Execute(int nAudioSource)
         {
             NativeList<int> tilesToUpdateNeighbours = new(64, Allocator.Temp);
-            AudioSourceData audioSourceData = audioSourcesData[nAudioSource];
+            AudioSourceInfo audioSourceInfo = audioSourcesData[nAudioSource];
 
             // Skip if tile is outside of map
-            if (Hint.Unlikely(audioSourceData.tileIndex >= audioTilesData.Length || audioSourceData.tileIndex < 0)) return;
+            if (Hint.Unlikely(audioSourceInfo.tileIndex >= audioTilesData.Length || audioSourceInfo.tileIndex < 0)) return;
             
             // Get start tile and initialize with audio value
-            AudioTileData startTile = audioTilesData[audioSourceData.tileIndex];
+            AudioTileInfo startTile = audioTilesData[audioSourceInfo.tileIndex];
             AudibilityLevel.UpdateAudioLevelForTile(tilemapInfo, ref tilesToUpdateNeighbours, 
-                startTile, ref startTile, audioSourceData,
-                audioSourceData.audioLevel);
-            audioTilesData[audioSourceData.tileIndex] = startTile;
+                startTile, ref startTile, audioSourceInfo,
+                audioSourceInfo.audioLevel);
+            audioTilesData[audioSourceInfo.tileIndex] = startTile;
 
             // Perform update sequence
             while (Hint.Likely(tilesToUpdateNeighbours.Length > 0))
             {
                 // Perform update sequence
                 int tileIndex = tilesToUpdateNeighbours[0];
-                AudioTileData tile = audioTilesData[tileIndex];
+                AudioTileInfo tile = audioTilesData[tileIndex];
                 AudibilityLevel.UpdateNeighbourAudioLevelsForTile(tilemapInfo,
                     ref tilesToUpdateNeighbours,
-                    ref audioTilesData, ref tile, audioSourceData);
+                    ref audioTilesData, ref tile, audioSourceInfo);
 
                 // Remove tiles from update
                 tilesToUpdateNeighbours.RemoveAt(0);

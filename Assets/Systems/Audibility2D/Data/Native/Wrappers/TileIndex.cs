@@ -1,9 +1,8 @@
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
-using UnityEngine;
 
-namespace Systems.Audibility2D.Data.Native
+namespace Systems.Audibility2D.Data.Native.Wrappers
 {
     [BurstCompile] public readonly struct TileIndex
     {

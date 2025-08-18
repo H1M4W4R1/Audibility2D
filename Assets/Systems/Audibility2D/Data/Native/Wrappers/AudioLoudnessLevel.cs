@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Mathematics;
 
-namespace Systems.Audibility2D.Data.Native
+namespace Systems.Audibility2D.Data.Native.Wrappers
 {
     /// <summary>
     ///     Represents decibel level for easier audio mapping and falloff calculation

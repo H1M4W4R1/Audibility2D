@@ -12,7 +12,7 @@ namespace Systems.Audibility2D.Jobs
     [BurstCompile]
     public struct GetAverageAudioLoudnessDataJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<AudioTileData> tileData;
+        [ReadOnly] public NativeArray<AudioTileInfo> tileData;
         [WriteOnly] public NativeArray<int> averageTileLoudnessData;
         
         [BurstCompile]

@@ -1,12 +1,13 @@
 using System.Runtime.CompilerServices;
-using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
+using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
+using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Systems.Audibility2D.Tiles
+namespace Systems.Audibility2D.Data.Tiles
 {
     /// <summary>
     ///     Audio tile used to compute muffling / dampening properties at specific position

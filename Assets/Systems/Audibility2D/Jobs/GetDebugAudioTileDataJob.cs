@@ -13,15 +13,15 @@ namespace Systems.Audibility2D.Jobs
     [BurstCompile] public struct GetDebugAudioTileDataJob : IJobParallelFor
     {
         [ReadOnly] public TilemapInfo tilemapInfo;
-        [ReadOnly] public NativeArray<AudioTileData> tileData;
-        [WriteOnly] public NativeArray<AudioTileDebugData> audioTileDebugData;
+        [ReadOnly] public NativeArray<AudioTileInfo> tileData;
+        [WriteOnly] public NativeArray<AudioTileDebugInfo> audioTileDebugData;
 
         [BurstCompile] public void Execute(int index)
         {
-            AudioTileData tile = tileData[index];
+            AudioTileInfo tile = tileData[index];
             float normalizedLoudness = tile.currentAudioLevel.GetAverage() / (float) AudibilityLevel.LOUDNESS_MAX;
             audioTileDebugData[index] =
-                new AudioTileDebugData(tile.index.GetWorldPosition(tilemapInfo), normalizedLoudness);
+                new AudioTileDebugInfo(tile.index.GetWorldPosition(tilemapInfo), normalizedLoudness);
         }
     }
 }

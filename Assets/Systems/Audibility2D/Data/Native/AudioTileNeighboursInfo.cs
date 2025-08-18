@@ -8,7 +8,7 @@ namespace Systems.Audibility2D.Data.Native
 {
     [StructLayout(LayoutKind.Explicit)]
     [BurstCompile]
-    public struct AudioTileNeighbourData
+    public struct AudioTileNeighboursInfo
     {
         public const int MAX_INDEX = 4;
         
@@ -54,9 +54,9 @@ namespace Systems.Audibility2D.Data.Native
         ///     Creates new instance of this class and sets-up all tiles to be -1 (not existing).
         ///     
         /// </summary>
-        public static AudioTileNeighbourData New()
+        public static AudioTileNeighboursInfo New()
         {
-            return new AudioTileNeighbourData()
+            return new AudioTileNeighboursInfo()
             {
                 tile0 = -1,
                 tile1 = -1,

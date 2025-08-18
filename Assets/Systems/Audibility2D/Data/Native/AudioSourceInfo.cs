@@ -1,11 +1,12 @@
-﻿using Unity.Mathematics;
+﻿using Systems.Audibility2D.Data.Native.Wrappers;
+using Unity.Mathematics;
 
 namespace Systems.Audibility2D.Data.Native
 {
     /// <summary>
     ///     Object to store computation data of audio source for 2D audibility system
     /// </summary>
-    public readonly struct AudioSourceData
+    public readonly struct AudioSourceInfo
     {
         /// <summary>
         ///     Index of tile in array
@@ -22,7 +23,7 @@ namespace Systems.Audibility2D.Data.Native
         /// </summary>
         public readonly float range; // 4B
 
-        public AudioSourceData(TileIndex tileIndex, AudioLoudnessLevel audioLevel, float range)
+        public AudioSourceInfo(TileIndex tileIndex, AudioLoudnessLevel audioLevel, float range)
         {
             this.tileIndex = tileIndex;
             this.audioLevel = audioLevel;

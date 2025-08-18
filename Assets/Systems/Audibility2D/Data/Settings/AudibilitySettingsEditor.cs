@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using UnityEditor;
 
-namespace Systems.Audibility2D.Settings
+namespace Systems.Audibility2D.Data.Settings
 {
     /// <summary>
     ///     Editor for audibility settings

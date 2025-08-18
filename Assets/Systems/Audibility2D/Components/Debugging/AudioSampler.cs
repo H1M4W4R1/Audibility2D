@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Data.Native;
-using Systems.Audibility2D.Tiles;
+using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Utility;
+using Systems.Audibility2D.Utility.Internal;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -19,9 +20,9 @@ namespace Systems.Audibility2D.Components.Debugging
         /// </summary>
         [SerializeField] [CanBeNull] private Tilemap audioTilemap;
 
-        private NativeArray<AudioTileData> _tileComputeData;
-        private NativeArray<AudioSourceData> _audioSourceComputeData;
-        private NativeArray<AudioTileDebugData> _tileDebugData;
+        private NativeArray<AudioTileInfo> _tileComputeData;
+        private NativeArray<AudioSourceInfo> _audioSourceComputeData;
+        private NativeArray<AudioTileDebugInfo> _tileDebugData;
 
         private void OnDrawGizmos()
         {

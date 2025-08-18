@@ -3,7 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine.Tilemaps;
 
-namespace Systems.Audibility2D.Utility
+namespace Systems.Audibility2D.Utility.Internal
 {
     /// <summary>
     ///     Utility class used to transfer system-wide notification for 2D API

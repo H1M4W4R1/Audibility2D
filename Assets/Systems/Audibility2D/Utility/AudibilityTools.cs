@@ -2,8 +2,10 @@
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
+using Systems.Audibility2D.Data.Native.Wrappers;
+using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
-using Systems.Audibility2D.Tiles;
+using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
@@ -34,8 +36,8 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         public static void GetTileDebugData(
             [NotNull] in Tilemap audioTilemap,
-            in NativeArray<AudioTileData> tileDataAfterComputing,
-            ref NativeArray<AudioTileDebugData> debugDataArray)
+            in NativeArray<AudioTileInfo> tileDataAfterComputing,
+            ref NativeArray<AudioTileDebugInfo> debugDataArray)
         {
             Assert.IsTrue(tileDataAfterComputing.IsCreated);
             Assert.IsTrue(debugDataArray.IsCreated);
@@ -63,7 +65,7 @@ namespace Systems.Audibility2D.Utility
         ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
         /// </param>
         public static void GetAverageLoudnessData(
-            in NativeArray<AudioTileData> tileDataAfterComputing,
+            in NativeArray<AudioTileInfo> tileDataAfterComputing,
             ref NativeArray<int> averageLoudnessArray)
         {
             Assert.IsTrue(tileDataAfterComputing.IsCreated);
@@ -94,7 +96,7 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         [BurstDiscard] public static void TilemapToArray(
             [NotNull] Tilemap audioTilemap,
-            ref NativeArray<AudioTileData> tileComputeData
+            ref NativeArray<AudioTileInfo> tileComputeData
         )
         {
             Assert.IsNotNull(audioTilemap);
@@ -133,7 +135,7 @@ namespace Systems.Audibility2D.Utility
         [BurstDiscard] public static void AudioSourcesToArray(
             [NotNull] Tilemap audioTilemap,
             [NotNull] AudibleSound[] sources,
-            ref NativeArray<AudioSourceData> audioSourceComputeData)
+            ref NativeArray<AudioSourceInfo> audioSourceComputeData)
         {
             Assert.IsNotNull(audioTilemap);
             Assert.IsNotNull(sources);
@@ -153,7 +155,7 @@ namespace Systems.Audibility2D.Utility
 
                 // Assign value
                 audioSourceComputeData[nIndex] =
-                    new AudioSourceData(tileIndex, source.GetDecibelLevel(), source.GetRange());
+                    new AudioSourceInfo(tileIndex, source.GetDecibelLevel(), source.GetRange());
             }
 
             Assert.AreEqual(sources.Length, audioSourceComputeData.Length);
@@ -213,7 +215,7 @@ namespace Systems.Audibility2D.Utility
         [BurstCompile] private static void _TilemapToArray(
             in TilemapInfo tilemapInfo,
             in NativeArray<AudioLoudnessLevel> mufflingLevels,
-            ref NativeArray<AudioTileData> audioTileData
+            ref NativeArray<AudioTileInfo> audioTileData
         )
         {
             int3 tilemapSize = tilemapInfo.size;
@@ -240,15 +242,15 @@ namespace Systems.Audibility2D.Utility
 
                         // Register node neighbours taking limit into account
                         int nNeighbours = 0;
-                        AudioTileData tileData = new(nIndex, mufflingStrength);
-                        nNeighbours += tileData.SetNeighbour(northIndex, nNeighbours);
-                        nNeighbours += tileData.SetNeighbour(southIndex, nNeighbours);
-                        nNeighbours += tileData.SetNeighbour(westIndex, nNeighbours);
+                        AudioTileInfo tileInfo = new(nIndex, mufflingStrength);
+                        nNeighbours += tileInfo.SetNeighbour(northIndex, nNeighbours);
+                        nNeighbours += tileInfo.SetNeighbour(southIndex, nNeighbours);
+                        nNeighbours += tileInfo.SetNeighbour(westIndex, nNeighbours);
                         // ReSharper disable once RedundantAssignment
-                        nNeighbours += tileData.SetNeighbour(eastIndex, nNeighbours);
+                        nNeighbours += tileInfo.SetNeighbour(eastIndex, nNeighbours);
 
                         // Copy new tile data into array
-                        audioTileData[nIndex] = tileData;
+                        audioTileData[nIndex] = tileInfo;
                     }
                 }
             }

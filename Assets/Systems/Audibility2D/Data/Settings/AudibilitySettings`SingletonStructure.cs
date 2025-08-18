@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Systems.Audibility2D.Settings
+namespace Systems.Audibility2D.Data.Settings
 {
     /// <summary>
     ///     Global audibility settings for all known audibility solutions
