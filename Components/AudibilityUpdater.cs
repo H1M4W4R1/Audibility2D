@@ -1,4 +1,3 @@
-using System;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
@@ -18,10 +17,10 @@ namespace Systems.Audibility2D.Components
     [RequireComponent(typeof(Tilemap))] [ExecuteInEditMode] public sealed class AudibilityUpdater : MonoBehaviour
     {
         private Tilemap _tilemap;
-        private NativeArray<AudioLoudnessLevel> _audioTileMufflingCache;
         private NativeArray<AudioTileInfo> _audioTileData;
         private NativeArray<AudioSourceInfo> _audioSourceData;
         private bool _areEventsConfigured;
+        private bool _isAudioDataInitiallyCached;
 
         /// <summary>
         ///     Access local tilemap
@@ -61,7 +60,11 @@ namespace Systems.Audibility2D.Components
             EnsureEventsAreAttached();
             
             // Refresh audio muffling cache if necessary
-            if (!_audioTileMufflingCache.IsCreated) RefreshAudioMufflingCache();
+            if (!_isAudioDataInitiallyCached)
+            {
+                RefreshAudioMufflingCache();
+                _isAudioDataInitiallyCached = true;
+            }
 
             // Perform update of audio level
             AudibilityTools.UpdateAudibilityLevel(Tilemap, ref _audioSourceData,
@@ -127,8 +130,6 @@ namespace Systems.Audibility2D.Components
             Events.OnMufflingMaterialDataChanged += OnMufflingMaterialDataChangedHandler;
             Events.OnTileUpdated += OnTileUpdatedHandler;
             _areEventsConfigured = true;
-
-            RefreshAudioMufflingCache();
         }
 
         private void OnTileUpdatedHandler(AudibilityUpdater updater, int3 tilePosition)
@@ -162,6 +163,10 @@ namespace Systems.Audibility2D.Components
         private void OnDestroy()
         {
             DetachEvents();
+            
+            // Clear allocations
+            _audioTileData.Dispose();
+            _audioSourceData.Dispose();
         }
 
 #endregion
