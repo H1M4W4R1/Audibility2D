@@ -165,13 +165,19 @@ namespace Systems.Audibility2D.Utility
             in AudioSourceInfo currentAudioSource)
         {
             // Early return
-            if (Hint.Unlikely(neighbourTileIndex == -1)) return;
+            if (Hint.Unlikely(neighbourTileIndex == TileIndex.NONE)) return;
 
             // Process tile
             AudioTileInfo neighbourTile = audioTilesData[neighbourTileIndex];
+            
+            // This perfectly handles wall-based sounds because sometimes
+            // I am stupid and do weird things
+            AudioLoudnessLevel newLoudness = currentTile.currentAudioLevel;
+            newLoudness.MuffleBy(currentTile.mufflingStrength);
+            
             UpdateAudioLevelForTile(
                 tilemapInfo, ref tilesToUpdateNeighbours,
-                currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
+                currentTile, ref neighbourTile, currentAudioSource, newLoudness);
             audioTilesData[neighbourTileIndex] = neighbourTile;
         }
 
@@ -212,11 +218,11 @@ namespace Systems.Audibility2D.Utility
             float distance = math.distance(originalTilePosition, neighbouringTilePosition);
 
             // This will always result in silence, skip this trash ;)
-            if (Hint.Likely(distance > currentAudioSource.range)) return;
+            if (Hint.Unlikely(distance > currentAudioSource.range)) return;
 
             // Copy current audio level and compute muffling 
             AudioLoudnessLevel newTileLevel = currentAudioLevel;
-            newTileLevel = newTileLevel.MuffleBy(neighbouringTile.mufflingStrength); // Current tile muffling
+            //newTileLevel = newTileLevel.MuffleBy(neighbouringTile.mufflingStrength); // Current tile muffling
             newTileLevel = newTileLevel.MuffleBy(math.lerp(0, LOUDNESS_MAX,
                 math.clamp(distance / currentAudioSource.range, 0, 1)));
             newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);

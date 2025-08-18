@@ -7,6 +7,9 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
 {
     [BurstCompile] public readonly struct TileIndex // 4B
     {
+        // No tile...
+        public const int NONE = -1;
+
         /// <summary>
         ///     Index value storage
         /// </summary>
@@ -65,7 +68,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(y + 1 < tilemapInfo.size.y)
                 ? ToIndexRelative(x, y + 1, z, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         public int GetSouthTileIndex(in TilemapInfo tilemapInfo)
@@ -73,7 +76,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(y - 1 >= 0)
                 ? ToIndexRelative(x, y - 1, z, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         public int GetEastTileIndex(in TilemapInfo tilemapInfo)
@@ -81,7 +84,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(x + 1 < tilemapInfo.size.x)
                 ? ToIndexRelative(x + 1, y, z, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         public int GetWestTileIndex(in TilemapInfo tilemapInfo)
@@ -89,7 +92,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(x - 1 >= 0)
                 ? ToIndexRelative(x - 1, y, z, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         public int GetUpTileIndex(in TilemapInfo tilemapInfo)
@@ -97,7 +100,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(z + 1 < tilemapInfo.size.z)
                 ? ToIndexRelative(x, y, z + 1, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         public int GetDownTileIndex(in TilemapInfo tilemapInfo)
@@ -105,7 +108,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
             return Hint.Likely(z - 1 >= 0)
                 ? ToIndexAbsolute(x, y, z - 1, tilemapInfo)
-                : -1;
+                : NONE;
         }
 
         /// <summary>
