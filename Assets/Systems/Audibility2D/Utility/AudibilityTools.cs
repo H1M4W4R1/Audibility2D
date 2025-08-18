@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
@@ -28,8 +29,66 @@ namespace Systems.Audibility2D.Utility
         private static readonly Dictionary<Tilemap, NativeArray<AudioLoudnessLevel>> _tileMufflingLevels = new();
 
         /// <summary>
+        ///     Deactivate audio tilemap to dispose of unused data
+        /// </summary>
+        /// <param name="audioTilemap">Tilemap to activate</param>
+        public static void DeactivateAudioTilemap([NotNull] Tilemap audioTilemap)
+        {
+            // Disable tilemap gameObject if not disabled
+            if (!CheckIfTilemapIsEnabled(audioTilemap)) audioTilemap.enabled = false;
+            
+            // Get rid of array
+            if (_tileMufflingLevels.TryGetValue(audioTilemap, out NativeArray<AudioLoudnessLevel> array))
+                array.Dispose();
+        }
+        
+        /// <summary>
+        ///     Activate tilemap if necessary
+        /// </summary>
+        /// <param name="audioTilemap">Tilemap to activate</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ActivateAudioTilemap([NotNull] Tilemap audioTilemap)
+        {
+            // Activate tilemap object
+            if (!CheckIfTilemapIsEnabled(audioTilemap))
+            {
+                audioTilemap.gameObject.SetActive(true);
+                audioTilemap.enabled = true;
+            }
+
+            EnsureTilemapIsReady(audioTilemap);
+        } 
+            
+        /// <summary>
+        ///     Ensures that tilemap is ready to be used in computation analysis
+        /// </summary>
+        /// <param name="audioTilemap">Tilemap to check</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnsureTilemapIsReady([NotNull] Tilemap audioTilemap)
+        {
+            if (!CheckIfTilemapIsReady(audioTilemap)) RefreshTileData(audioTilemap);
+        }
+
+        /// <summary>
+        ///     Check if tilemap is ready to be used in computation
+        /// </summary>
+        /// <param name="audioTilemap">Tilemap to check</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CheckIfTilemapIsReady([NotNull] Tilemap audioTilemap)
+            => AudibilitySystem.IsDirty(audioTilemap);
+
+        /// <summary>
+        ///     Check if tilemap is enabled (required to compute data)
+        /// </summary>
+        /// <param name="audioTilemap">Tilemap to check</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CheckIfTilemapIsEnabled([NotNull] Tilemap audioTilemap)
+            => audioTilemap.isActiveAndEnabled;
+        
+        /// <summary>
         ///     Get average loudness data from results array
         /// </summary>
+        /// <param name="audioTilemap">Tilemap to get debug data for</param>
         /// <param name="tileDataAfterComputing">Array with computed tile data</param>
         /// <param name="debugDataArray">
         ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
@@ -43,8 +102,8 @@ namespace Systems.Audibility2D.Utility
             Assert.IsTrue(debugDataArray.IsCreated);
             Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length);
 
-            TilemapInfo tilemapInfo = new TilemapInfo(audioTilemap);
-            
+            TilemapInfo tilemapInfo = new(audioTilemap);
+
             GetDebugAudioTileDataJob job = new()
             {
                 tilemapInfo = tilemapInfo,
@@ -100,11 +159,12 @@ namespace Systems.Audibility2D.Utility
         )
         {
             Assert.IsNotNull(audioTilemap);
+            Assert.IsTrue(CheckIfTilemapIsEnabled(audioTilemap));
 
             TilemapInfo tilemapInfo = new(audioTilemap);
-            
+
             // Refresh tilemap if dirty
-            if (AudibilitySystem.IsDirty(audioTilemap)) RefreshTileData(audioTilemap);
+            EnsureTilemapIsReady(audioTilemap);
             NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
 
             // Prepare tilemap data
@@ -219,7 +279,7 @@ namespace Systems.Audibility2D.Utility
         )
         {
             int3 tilemapSize = tilemapInfo.size;
-            
+
             // Prepare analysis data
             for (int x = 0; x < tilemapSize.x; x++)
             {
@@ -227,11 +287,11 @@ namespace Systems.Audibility2D.Utility
                 {
                     for (int z = 0; z < tilemapSize.z; z++)
                     {
-                        int3 cellPosition = new int3(x, y, z);
-                        
+                        int3 cellPosition = new(x, y, z);
+
                         // Compute tile index
-                        TileIndex nIndex = new TileIndex(cellPosition + tilemapInfo.originPoint, tilemapInfo);
-                        
+                        TileIndex nIndex = new(cellPosition + tilemapInfo.originPoint, tilemapInfo);
+
                         // Pre-compute Unity-based data
                         AudioLoudnessLevel mufflingStrength = mufflingLevels[nIndex];
 
