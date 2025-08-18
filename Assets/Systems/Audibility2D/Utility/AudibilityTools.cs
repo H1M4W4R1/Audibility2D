@@ -8,7 +8,6 @@ using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
 using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
-using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -34,6 +33,8 @@ namespace Systems.Audibility2D.Utility
         /// <param name="audioTilemap">Tilemap to activate</param>
         public static void DeactivateAudioTilemap([NotNull] Tilemap audioTilemap)
         {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            
             // Disable tilemap gameObject if not disabled
             if (!CheckIfTilemapIsEnabled(audioTilemap)) audioTilemap.enabled = false;
             
@@ -49,6 +50,8 @@ namespace Systems.Audibility2D.Utility
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ActivateAudioTilemap([NotNull] Tilemap audioTilemap)
         {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            
             // Activate tilemap object
             if (!CheckIfTilemapIsEnabled(audioTilemap))
             {
@@ -66,6 +69,7 @@ namespace Systems.Audibility2D.Utility
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void EnsureTilemapIsReady([NotNull] Tilemap audioTilemap)
         {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
             if (!CheckIfTilemapIsReady(audioTilemap)) RefreshTileData(audioTilemap);
         }
 
@@ -75,7 +79,10 @@ namespace Systems.Audibility2D.Utility
         /// <param name="audioTilemap">Tilemap to check</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckIfTilemapIsReady([NotNull] Tilemap audioTilemap)
-            => AudibilitySystem.IsDirty(audioTilemap);
+        {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            return AudibilitySystem.IsDirty(audioTilemap) && _tileMufflingLevels.ContainsKey(audioTilemap);
+        }
 
         /// <summary>
         ///     Check if tilemap is enabled (required to compute data)
@@ -83,8 +90,11 @@ namespace Systems.Audibility2D.Utility
         /// <param name="audioTilemap">Tilemap to check</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckIfTilemapIsEnabled([NotNull] Tilemap audioTilemap)
-            => audioTilemap.isActiveAndEnabled;
-        
+        {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            return audioTilemap.isActiveAndEnabled;
+        }
+
         /// <summary>
         ///     Get average loudness data from results array
         /// </summary>
@@ -98,9 +108,10 @@ namespace Systems.Audibility2D.Utility
             in NativeArray<AudioTileInfo> tileDataAfterComputing,
             ref NativeArray<AudioTileDebugInfo> debugDataArray)
         {
-            Assert.IsTrue(tileDataAfterComputing.IsCreated);
-            Assert.IsTrue(debugDataArray.IsCreated);
-            Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length);
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            Assert.IsTrue(tileDataAfterComputing.IsCreated, "Tile data results array is not created");
+            Assert.IsTrue(debugDataArray.IsCreated, "Debug data array is not created");
+            Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length, "Arrays length mismatch");
 
             TilemapInfo tilemapInfo = new(audioTilemap);
 
@@ -127,9 +138,9 @@ namespace Systems.Audibility2D.Utility
             in NativeArray<AudioTileInfo> tileDataAfterComputing,
             ref NativeArray<int> averageLoudnessArray)
         {
-            Assert.IsTrue(tileDataAfterComputing.IsCreated);
-            Assert.IsTrue(averageLoudnessArray.IsCreated);
-            Assert.AreEqual(averageLoudnessArray.Length, tileDataAfterComputing.Length);
+            Assert.IsTrue(tileDataAfterComputing.IsCreated, "Tile data results array is not created");
+            Assert.IsTrue(averageLoudnessArray.IsCreated, "Average loudness array is not created");
+            Assert.AreEqual(averageLoudnessArray.Length, tileDataAfterComputing.Length, "Arrays length mismatch");
 
             GetAverageAudioLoudnessDataJob averageAudioLoudnessDataJob = new()
             {
@@ -158,8 +169,8 @@ namespace Systems.Audibility2D.Utility
             ref NativeArray<AudioTileInfo> tileComputeData
         )
         {
-            Assert.IsNotNull(audioTilemap);
-            Assert.IsTrue(CheckIfTilemapIsEnabled(audioTilemap));
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            Assert.IsTrue(CheckIfTilemapIsEnabled(audioTilemap), "Tilemap is not enabled nor active");
 
             TilemapInfo tilemapInfo = new(audioTilemap);
 
@@ -178,7 +189,7 @@ namespace Systems.Audibility2D.Utility
             _TilemapToArray(tilemapInfo, mufflingLevels,
                 ref tileComputeData);
 
-            Assert.AreEqual(tileComputeData.Length, tilesCount);
+            Assert.AreEqual(tileComputeData.Length, tilesCount, "Something went wrong during computation");
         }
 
         /// <summary>
@@ -197,8 +208,8 @@ namespace Systems.Audibility2D.Utility
             [NotNull] AudibleSound[] sources,
             ref NativeArray<AudioSourceInfo> audioSourceComputeData)
         {
-            Assert.IsNotNull(audioTilemap);
-            Assert.IsNotNull(sources);
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            Assert.IsNotNull(sources, "Sources array is null");
 
             TilemapInfo tilemapInfo = new(audioTilemap);
 
@@ -218,7 +229,7 @@ namespace Systems.Audibility2D.Utility
                     new AudioSourceInfo(tileIndex, source.GetDecibelLevel(), source.GetRange());
             }
 
-            Assert.AreEqual(sources.Length, audioSourceComputeData.Length);
+            Assert.AreEqual(sources.Length, audioSourceComputeData.Length, "Something went wrong during computation");
         }
 
 
@@ -227,6 +238,8 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         private static void RefreshTileData([NotNull] Tilemap audioTilemap)
         {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+            
             Vector3Int tilemapOrigin = audioTilemap.origin;
             Vector3Int tilemapSize = audioTilemap.size;
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
@@ -295,21 +308,8 @@ namespace Systems.Audibility2D.Utility
                         // Pre-compute Unity-based data
                         AudioLoudnessLevel mufflingStrength = mufflingLevels[nIndex];
 
-                        int northIndex = Hint.Likely(y + 1 < tilemapSize.y) ? x * tilemapSize.y + y + 1 : -1;
-                        int southIndex = Hint.Likely(y - 1 >= 0) ? x * tilemapSize.y + y - 1 : -1;
-                        int westIndex = Hint.Likely(x - 1 >= 0) ? (x - 1) * tilemapSize.y + y : -1;
-                        int eastIndex = Hint.Likely(x + 1 < tilemapSize.x) ? (x + 1) * tilemapSize.y + y : -1;
-
-                        // Register node neighbours taking limit into account
-                        int nNeighbours = 0;
-                        AudioTileInfo tileInfo = new(nIndex, mufflingStrength);
-                        nNeighbours += tileInfo.SetNeighbour(northIndex, nNeighbours);
-                        nNeighbours += tileInfo.SetNeighbour(southIndex, nNeighbours);
-                        nNeighbours += tileInfo.SetNeighbour(westIndex, nNeighbours);
-                        // ReSharper disable once RedundantAssignment
-                        nNeighbours += tileInfo.SetNeighbour(eastIndex, nNeighbours);
-
                         // Copy new tile data into array
+                        AudioTileInfo tileInfo = new(nIndex, mufflingStrength);
                         audioTileData[nIndex] = tileInfo;
                     }
                 }

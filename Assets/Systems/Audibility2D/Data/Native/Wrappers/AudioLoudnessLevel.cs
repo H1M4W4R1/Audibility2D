@@ -10,9 +10,9 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
     ///     Represents decibel level for easier audio mapping and falloff calculation
     /// </summary>
     [Serializable] [StructLayout(LayoutKind.Explicit)]
-    public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel>
+    public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel> // 2B
     {
-        [FieldOffset(0)] public short value; // 32-bit
+        [FieldOffset(0)] public short value; // 2B
 
         /// <summary>
         ///     Create level from decibel value

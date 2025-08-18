@@ -8,6 +8,7 @@ using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace Systems.Audibility2D.Utility
             ref NativeArray<AudioTileInfo> tileComputeData)
         {
             TilemapInfo tilemapInfo = new(audioTilemap);
-            
+
             // Initialize tilemap arrays
             AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData);
 
@@ -105,28 +106,71 @@ namespace Systems.Audibility2D.Utility
         /// <param name="currentAudioSource">
         ///     Current audio source that is being analyzed
         /// </param>
-        [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
+        [BurstCompile] internal static unsafe void UpdateNeighbourAudioLevelsForTile(
             in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
             ref AudioTileInfo currentTile,
             in AudioSourceInfo currentAudioSource)
         {
-            for (int neighbourId = 0; neighbourId <= AudioTileNeighboursInfo.MAX_INDEX; neighbourId++)
-            {
-                // Get tile index
-                int neighbourTileIndex = currentTile.GetNeighbourIndex(neighbourId);
+            TileIndex currentTileIndex = currentTile.index;
 
-                // Early return
-                if (Hint.Unlikely(neighbourTileIndex == -1)) break;
+            int totalNodeCount = 0;
+            int* indexList = stackalloc int[12]; // max of 12 tiles in 3D grid, kept as fail-safe
 
-                // Process tile
-                AudioTileInfo neighbourTile = audioTilesData[neighbourTileIndex];
-                UpdateAudioLevelForTile(
-                    tilemapInfo, ref tilesToUpdateNeighbours,
-                    currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
-                audioTilesData[neighbourTileIndex] = neighbourTile;
-            }
+      
+            // North
+            CheckNode(currentTileIndex.GetNorthTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+
+            // South
+            CheckNode(currentTileIndex.GetSouthTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+            
+            // East
+            CheckNode(currentTileIndex.GetEastTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+            
+            // West
+            CheckNode(currentTileIndex.GetWestTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+            
+            // Up
+            CheckNode(currentTileIndex.GetUpTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+            
+            // Down
+            CheckNode(currentTileIndex.GetDownTileIndex(tilemapInfo),
+                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                ref currentTile, in currentAudioSource);
+        }
+
+        private static unsafe void CheckNode(
+            int neighbourTileIndex,
+            int* indexListPtr,
+            ref int currentIndexStoragePos,
+            in TilemapInfo tilemapInfo,
+            ref NativeList<int> tilesToUpdateNeighbours,
+            ref NativeArray<AudioTileInfo> audioTilesData,
+            ref AudioTileInfo currentTile,
+            in AudioSourceInfo currentAudioSource)
+        {
+            // Early return
+            if (Hint.Unlikely(neighbourTileIndex == -1)) return;
+
+            // Process tile
+            AudioTileInfo neighbourTile = audioTilesData[neighbourTileIndex];
+            UpdateAudioLevelForTile(
+                tilemapInfo, ref tilesToUpdateNeighbours,
+                currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
+            audioTilesData[neighbourTileIndex] = neighbourTile;
+
+            currentIndexStoragePos++;
         }
 
         /// <summary>
@@ -160,7 +204,7 @@ namespace Systems.Audibility2D.Utility
             // Get positions
             float3 originalTilePosition = originalTile.index.GetWorldPosition(tilemapInfo);
             float3 neighbouringTilePosition = neighbouringTile.index.GetWorldPosition(tilemapInfo);
-            
+
             // Compute distance between tiles to decrease audio level
             // Unfortunately we can't use distanceSq as it behaves poorly in division scenarios
             float distance = math.distance(originalTilePosition, neighbouringTilePosition);
