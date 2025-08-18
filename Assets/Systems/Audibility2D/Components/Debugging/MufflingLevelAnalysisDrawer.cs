@@ -1,6 +1,8 @@
 ﻿using JetBrains.Annotations;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Utility;
+using Systems.Audibility2D.Utility.Internal;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -24,6 +26,11 @@ namespace Systems.Audibility2D.Components.Debugging
             // Find tilemap
             if (!audioTilemap) return;
             
+            // Use Scene camera in Editor (falls back to main camera if missing)
+            // In case no camera was found we don't want anything
+            Camera gizmosCamera = Camera.current ? Camera.current : Camera.main;
+            if (!gizmosCamera) return;
+            
             Gizmos.color = Color.cyan;
 
             Vector3Int tilemapSize = audioTilemap.size;
@@ -32,6 +39,10 @@ namespace Systems.Audibility2D.Components.Debugging
             float3 cellSize = audioTilemap.cellSize;
             float3 worldOrigin = (float3) audioTilemap.CellToWorld(tilemapOrigin) + 0.5f * cellSize;
       
+            // Compute camera planes
+            NativeArray<float4> frustrumPlanes = new(6, Allocator.TempJob);
+            gizmosCamera.ExtractFrustumPlanes(ref frustrumPlanes);
+            
             // Prepare analysis data
             for (int x = 0; x < tilemapSize.x; x++)
             {
@@ -43,6 +54,9 @@ namespace Systems.Audibility2D.Components.Debugging
                     // Get data from tile, we're pre-caching it early and using multiplication
                     // to improve performance, as it's faster than casting external calls to Unity API
                     float3 worldPosition = worldOrigin + new float3(x * cellSize.x, y * cellSize.y, 0);
+                    
+                    // Quickly check camera point in view frustrum
+                    if (!MakeGizmosFasterUtility.PointInFrustum(worldPosition, frustrumPlanes)) continue;
                     
                     AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
                     if (ReferenceEquals(audioTile, null)) continue;
@@ -58,6 +72,8 @@ namespace Systems.Audibility2D.Components.Debugging
                     Gizmos.DrawSphere(worldPosition, 0.15f);
                 }
             }
+            
+            frustrumPlanes.Dispose();
         }
     }
 }
