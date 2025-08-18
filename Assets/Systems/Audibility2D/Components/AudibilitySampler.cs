@@ -1,4 +1,5 @@
 using System;
+using NUnit.Framework;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
@@ -61,7 +62,7 @@ namespace Systems.Audibility2D.Components
         {
             // Ensure tilemap is set
             if (!Tilemap) return;
-            
+
             // Use Scene camera in Editor (falls back to main camera if missing)
             // In case no camera was found we don't want anything
             Camera gizmosCamera = Camera.current ? Camera.current : Camera.main;
@@ -70,16 +71,6 @@ namespace Systems.Audibility2D.Components
             // Ensure that audio tile data exists in current context
             // to prevent throwing assertion errors when recompiled in background
             if (!_audioTileData.IsCreated) return;
-            
-            // Create non-allocated array placement
-            NativeArray<AudioLoudnessLevel> audioLoudnessData = new();
-            
-            Vector3Int tilemapSize = Tilemap.size;
-            int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
-            QuickArray.PerformEfficientAllocation(ref audioLoudnessData, tilesCount, Allocator.TempJob);
-
-            // Compute average tile loudness
-            AudibilityTools.GetAverageLoudnessData(in _audioTileData, ref audioLoudnessData);
 
             TilemapInfo tilemapInfo = new(Tilemap);
 
@@ -88,23 +79,19 @@ namespace Systems.Audibility2D.Components
             gizmosCamera.ExtractFrustumPlanes(ref frustrumPlanes);
 
             // Draw gizmos
-            for (int n = 0; n < audioLoudnessData.Length; n++)
+            foreach(AudioTileInfo audioTileInfo in _audioTileData)
             {
-                // Quickly compute tile position using tilemap
-                TileIndex index = new(n);
-
                 // TODO: Improve perf of this line using some Black Magic F*$#ery
-                float3 worldTilePosition = index.GetWorldPosition(tilemapInfo);
+                float3 worldTilePosition = audioTileInfo.index.GetWorldPosition(tilemapInfo);
 
                 // Quickly check camera point in view frustrum
                 if (!MakeGizmosFasterUtility.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
 
                 Gizmos.color = Color.Lerp(Color.red, Color.green,
-                    audioLoudnessData[n] / (float) AudibilityTools.LOUDNESS_MAX);
+                    audioTileInfo.currentAudioLevel / (float) AudibilityTools.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
 
-            audioLoudnessData.Dispose();
             frustrumPlanes.Dispose();
         }
     }
