@@ -41,7 +41,7 @@ namespace Systems.Audibility2D.Components.Debugging
             QuickArray.PerformEfficientAllocation(ref _loudnessData, tilesCount, Allocator.TempJob);
 
             // Compute audibility in 2D space
-            AudibilityLevel.UpdateAudibilityLevel(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
+            AudibilityTools.UpdateAudibilityTools(audioTilemap, ref _audioSourceComputeData, ref _tileComputeData);
 
             // Compute average tile loudness
             AudibilityTools.GetAverageLoudnessData(in _tileComputeData, ref _loudnessData);
@@ -65,7 +65,7 @@ namespace Systems.Audibility2D.Components.Debugging
                 if (!MakeGizmosFasterUtility.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
 
                 Gizmos.color = Color.Lerp(Color.red, Color.green,
-                    _loudnessData[n] / (float) AudibilityLevel.LOUDNESS_MAX);
+                    _loudnessData[n] / (float) AudibilityTools.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
 

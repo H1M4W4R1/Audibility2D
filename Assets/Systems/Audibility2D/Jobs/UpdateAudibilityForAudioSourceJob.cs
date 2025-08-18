@@ -41,7 +41,7 @@ namespace Systems.Audibility2D.Jobs
             
             // Get start tile and initialize with audio value
             AudioTileInfo startTile = audioTilesData[audioSourceInfo.tileIndex];
-            AudibilityLevel.UpdateAudioLevelForTile(tilemapInfo, ref tilesToUpdateNeighbours, 
+            AudibilityTools.UpdateAudioLevelForTile(tilemapInfo, ref tilesToUpdateNeighbours, 
                 startTile, ref startTile, audioSourceInfo,
                 audioSourceInfo.audioLevel);
             audioTilesData[audioSourceInfo.tileIndex] = startTile;
@@ -52,7 +52,7 @@ namespace Systems.Audibility2D.Jobs
                 // Perform update sequence
                 int tileIndex = tilesToUpdateNeighbours[0];
                 AudioTileInfo tile = audioTilesData[tileIndex];
-                AudibilityLevel.UpdateNeighbourAudioLevelsForTile(tilemapInfo,
+                AudibilityTools.UpdateNeighbourAudioLevelsForTile(tilemapInfo,
                     ref tilesToUpdateNeighbours,
                     ref audioTilesData, ref tile, audioSourceInfo);
 

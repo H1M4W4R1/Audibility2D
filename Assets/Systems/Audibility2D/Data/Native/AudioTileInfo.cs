@@ -30,7 +30,7 @@ namespace Systems.Audibility2D.Data.Native
             this.index = index;
             this.mufflingStrength = mufflingStrength;
 
-            currentAudioLevel = AudibilityLevel.LOUDNESS_NONE;
+            currentAudioLevel = AudibilityTools.LOUDNESS_NONE;
         }
     }
 }

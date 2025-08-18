@@ -18,9 +18,9 @@ using UnityEngine.Tilemaps;
 namespace Systems.Audibility2D.Utility
 {
     /// <summary>
-    ///     Additional class to reduce mess in <see cref="AudibilityLevel"/>
+    ///     Additional class to reduce mess in <see cref="AudibilityTools"/>
     /// </summary>
-    [BurstCompile] public static class AudibilityTools
+    public static partial class AudibilityTools
     {
         /// <summary>
         ///     Data about tile muffling levels, cached to improve performance
@@ -31,6 +31,7 @@ namespace Systems.Audibility2D.Utility
         ///     Deactivate audio tilemap to dispose of unused data
         /// </summary>
         /// <param name="audioTilemap">Tilemap to activate</param>
+        [BurstDiscard]
         public static void DeactivateAudioTilemap([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -47,6 +48,7 @@ namespace Systems.Audibility2D.Utility
         ///     Activate tilemap if necessary
         /// </summary>
         /// <param name="audioTilemap">Tilemap to activate</param>
+        [BurstDiscard]
         public static void ActivateAudioTilemap([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -65,7 +67,7 @@ namespace Systems.Audibility2D.Utility
         ///     Ensures that tilemap is ready to be used in computation analysis
         /// </summary>
         /// <param name="audioTilemap">Tilemap to check</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void EnsureTilemapIsReady([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -76,7 +78,7 @@ namespace Systems.Audibility2D.Utility
         ///     Check if tilemap is ready to be used in computation
         /// </summary>
         /// <param name="audioTilemap">Tilemap to check</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckIfTilemapIsReady([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -87,7 +89,7 @@ namespace Systems.Audibility2D.Utility
         ///     Check if tilemap is enabled (required to compute data)
         /// </summary>
         /// <param name="audioTilemap">Tilemap to check</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckIfTilemapIsEnabled([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
@@ -102,7 +104,7 @@ namespace Systems.Audibility2D.Utility
         /// <param name="debugDataArray">
         ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
         /// </param>
-        public static void GetTileDebugData(
+        [BurstDiscard] public static void GetTileDebugData(
             [NotNull] in Tilemap audioTilemap,
             in NativeArray<AudioTileInfo> tileDataAfterComputing,
             ref NativeArray<AudioTileDebugInfo> debugDataArray)
@@ -133,7 +135,7 @@ namespace Systems.Audibility2D.Utility
         /// <param name="averageLoudnessArray">
         ///     Output array to store loudness, same length as <see cref="tileDataAfterComputing"/>
         /// </param>
-        public static void GetAverageLoudnessData(
+        [BurstDiscard] public static void GetAverageLoudnessData(
             in NativeArray<AudioTileInfo> tileDataAfterComputing,
             ref NativeArray<AudioLoudnessLevel> averageLoudnessArray)
         {
@@ -237,7 +239,7 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Refreshes tile data, called when tilemap is dirty
         /// </summary>
-        private static void RefreshTileData([NotNull] Tilemap audioTilemap)
+        [BurstDiscard] private static void RefreshTileData([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
             
@@ -273,7 +275,7 @@ namespace Systems.Audibility2D.Utility
 
                         // ReSharper disable once Unity.NoNullPropagation
                         AudioLoudnessLevel mufflingStrength =
-                            audioTile?.GetMufflingData() ?? AudibilityLevel.LOUDNESS_NONE;
+                            audioTile?.GetMufflingData() ?? AudibilityTools.LOUDNESS_NONE;
                         mufflingLevelsArray[nIndex] = mufflingStrength;
                     }
                 }

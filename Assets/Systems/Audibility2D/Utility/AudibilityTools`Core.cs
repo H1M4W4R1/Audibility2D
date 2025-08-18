@@ -19,7 +19,7 @@ namespace Systems.Audibility2D.Utility
     /// <summary>
     ///     Utility class to calculate audibility level from provided data
     /// </summary>
-    [BurstCompile] public static class AudibilityLevel
+    [BurstCompile] public static partial class AudibilityTools
     {
         public const int LOUDNESS_NONE = 0;
         public const int LOUDNESS_MAX = 160;
@@ -38,7 +38,7 @@ namespace Systems.Audibility2D.Utility
         ///     Also your output array.
         /// </param>
         /// <param name="allocator">Allocation mode for <see cref="tileComputeData"/> and <see cref="audioSourceComputeData"/></param>
-        [BurstDiscard] public static void UpdateAudibilityLevel(
+        [BurstDiscard] public static void UpdateAudibilityTools(
             [NotNull] Tilemap audioTilemap,
             ref NativeArray<AudioSourceInfo> audioSourceComputeData,
             ref NativeArray<AudioTileInfo> tileComputeData,
@@ -62,7 +62,7 @@ namespace Systems.Audibility2D.Utility
             AudibilityTools.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
 
             // Handle computation
-            UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);
+            UpdateAudibilityTools(tilemapInfo, audioSourceComputeData, ref tileComputeData);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Systems.Audibility2D.Utility
         ///     Reference to handle for Tile Data array, must be filled with proper data
         ///     Also your output array.
         /// </param>
-        [BurstCompile] public static void UpdateAudibilityLevel(
+        [BurstCompile] public static void UpdateAudibilityTools(
             in TilemapInfo tilemapInfo,
             in NativeArray<AudioSourceInfo> audioSourceComputeData,
             ref NativeArray<AudioTileInfo> tileComputeData)

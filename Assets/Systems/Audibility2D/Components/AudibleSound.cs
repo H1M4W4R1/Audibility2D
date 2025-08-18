@@ -18,7 +18,7 @@ namespace Systems.Audibility2D.Components
         ///     gunshots can be louder than whispering.
         /// </summary>
         [SerializeField] [Tooltip("How loud is this audio source (dB)")] 
-        private AudioLoudnessLevel audioLoudnessLevel = AudibilityLevel.LOUDNESS_MAX;
+        private AudioLoudnessLevel audioLoudnessLevel = AudibilityTools.LOUDNESS_MAX;
 
         /// <summary>
         ///     Range of audio sound in 3D space
