@@ -1,5 +1,3 @@
-using System;
-using NUnit.Framework;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
@@ -11,6 +9,10 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Components
 {
+    /// <summary>
+    ///     Script that automatically updates audibility data. Created to make implementation as quick as
+    ///     possible. Must be implemented on tilemap consisting of audio tile(s).
+    /// </summary>
     [RequireComponent(typeof(Tilemap))] [ExecuteInEditMode] public sealed class AudibilityUpdater : MonoBehaviour
     {
         private Tilemap _tilemap;
