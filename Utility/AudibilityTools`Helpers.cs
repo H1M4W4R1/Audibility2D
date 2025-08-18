@@ -147,11 +147,14 @@ namespace Systems.Audibility2D.Utility
             // Convert tile data into proper helpers
             TilemapInfo tilemapInfo = new(audioTilemap);
             TileIndex tileIndex = new(TileIndex.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
-
+            
+            // Skip some tiles
+            if (tileIndex < 0 || tileIndex >= tileComputeData.Length) return;
+            
             // Get audio tile at desired location
             AudioTile audioTile = audioTilemap.GetTile<AudioTile>(new Vector3Int(tilePositionAbsolute.x,
                 tilePositionAbsolute.y, tilePositionAbsolute.z));
-
+            
             // ReSharper disable once Unity.NoNullPropagation
             AudioLoudnessLevel mufflingStrength =
                 audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
