@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
@@ -22,69 +21,6 @@ namespace Systems.Audibility2D.Utility
     /// </summary>
     public static partial class AudibilityTools
     {
-        /// <summary>
-        ///     Data about tile muffling levels, cached to improve performance
-        /// </summary>
-        private static readonly Dictionary<Tilemap, NativeArray<AudioLoudnessLevel>> _tileMufflingLevels = new();
-
-        /// <summary>
-        ///     Deactivate audio tilemap to dispose of unused data
-        /// </summary>
-        /// <param name="audioTilemap">Tilemap to activate</param>
-        [BurstDiscard]
-        public static void DeactivateAudioTilemap([NotNull] Tilemap audioTilemap)
-        {
-            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            
-            // Disable tilemap gameObject if not disabled
-            if (!CheckIfTilemapIsEnabled(audioTilemap)) audioTilemap.enabled = false;
-            
-            // Get rid of array
-            if (_tileMufflingLevels.TryGetValue(audioTilemap, out NativeArray<AudioLoudnessLevel> array))
-                array.Dispose();
-        }
-        
-        /// <summary>
-        ///     Activate tilemap if necessary
-        /// </summary>
-        /// <param name="audioTilemap">Tilemap to activate</param>
-        [BurstDiscard]
-        public static void ActivateAudioTilemap([NotNull] Tilemap audioTilemap)
-        {
-            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            
-            // Activate tilemap object
-            if (!CheckIfTilemapIsEnabled(audioTilemap))
-            {
-                audioTilemap.gameObject.SetActive(true);
-                audioTilemap.enabled = true;
-            }
-
-            EnsureTilemapIsReady(audioTilemap);
-        } 
-            
-        /// <summary>
-        ///     Ensures that tilemap is ready to be used in computation analysis
-        /// </summary>
-        /// <param name="audioTilemap">Tilemap to check</param>
-        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnsureTilemapIsReady([NotNull] Tilemap audioTilemap)
-        {
-            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            if (!CheckIfTilemapIsReady(audioTilemap)) RefreshTileData(audioTilemap);
-        }
-
-        /// <summary>
-        ///     Check if tilemap is ready to be used in computation
-        /// </summary>
-        /// <param name="audioTilemap">Tilemap to check</param>
-        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool CheckIfTilemapIsReady([NotNull] Tilemap audioTilemap)
-        {
-            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            return !AudibilitySystem.IsDirty(audioTilemap) && _tileMufflingLevels.ContainsKey(audioTilemap);
-        }
-
         /// <summary>
         ///     Check if tilemap is enabled (required to compute data)
         /// </summary>
@@ -177,10 +113,6 @@ namespace Systems.Audibility2D.Utility
 
             TilemapInfo tilemapInfo = new(audioTilemap);
 
-            // Refresh tilemap if dirty
-            EnsureTilemapIsReady(audioTilemap);
-            NativeArray<AudioLoudnessLevel> mufflingLevels = _tileMufflingLevels[audioTilemap];
-
             // Prepare tilemap data
             Vector3Int tilemapSize = audioTilemap.size;
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
@@ -189,8 +121,7 @@ namespace Systems.Audibility2D.Utility
             QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
 
             // Perform conversion
-            _TilemapToArray(tilemapInfo, mufflingLevels,
-                ref tileComputeData);
+            _TilemapToArray(tilemapInfo, ref tileComputeData);
 
             Assert.AreEqual(tileComputeData.Length, tilesCount, "Something went wrong during computation");
         }
@@ -219,7 +150,7 @@ namespace Systems.Audibility2D.Utility
             // Create or update array if necessary
             QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
                 allocator);
-            
+
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // This should be pretty performant
@@ -238,34 +169,62 @@ namespace Systems.Audibility2D.Utility
                     new AudioSourceInfo(tileIndex, source.GetDecibelLevel(), source.GetRange());
             }
 
-            Assert.AreEqual(sources.Length, audioSourceComputeData.Length, "Something went wrong during computation");
+            Assert.AreEqual(sources.Length, audioSourceComputeData.Length,
+                "Something went wrong during computation");
         }
 
+        /// <summary>
+        ///     Internal solution to update specific tile data
+        ///     When modifying also check <see cref="AudioTileLoudnessToArray"/>
+        /// </summary>
+        [BurstDiscard] internal static void AudioTileLoudnessUpdateInArray(
+            [NotNull] Tilemap audioTilemap,
+            int3 tilePositionAbsolute,
+            ref NativeArray<AudioTileInfo> tileComputeData,
+            Allocator allocator = Allocator.Persistent)
+        {
+            // If array is not created build new one
+            if (!tileComputeData.IsCreated)
+            {
+                AudioTileLoudnessToArray(audioTilemap, ref tileComputeData, allocator);
+                return;
+            }
+
+            // Convert tile data into proper helpers
+            TilemapInfo tilemapInfo = new(audioTilemap);
+            TileIndex tileIndex = new(TileIndex.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
+
+            // Get audio tile at desired location
+            AudioTile audioTile = audioTilemap.GetTile<AudioTile>(new Vector3Int(tilePositionAbsolute.x,
+                tilePositionAbsolute.y, tilePositionAbsolute.z));
+
+            // ReSharper disable once Unity.NoNullPropagation
+            AudioLoudnessLevel mufflingStrength =
+                audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
+
+            // Rota-set variable because C# stupid
+            AudioTileInfo tileInfo = tileComputeData[tileIndex];
+            tileInfo.mufflingStrength = mufflingStrength;
+            tileComputeData[tileIndex] = tileInfo;
+        }
 
         /// <summary>
         ///     Refreshes tile data, called when tilemap is dirty
+        ///     When modifying also check <see cref="AudioTileLoudnessUpdateInArray"/>
         /// </summary>
-        [BurstDiscard] private static void RefreshTileData([NotNull] Tilemap audioTilemap)
+        [BurstDiscard] public static void AudioTileLoudnessToArray(
+            [NotNull] Tilemap audioTilemap,
+            ref NativeArray<AudioTileInfo> tileComputeData,
+            Allocator allocator = Allocator.Persistent)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            
+
             Vector3Int tilemapOrigin = audioTilemap.origin;
             Vector3Int tilemapSize = audioTilemap.size;
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
 
-            // Try to get value and update array if necessary
-            if (!_tileMufflingLevels.TryGetValue(audioTilemap,
-                    out NativeArray<AudioLoudnessLevel> mufflingLevelsArray))
-            {
-                QuickArray.PerformEfficientAllocation(ref mufflingLevelsArray, tilesCount,
-                    Allocator.Persistent);
-                _tileMufflingLevels.Add(audioTilemap, mufflingLevelsArray);
-            }
-            else
-            {
-                QuickArray.PerformEfficientAllocation(ref mufflingLevelsArray, tilesCount,
-                    Allocator.Persistent);
-            }
+            // Ensure arrays are initialized 
+            QuickArray.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
 
             for (int x = 0; x < tilemapSize.x; x++)
             {
@@ -276,22 +235,20 @@ namespace Systems.Audibility2D.Utility
                         int nIndex = x * tilemapSize.y + y;
 
                         // Pre-compute Unity-based data
-                        Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
-                        AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
+                        Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, z);
+                        AudioTile audioTile = audioTilemap.GetTile<AudioTile>(cellPosition);
 
                         // ReSharper disable once Unity.NoNullPropagation
                         AudioLoudnessLevel mufflingStrength =
-                            audioTile?.GetMufflingData() ?? AudibilityTools.LOUDNESS_NONE;
-                        mufflingLevelsArray[nIndex] = mufflingStrength;
+                            audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
+
+                        // Rota-set variable because C# stupid
+                        AudioTileInfo tileInfo = tileComputeData[nIndex];
+                        tileInfo.mufflingStrength = mufflingStrength;
+                        tileComputeData[nIndex] = tileInfo;
                     }
                 }
             }
-
-            // Ensure proper array is assigned
-            _tileMufflingLevels[audioTilemap] = mufflingLevelsArray;
-            
-            // System is no longer dirty
-            AudibilitySystem.SetDirty(audioTilemap, false);
         }
 
         /// <summary>
@@ -299,7 +256,6 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstCompile] private static void _TilemapToArray(
             in TilemapInfo tilemapInfo,
-            in NativeArray<AudioLoudnessLevel> mufflingLevels,
             ref NativeArray<AudioTileInfo> audioTileData
         )
         {
@@ -317,11 +273,8 @@ namespace Systems.Audibility2D.Utility
                         // Compute tile index
                         TileIndex nIndex = new(cellPosition + tilemapInfo.originPoint, tilemapInfo);
 
-                        // Pre-compute Unity-based data
-                        AudioLoudnessLevel mufflingStrength = mufflingLevels[nIndex];
-
                         // Copy new tile data into array
-                        AudioTileInfo tileInfo = new(nIndex, mufflingStrength);
+                        AudioTileInfo tileInfo = new(nIndex, audioTileData[nIndex].mufflingStrength);
                         audioTileData[nIndex] = tileInfo;
                     }
                 }

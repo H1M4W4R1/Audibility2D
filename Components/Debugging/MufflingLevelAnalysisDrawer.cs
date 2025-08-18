@@ -48,28 +48,32 @@ namespace Systems.Audibility2D.Components.Debugging
             {
                 for (int y = 0; y < tilemapSize.y; y++)
                 {
-                    // Pre-compute Unity-based data
-                    Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
-                   
-                    // Get data from tile, we're pre-caching it early and using multiplication
-                    // to improve performance, as it's faster than casting external calls to Unity API
-                    float3 worldPosition = worldOrigin + new float3(x * cellSize.x, y * cellSize.y, 0);
-                    
-                    // Quickly check camera point in view frustrum
-                    if (!MakeGizmosFasterUtility.PointInFrustum(worldPosition, frustrumPlanes)) continue;
-                    
-                    AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
-                    if (ReferenceEquals(audioTile, null)) continue;
+                    for (int z = 0; z < tilemapSize.z; z++)
+                    {
+                        // Pre-compute Unity-based data
+                        Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, z);
 
-                    // Compute percentage and remap into 0~1 range
-                    float percentage = (float) audioTile.GetMufflingData().GetAverage() /
-                                       AudibilityTools.LOUDNESS_MAX;
-                    percentage = math.remap(-1, 1, 0f, 1f, percentage);
-                    
-                    // Compute gizmo color
-                    Gizmos.color = Color.Lerp(Color.green, Color.red, percentage);
-                    
-                    Gizmos.DrawSphere(worldPosition, 0.15f);
+                        // Get data from tile, we're pre-caching it early and using multiplication
+                        // to improve performance, as it's faster than casting external calls to Unity API
+                        float3 worldPosition =
+                            worldOrigin + new float3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
+
+                        // Quickly check camera point in view frustrum
+                        if (!MakeGizmosFasterUtility.PointInFrustum(worldPosition, frustrumPlanes)) continue;
+
+                        AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
+                        if (ReferenceEquals(audioTile, null)) continue;
+
+                        // Compute percentage and remap into 0~1 range
+                        float percentage = (float) audioTile.GetMufflingData().GetAverage() /
+                                           AudibilityTools.LOUDNESS_MAX;
+                        percentage = math.remap(-1, 1, 0f, 1f, percentage);
+
+                        // Compute gizmo color
+                        Gizmos.color = Color.Lerp(Color.green, Color.red, percentage);
+
+                        Gizmos.DrawSphere(worldPosition, 0.15f);
+                    }
                 }
             }
             

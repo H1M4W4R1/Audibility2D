@@ -1,8 +1,11 @@
+using System;
 using System.Runtime.CompilerServices;
+using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
 using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -17,14 +20,14 @@ namespace Systems.Audibility2D.Data.Tiles
         /// <summary>
         ///     Sound loudness dampening material, see class for more information
         /// </summary>
-        [Tooltip("Tile material used to define muffling levels")]
-        [SerializeField] private AudioMufflingMaterialData audioMaterialData;
-     
+        [Tooltip("Tile material used to define muffling levels")] [SerializeField]
+        private AudioMufflingMaterialData audioMaterialData;
+
         /// <summary>
         ///     Sprite used to render tile in editor
         /// </summary>
         [field: SerializeField] public Sprite PreviewSprite { get; private set; }
-        
+
         /// <summary>
         ///     Color used to render sprite in editor
         /// </summary>
@@ -32,14 +35,23 @@ namespace Systems.Audibility2D.Data.Tiles
 
         public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
         {
-            AudibilitySystem.SetDirtyAll(true);
+            int3 tilePos = new int3(position.x, position.y, position.z);
+            Events.OnTileUpdated?.Invoke(tilemap.GetComponent<AudibilityUpdater>(), tilePos);
             return base.StartUp(position, tilemap, go);
+        } 
+
+        public override void RefreshTile(Vector3Int position, ITilemap tilemap)
+        {
+            base.RefreshTile(position, tilemap);
+            int3 tilePos = new(position.x, position.y, position.z);
+            Events.OnTileUpdated?.Invoke(tilemap.GetComponent<AudibilityUpdater>(), tilePos);
         }
 
         /// <summary>
         ///     Get tile muffle levels
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetMufflingData()
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public AudioLoudnessLevel GetMufflingData()
         {
             if (ReferenceEquals(audioMaterialData, null)) return AudibilityTools.LOUDNESS_NONE;
             return audioMaterialData.MuffleLevel;
@@ -48,8 +60,12 @@ namespace Systems.Audibility2D.Data.Tiles
         /// <summary>
         ///     Set tile audio material to reduce or increase sound level
         /// </summary>
-        public void SetAudioMaterial(AudioMufflingMaterialData audioMaterial) => audioMaterialData = audioMaterial;
-        
+        public void SetAudioMaterial(AudioMufflingMaterialData audioMaterial)
+        {
+            audioMaterialData = audioMaterial;
+            Events.OnMufflingMaterialChanged?.Invoke(this, audioMaterial);
+        }
+
         /// <summary>
         /// Retrieves any tile rendering data from the scripted tile.
         /// </summary>
@@ -65,9 +81,11 @@ namespace Systems.Audibility2D.Data.Tiles
             tileData.colliderType = Tile.ColliderType.None;
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
-           AudibilitySystem.SetDirtyAll(true);
+            Events.OnMufflingMaterialChanged?.Invoke(this, audioMaterialData);
         }
+#endif
     }
 }

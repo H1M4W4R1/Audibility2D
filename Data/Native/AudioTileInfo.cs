@@ -21,7 +21,7 @@ namespace Systems.Audibility2D.Data.Native
         /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
         /// </summary>
-        public readonly AudioLoudnessLevel mufflingStrength; // 2B
+        public AudioLoudnessLevel mufflingStrength; // 2B
 
         public AudioTileInfo(
             TileIndex index,
@@ -32,5 +32,11 @@ namespace Systems.Audibility2D.Data.Native
 
             currentAudioLevel = AudibilityTools.LOUDNESS_NONE;
         }
+        
+        /// <summary>
+        ///     Update muffling strength of this tile
+        /// </summary>
+        public void SetMufflingStrength(AudioLoudnessLevel newMufflingStrength) =>
+            mufflingStrength = newMufflingStrength;
     }
 }
