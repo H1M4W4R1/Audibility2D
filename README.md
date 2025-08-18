@@ -1,33 +1,28 @@
+<div align="center">
+  <h1>Audibility2D • <a href="https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/wiki">GitHub Wiki</a></h1>
+  <img src="https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/blob/master/Images/screenshot.png" alt="Preview screenshot"/>
+</div>
+
 # About
-
-This is a Unity3D package used to detect audibility levels of multiple audio sources in 2D space.
-Main intent was to create efficient detection of enemy hearing mechanics with walls that dampen sound to make gameplay
-more engaging.
-
-![Showcase Image](https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/blob/master/Images/screenshot.png)
+**Audibility2D** is a Unity3D package designed to detect audibility levels of multiple audio sources in 2D space. Its primary purpose is to enable efficient enemy-hearing mechanics, with walls and other obstacles that dampen sound, creating more engaging gameplay.
 
 # Implementation
-To implement 2D mode you need to create basic project including Unity `Tileset` and add another `Tileset` for audio tiles (
-you can create them from asset menu). Audio Tiles can have sound dampening material attached - this material
-describes how efficiently (or inefficiently) sound transmission to tile is.
+To set up 2D mode:
 
-System calculates dampening effects when audio enters tile by subtraction of muffling strength from previously-visited
-tile loudness. Also takes distance to audio source into account.
-You can use `MufflingLevelAnalysisDrawer` to draw current tile muffling levels.
+1. Create a basic Unity project with a standard `Tileset` (2D Tilemap Editor package)
+2. Add a secondary `Tileset` for audio tiles (these can be created from the Asset menu).  
+   Each **Audio Tile** can have an optional sound-dampening material attached, which defines how effectively sound propagates through it.
 
-To enable computation you need also to add `AudibleSound` to desired GameObjects. This component defines how loud
-audio is and serves as intermediate layer for defining sound source properties.
-If you've added your `AudibleSound`(s) you should be able to preview loudness using `AudibilitySampler`.
+The system calculates dampening by subtracting the muffling strength of the current tile from the loudness of previously visited tiles, while also factoring in distance to the audio source. For visualization, you can use `MufflingLevelAnalysisDrawer` to display current tile muffling levels.
 
-You can implement your own mechanics based on `AudibilitySampler` script `OnDrawGizmos` method as your reference.
+To define sound sources, attach the `AudibleSound` component to desired GameObjects. This component specifies the source’s loudness. Once added, you can preview audibility levels using the `AudibilitySampler`. Beware that only Audibile Sounds that are located within tileset area will be considered for calculations.
 
-# Known limitations
-Even if computation of entire world is quite efficient you can lose a lot of performance when trying to access whole data to render
-e.g. debug gizmos. It is heavily recommended to use only selected nodes instead of all of them as scale matters.
+You can also base on the `OnDrawGizmos` method in `AudibilitySampler` to implement custom mechanics or visualization tools.
 
-You can also use low-level method to access limited tileset section near your entity to improve performance as any sources or audio tiles
-outside of bounds won't be taken into account. Unfortunately that requires creating a few helper methods to compute all necessary data
-as currently implemented ones allow only to process all nodes in tileset at once.
+# Known Limitations
+- Full-world computations are efficient, but rendering debug gizmos for all tiles can significantly impact performance. It is recommended to visualize only selected nodes.  
+- You can improve performance by processing only a limited section of the tileset around your entity. However, this requires using low-level API.
+- The system is primarily tested on XY tilemaps; other layouts (e.g., XZ) may behave unpredictably.
 
 # Warranty
-This thing is mostly untested for non-common scenarios (e.g. XZ tilemap instead of XY one). Use it at your own risk.
+Audibility2D is experimental for non-standard use cases. Use at your own risk.
