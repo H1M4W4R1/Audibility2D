@@ -60,55 +60,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
 
             // Convert into world position
             result -= tilemapInfo.originPoint; // We move by origin point to get offset of the tile from origin
-            return tilemapInfo.worldOriginPoint + tilemapInfo.tileSize * result; 
-        }
-
-        public int GetNorthTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(y + 1 < tilemapInfo.size.y)
-                ? ToIndexRelative(x, y + 1, z, tilemapInfo)
-                : NONE;
-        }
-
-        public int GetSouthTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(y - 1 >= 0)
-                ? ToIndexRelative(x, y - 1, z, tilemapInfo)
-                : NONE;
-        }
-
-        public int GetEastTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(x + 1 < tilemapInfo.size.x)
-                ? ToIndexRelative(x + 1, y, z, tilemapInfo)
-                : NONE;
-        }
-
-        public int GetWestTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(x - 1 >= 0)
-                ? ToIndexRelative(x - 1, y, z, tilemapInfo)
-                : NONE;
-        }
-
-        public int GetUpTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(z + 1 < tilemapInfo.size.z)
-                ? ToIndexRelative(x, y, z + 1, tilemapInfo)
-                : NONE;
-        }
-
-        public int GetDownTileIndex(in TilemapInfo tilemapInfo)
-        {
-            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
-            return Hint.Likely(z - 1 >= 0)
-                ? ToIndexAbsolute(x, y, z - 1, tilemapInfo)
-                : NONE;
+            return tilemapInfo.worldOriginPoint + tilemapInfo.tileSize * result;
         }
 
         /// <summary>
@@ -181,7 +133,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
             y += tilemapInfo.originPoint.y;
             z += tilemapInfo.originPoint.z;
         }
-        
+
         /// <summary>
         /// Converts 1D tile index back into relative 3D coordinates (x, y, z).
         /// </summary>
@@ -215,5 +167,102 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
         }
 
         public static implicit operator int(TileIndex tileIndex) => tileIndex.value;
+
+#region NEIGHBORS
+
+        public int GetNorthTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, +1, 0, tilemapInfo);
+
+        public int GetSouthTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, -1, 0, tilemapInfo);
+
+        public int GetEastTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, 0, 0, tilemapInfo);
+
+        public int GetWestTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, 0, 0, tilemapInfo);
+        
+        
+        public int GetNorthEastTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, +1, 0, tilemapInfo);
+
+        public int GetNorthWestTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, +1, 0, tilemapInfo);
+
+        public int GetSouthEastTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, -1, 0, tilemapInfo);
+
+        public int GetSouthWestTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, -1, 0, tilemapInfo);
+
+        public int GetUpTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, 0, +1, tilemapInfo);
+
+        public int GetDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, 0, -1, tilemapInfo);
+        
+        public int GetEastUpTileIndex(in TilemapInfo tilemapInfo) =>
+            GetNeighborTileIndex(+1, 0, +1, tilemapInfo);
+
+        public int GetEastDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, 0, -1, tilemapInfo);
+
+        public int GetWestUpTileIndex(in TilemapInfo tilemapInfo) =>
+            GetNeighborTileIndex(-1, 0, +1, tilemapInfo);
+
+        public int GetWestDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, 0, -1, tilemapInfo);
+
+        public int GetNorthUpTileIndex(in TilemapInfo tilemapInfo) =>
+            GetNeighborTileIndex(0, +1, +1, tilemapInfo);
+
+        public int GetNorthDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, +1, -1, tilemapInfo);
+
+        public int GetSouthUpTileIndex(in TilemapInfo tilemapInfo) =>
+            GetNeighborTileIndex(0, -1, +1, tilemapInfo);
+
+        public int GetSouthDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(0, -1, -1, tilemapInfo);
+
+        public int GetNorthEastUpTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, +1, +1, tilemapInfo);
+
+        public int GetNorthEastDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, +1, -1, tilemapInfo);
+
+        public int GetNorthWestUpTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, +1, +1, tilemapInfo);
+
+        public int GetNorthWestDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, +1, -1, tilemapInfo);
+
+        public int GetSouthEastUpTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, -1, +1, tilemapInfo);
+
+        public int GetSouthEastDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(+1, -1, -1, tilemapInfo);
+
+        public int GetSouthWestUpTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, -1, +1, tilemapInfo);
+
+        public int GetSouthWestDownTileIndex(in TilemapInfo tilemapInfo)
+            => GetNeighborTileIndex(-1, -1, -1, tilemapInfo);
+
+        private int GetNeighborTileIndex(int dx, int dy, int dz, in TilemapInfo tilemapInfo)
+        {
+            FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
+
+            int nx = x + dx;
+            int ny = y + dy;
+            int nz = z + dz;
+
+            return Hint.Likely(nx >= 0 && nx < tilemapInfo.size.x && ny >= 0 && ny < tilemapInfo.size.y &&
+                               nz >= 0 && nz < tilemapInfo.size.z)
+                ? ToIndexRelative(nx, ny, nz, tilemapInfo)
+                : NONE;
+        }
+
+#endregion
     }
 }
