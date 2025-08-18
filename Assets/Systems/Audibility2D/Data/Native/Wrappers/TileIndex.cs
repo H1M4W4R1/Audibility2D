@@ -116,7 +116,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
         /// Uses absolute coordinates of a tile
         /// </summary>
         [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ToIndexAbsolute(int3 tilePosition, in TilemapInfo tilemapInfo) =>
+        public static int ToIndexAbsolute(in int3 tilePosition, in TilemapInfo tilemapInfo) =>
             ToIndexAbsolute(tilePosition.x, tilePosition.y, tilePosition.z, tilemapInfo);
 
         /// <summary>
