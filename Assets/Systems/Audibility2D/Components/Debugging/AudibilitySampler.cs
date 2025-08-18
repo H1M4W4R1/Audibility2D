@@ -14,7 +14,7 @@ namespace Systems.Audibility2D.Components.Debugging
     /// <summary>
     ///     Debug script used to sample 2D audio for specified tilemap
     /// </summary>
-    public sealed class AudioSampler : MonoBehaviour
+    public sealed class AudibilitySampler : MonoBehaviour
     {
         /// <summary>
         ///     Audio tilemap that will be used to compute data

@@ -17,9 +17,9 @@ You can use `MufflingLevelAnalysisDrawer` to draw current tile muffling levels.
 
 To enable computation you need also to add `AudibleSound` to desired GameObjects. This component defines how loud
 audio is and serves as intermediate layer for defining sound source properties.
-If you've added your `AudibleSound`(s) you should be able to preview loudness using `AudioSampler`.
+If you've added your `AudibleSound`(s) you should be able to preview loudness using `AudibilitySampler`.
 
-You can implement your own mechanics based on `AudioSampler` script `OnDrawGizmos` method as your reference.
+You can implement your own mechanics based on `AudibilitySampler` script `OnDrawGizmos` method as your reference.
 
 # Known limitations
 Even if computation of entire world is quite efficient you can lose a lot of performance when trying to access whole data to render
