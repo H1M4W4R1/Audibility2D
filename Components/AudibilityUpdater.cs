@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
@@ -20,7 +21,6 @@ namespace Systems.Audibility2D.Components
         private NativeArray<AudioTileInfo> _audioTileData;
         private NativeArray<AudioSourceInfo> _audioSourceData;
         private bool _areEventsConfigured;
-        private bool _isAudioDataInitiallyCached;
 
         /// <summary>
         ///     Access local tilemap
@@ -59,13 +59,6 @@ namespace Systems.Audibility2D.Components
             // Ensure that events are properly operational
             EnsureEventsAreAttached();
             
-            // Refresh audio muffling cache if necessary
-            if (!_isAudioDataInitiallyCached)
-            {
-                RefreshAudioMufflingCache();
-                _isAudioDataInitiallyCached = true;
-            }
-
             // Perform update of audio level
             AudibilityTools.UpdateAudibilityLevel(Tilemap, ref _audioSourceData,
                 ref _audioTileData);
@@ -74,9 +67,10 @@ namespace Systems.Audibility2D.Components
         /// <summary>
         ///     Recompute cache of audio muffling data
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void RefreshAudioMufflingCache()
         {
-            AudibilityTools.AudioTileLoudnessToArray(Tilemap, ref _audioTileData);
+            AudibilityTools.RefreshTileDataArray(Tilemap, ref _audioTileData);
         }
 
         private void OnDrawGizmos()
@@ -134,7 +128,7 @@ namespace Systems.Audibility2D.Components
 
         private void OnTileUpdatedHandler(AudibilityUpdater updater, int3 tilePosition)
         {
-            AudibilityTools.AudioTileLoudnessUpdateInArray(Tilemap, tilePosition,
+            AudibilityTools.RefreshTileDataArrayAt(Tilemap, tilePosition,
                 ref _audioTileData);
             //RefreshAudioMufflingCache();
         }

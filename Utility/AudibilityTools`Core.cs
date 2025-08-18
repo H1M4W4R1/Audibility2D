@@ -49,12 +49,21 @@ namespace Systems.Audibility2D.Utility
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // Initialize tilemap arrays
-            TilemapToArray(audioTilemap, ref tileComputeData, allocator);
+            if (!tileComputeData.IsCreated) RefreshTileDataArray(audioTilemap, ref tileComputeData, allocator);
+
+            // Clear audibility levels data
+            ClearCurrentAudioLevelsJob clearLevelsJob = new()
+            {
+                tileComputeData = tileComputeData
+            };
+            JobHandle waitForClear =
+                clearLevelsJob.Schedule(tileComputeData.Length, math.min(tileComputeData.Length, 64));
+            waitForClear.Complete();
 
             // Prepare array of audio sources
             AudibleSound[] sources =
                 Object.FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData, allocator);
+            RefreshAudioSourcesArray(audioTilemap, sources, ref audioSourceComputeData, allocator);
 
             // Handle computation
             UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);
