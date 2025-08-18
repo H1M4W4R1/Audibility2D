@@ -5,12 +5,15 @@ using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Data.Native
 {
-    public readonly struct TilemapInfo
+    /// <summary>
+    ///     Info about tilemap
+    /// </summary>
+    public readonly struct TilemapInfo // 48B
     {
-        public readonly int3 originPoint;
-        public readonly int3 size;
-        public readonly float3 worldOriginPoint;
-        public readonly float3 tileSize;
+        public readonly int3 originPoint; // 12B
+        public readonly int3 size; // 12B
+        public readonly float3 worldOriginPoint; // 12B
+        public readonly float3 tileSize; // 12B
 
         public TilemapInfo(int3 originPoint, int3 size, float3 worldOriginPoint, float3 tileSize)
         {
