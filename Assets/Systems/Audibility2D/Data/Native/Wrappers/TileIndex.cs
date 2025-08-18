@@ -57,10 +57,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
 
             // Convert into world position
             result -= tilemapInfo.originPoint; // We move by origin point to get offset of the tile from origin
-            float3 worldLocation = tilemapInfo.worldOriginPoint + tilemapInfo.tileSize * (result +
-                new float3(0.5f, 0.5f, 0.5f)); // Move by offset and half tile
-
-            return worldLocation;
+            return tilemapInfo.worldOriginPoint + tilemapInfo.tileSize * result; 
         }
 
         public int GetNorthTileIndex(in TilemapInfo tilemapInfo)
