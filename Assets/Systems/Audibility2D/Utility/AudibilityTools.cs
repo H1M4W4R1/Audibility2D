@@ -277,6 +277,9 @@ namespace Systems.Audibility2D.Utility
                 }
             }
 
+            // Ensure proper array is assigned
+            _tileMufflingLevels[audioTilemap] = mufflingLevelsArray;
+            
             // System is no longer dirty
             AudibilitySystem.SetDirty(audioTilemap, false);
         }
