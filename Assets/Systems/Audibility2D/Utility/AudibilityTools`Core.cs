@@ -54,12 +54,7 @@ namespace Systems.Audibility2D.Utility
             // Prepare array of audio sources
             AudibleSound[] sources =
                 Object.FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
-            QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
-                allocator);
-
-            // Get audio sources data
-            AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
+            AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData, allocator);
 
             // Handle computation
             UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);

@@ -206,14 +206,20 @@ namespace Systems.Audibility2D.Utility
         ///     Reference to handle for Audio Source Data array, automatically allocated as PERSISTENT
         ///     Output value.
         /// </param>
+        /// <param name="allocator">Allocator to create array</param>
         [BurstDiscard] public static void AudioSourcesToArray(
             [NotNull] Tilemap audioTilemap,
             [NotNull] AudibleSound[] sources,
-            ref NativeArray<AudioSourceInfo> audioSourceComputeData)
+            ref NativeArray<AudioSourceInfo> audioSourceComputeData,
+            Allocator allocator = Allocator.Persistent)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
             Assert.IsNotNull(sources, "Sources array is null");
 
+            // Create or update array if necessary
+            QuickArray.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
+                allocator);
+            
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // This should be pretty performant
