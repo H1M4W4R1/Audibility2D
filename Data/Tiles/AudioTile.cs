@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
@@ -8,6 +9,7 @@ using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Object = System.Object;
 
 namespace Systems.Audibility2D.Data.Tiles
 {
@@ -33,18 +35,20 @@ namespace Systems.Audibility2D.Data.Tiles
         /// </summary>
         [field: SerializeField] public Color PreviewColor { get; private set; } = Color.gray;
 
-        public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
+        public override bool StartUp(Vector3Int position, [NotNull] ITilemap tilemap, GameObject go)
         {
-            int3 tilePos = new int3(position.x, position.y, position.z);
-            Events.OnTileUpdated?.Invoke(tilemap.GetComponent<AudibilityUpdater>(), tilePos);
+            AudibilityUpdater updater = tilemap.GetComponent<AudibilityUpdater>();
+            if (!ReferenceEquals(updater, null))
+                updater.OnTileUpdatedHandler(new int3(position.x, position.y, position.z));
             return base.StartUp(position, tilemap, go);
-        } 
+        }
 
-        public override void RefreshTile(Vector3Int position, ITilemap tilemap)
+        public override void RefreshTile(Vector3Int position, [NotNull] ITilemap tilemap)
         {
             base.RefreshTile(position, tilemap);
-            int3 tilePos = new(position.x, position.y, position.z);
-            Events.OnTileUpdated?.Invoke(tilemap.GetComponent<AudibilityUpdater>(), tilePos);
+            AudibilityUpdater updater = tilemap.GetComponent<AudibilityUpdater>();
+            if (!ReferenceEquals(updater, null))
+                updater.OnTileUpdatedHandler(new int3(position.x, position.y, position.z));
         }
 
         /// <summary>
@@ -63,7 +67,6 @@ namespace Systems.Audibility2D.Data.Tiles
         public void SetAudioMaterial(AudioMufflingMaterialData audioMaterial)
         {
             audioMaterialData = audioMaterial;
-            Events.OnMufflingMaterialChanged?.Invoke(this, audioMaterial);
         }
 
         /// <summary>
@@ -81,10 +84,19 @@ namespace Systems.Audibility2D.Data.Tiles
             tileData.colliderType = Tile.ColliderType.None;
         }
 
+        private void NotifyMaterialChangeToAudibilityUpdaters()
+        {
+            AudibilityUpdater[] updaters =
+                FindObjectsByType<AudibilityUpdater>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            for (int n = 0; n < updaters.Length; n++)
+                updaters[n].OnMufflingMaterialChangedHandler(this, audioMaterialData);
+        }
+        
+        
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            Events.OnMufflingMaterialChanged?.Invoke(this, audioMaterialData);
+            NotifyMaterialChangeToAudibilityUpdaters();
         }
 #endif
     }

@@ -62,9 +62,6 @@ namespace Systems.Audibility2D.Components
 
         private void Update()
         {
-            // Ensure that events are properly operational
-            EnsureEventsAreAttached();
-            
             // Perform update of audio level
             AudibilityTools.UpdateAudibilityLevel(Tilemap, ref _audioSourceData,
                 ref _audioTileData);
@@ -124,52 +121,23 @@ namespace Systems.Audibility2D.Components
         
 #region EVENTS_HANDLING
 
-        private void EnsureEventsAreAttached()
-        {
-            if (_areEventsConfigured) return;
-            AttachEvents();
-        }
-        
-        private void AttachEvents()
-        {
-            Events.OnMufflingMaterialChanged += OnMufflingMaterialChangedHandler;
-            Events.OnMufflingMaterialDataChanged += OnMufflingMaterialDataChangedHandler;
-            Events.OnTileUpdated += OnTileUpdatedHandler;
-            _areEventsConfigured = true;
-        }
-
-        private void OnTileUpdatedHandler(AudibilityUpdater updater, int3 tilePosition)
+        internal void OnTileUpdatedHandler(int3 tilePosition)
         {
             AudibilityTools.RefreshTileDataArrayAt(Tilemap, tilePosition,
                 ref _audioTileData);
             //RefreshAudioMufflingCache();
         }
         
-        private void OnMufflingMaterialDataChangedHandler(AudioMufflingMaterialData materialScriptableObject) =>
+        internal void OnMufflingMaterialDataChangedHandler(AudioMufflingMaterialData materialScriptableObject) =>
             RefreshAudioMufflingCache();
 
-        private void OnMufflingMaterialChangedHandler(
+        internal void OnMufflingMaterialChangedHandler(
             TileBase tileScriptableObject,
             AudioMufflingMaterialData newMaterial) =>
             RefreshAudioMufflingCache();
 
-        private void DetachEvents()
-        {
-            _areEventsConfigured = false;
-            Events.OnMufflingMaterialChanged -= OnMufflingMaterialChangedHandler;
-            Events.OnMufflingMaterialDataChanged -= OnMufflingMaterialDataChangedHandler;
-            Events.OnTileUpdated -= OnTileUpdatedHandler;
-        }
-
-        private void Awake()
-        {
-            EnsureEventsAreAttached();
-        }
-
         private void OnDestroy()
         {
-            DetachEvents();
-            
             // Clear allocations
             _audioTileData.Dispose();
             _audioSourceData.Dispose();

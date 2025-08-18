@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Systems.Audibility2D.Data
@@ -26,9 +28,18 @@ namespace Systems.Audibility2D.Data
         }
 
 #if UNITY_EDITOR
+        private void NotifyMaterialDataChangeToAudibilityUpdaters()
+        {
+            AudibilityUpdater[] updaters =
+                FindObjectsByType<AudibilityUpdater>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            for (int n = 0; n < updaters.Length; n++)
+                updaters[n].OnMufflingMaterialDataChangedHandler(this);
+        }
+
+        
         private void OnValidate()
         {
-            Events.OnMufflingMaterialDataChanged?.Invoke(this);
+            NotifyMaterialDataChangeToAudibilityUpdaters();
         }
 #endif
     }
