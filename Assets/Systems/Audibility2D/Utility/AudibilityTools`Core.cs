@@ -49,7 +49,7 @@ namespace Systems.Audibility2D.Utility
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // Initialize tilemap arrays
-            AudibilityTools.TilemapToArray(audioTilemap, ref tileComputeData, allocator);
+            TilemapToArray(audioTilemap, ref tileComputeData, allocator);
 
             // Prepare array of audio sources
             AudibleSound[] sources =
@@ -59,7 +59,7 @@ namespace Systems.Audibility2D.Utility
                 allocator);
 
             // Get audio sources data
-            AudibilityTools.AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
+            AudioSourcesToArray(audioTilemap, sources, ref audioSourceComputeData);
 
             // Handle computation
             UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);

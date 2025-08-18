@@ -82,7 +82,7 @@ namespace Systems.Audibility2D.Utility
         public static bool CheckIfTilemapIsReady([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
-            return AudibilitySystem.IsDirty(audioTilemap) && _tileMufflingLevels.ContainsKey(audioTilemap);
+            return !AudibilitySystem.IsDirty(audioTilemap) && _tileMufflingLevels.ContainsKey(audioTilemap);
         }
 
         /// <summary>
