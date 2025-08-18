@@ -8,10 +8,10 @@ using Systems.Audibility2D.Utility.Internal;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility
@@ -42,6 +42,8 @@ namespace Systems.Audibility2D.Utility
             ref NativeArray<AudioSourceInfo> audioSourceComputeData,
             ref NativeArray<AudioTileInfo> tileComputeData)
         {
+            Assert.IsNotNull(audioTilemap, "Audio tilemap is null");
+
             TilemapInfo tilemapInfo = new(audioTilemap);
 
             // Initialize tilemap arrays
@@ -78,6 +80,10 @@ namespace Systems.Audibility2D.Utility
             in NativeArray<AudioSourceInfo> audioSourceComputeData,
             ref NativeArray<AudioTileInfo> tileComputeData)
         {
+            Assert.AreNotEqual(tilemapInfo, default, "Tilemap info is invalid");
+            Assert.IsTrue(audioSourceComputeData.IsCreated, "Audio source data is invalid");
+            Assert.IsTrue(tileComputeData.IsCreated, "Audio tile data is invalid");
+
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {
                 tilemapInfo = tilemapInfo,
@@ -106,7 +112,7 @@ namespace Systems.Audibility2D.Utility
         /// <param name="currentAudioSource">
         ///     Current audio source that is being analyzed
         /// </param>
-        [BurstCompile] internal static unsafe void UpdateNeighbourAudioLevelsForTile(
+        [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
             in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
@@ -115,45 +121,40 @@ namespace Systems.Audibility2D.Utility
         {
             TileIndex currentTileIndex = currentTile.index;
 
-            int totalNodeCount = 0;
-            int* indexList = stackalloc int[12]; // max of 12 tiles in 3D grid, kept as fail-safe
-
-      
             // North
             CheckNode(currentTileIndex.GetNorthTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
 
             // South
             CheckNode(currentTileIndex.GetSouthTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
-            
+
             // East
             CheckNode(currentTileIndex.GetEastTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
-            
+
             // West
             CheckNode(currentTileIndex.GetWestTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
-            
+
             // Up
             CheckNode(currentTileIndex.GetUpTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
-            
+
             // Down
             CheckNode(currentTileIndex.GetDownTileIndex(tilemapInfo),
-                indexList, ref totalNodeCount, in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
+                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
                 ref currentTile, in currentAudioSource);
         }
 
-        private static unsafe void CheckNode(
+        [BurstCompile]
+        private static void CheckNode(
             int neighbourTileIndex,
-            int* indexListPtr,
-            ref int currentIndexStoragePos,
             in TilemapInfo tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
@@ -169,8 +170,6 @@ namespace Systems.Audibility2D.Utility
                 tilemapInfo, ref tilesToUpdateNeighbours,
                 currentTile, ref neighbourTile, currentAudioSource, currentTile.currentAudioLevel);
             audioTilesData[neighbourTileIndex] = neighbourTile;
-
-            currentIndexStoragePos++;
         }
 
         /// <summary>

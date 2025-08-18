@@ -1,9 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using Systems.Audibility2D.Data.Native.Wrappers;
+﻿using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
-using Unity.Burst;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace Systems.Audibility2D.Data.Native
 {

@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
 using Systems.Audibility2D.Utility.Internal;

@@ -47,7 +47,6 @@ namespace Systems.Audibility2D.Utility
         ///     Activate tilemap if necessary
         /// </summary>
         /// <param name="audioTilemap">Tilemap to activate</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ActivateAudioTilemap([NotNull] Tilemap audioTilemap)
         {
             Assert.IsNotNull(audioTilemap, "Audio tilemap is null");

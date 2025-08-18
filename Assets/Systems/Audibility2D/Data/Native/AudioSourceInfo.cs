@@ -1,5 +1,4 @@
 ﻿using Systems.Audibility2D.Data.Native.Wrappers;
-using Unity.Mathematics;
 
 namespace Systems.Audibility2D.Data.Native
 {

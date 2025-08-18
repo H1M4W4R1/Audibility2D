@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEngine.Assertions;
 using UnityEngine.Tilemaps;
 
 namespace Systems.Audibility2D.Utility.Internal
@@ -20,6 +21,8 @@ namespace Systems.Audibility2D.Utility.Internal
         /// </summary>
         internal static bool IsDirty([NotNull] Tilemap tilemap)
         {
+            Assert.IsNotNull(tilemap, "Tilemap is null");
+            
             if (IsDirtyCache.TryGetValue(tilemap, out bool value)) return value;
             SetDirty(tilemap, true);
             return true;
@@ -42,6 +45,7 @@ namespace Systems.Audibility2D.Utility.Internal
         /// </summary>
         internal static void SetDirty([NotNull] Tilemap tilemap, bool value)
         {
+            Assert.IsNotNull(tilemap, "Tilemap is null");
             IsDirtyCache[tilemap] = value;
         }
     }
