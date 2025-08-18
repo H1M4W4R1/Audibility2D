@@ -42,7 +42,7 @@ namespace Systems.Audibility2D.Data.Settings
                 if (!Directory.Exists("Assets/Resources")) Directory.CreateDirectory("Assets/Resources");
                 UnityEditor.AssetDatabase.CreateAsset(settings, PATH);
                 UnityEditor.AssetDatabase.SaveAssets();
-                Debug.Log("[Audibility3D] Created default AudibilitySettings3D at " + PATH);
+                Debug.Log("[Audibility System] Created default AudibilitySettings at " + PATH);
             }
 #endif
 
