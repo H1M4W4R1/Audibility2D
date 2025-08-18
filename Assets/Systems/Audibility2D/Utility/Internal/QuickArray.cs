@@ -1,4 +1,5 @@
 ﻿using Unity.Burst;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 
 namespace Systems.Audibility2D.Utility.Internal
@@ -16,13 +17,13 @@ namespace Systems.Audibility2D.Utility.Internal
             Allocator allocator)
             where TDataType : struct
         {
-            if (!source.IsCreated)
+            if (Hint.Unlikely(!source.IsCreated))
             {
                 source = new NativeArray<TDataType>(nLength, allocator);
                 return;
             }
 
-            if (source.Length == nLength) return;
+            if (Hint.Likely(source.Length == nLength)) return;
 
             source.Dispose();
             source = new NativeArray<TDataType>(nLength, allocator);
