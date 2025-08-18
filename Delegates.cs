@@ -7,14 +7,14 @@ namespace Systems.Audibility2D
 {
     public sealed class Delegates
     {
-        internal delegate void MufflingMaterialChangedHandler(
+        public delegate void MufflingMaterialChangedHandler(
             TileBase tileScriptableObject,
             AudioMufflingMaterialData newMaterial);
 
-        internal delegate void MufflingMaterialDataChangedHandler(
+        public delegate void MufflingMaterialDataChangedHandler(
             AudioMufflingMaterialData materialScriptableObject
         );
 
-        internal delegate void TileUpdatedHandler(AudibilityUpdater updater, int3 tilePosition);
+        public delegate void TileUpdatedHandler(AudibilityUpdater updater, int3 tilePosition);
     }
 }
