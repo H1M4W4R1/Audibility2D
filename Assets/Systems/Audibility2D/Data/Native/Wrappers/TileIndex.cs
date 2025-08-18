@@ -170,85 +170,111 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
 
 #region NEIGHBORS
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, +1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, -1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetEastTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, 0, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetWestTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, 0, 0, tilemapInfo);
         
-        
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthEastTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, +1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthWestTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, +1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthEastTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, -1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthWestTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, -1, 0, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, 0, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, 0, -1, tilemapInfo);
         
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetEastUpTileIndex(in TilemapInfo tilemapInfo) =>
             GetNeighborTileIndex(+1, 0, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetEastDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, 0, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetWestUpTileIndex(in TilemapInfo tilemapInfo) =>
             GetNeighborTileIndex(-1, 0, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetWestDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, 0, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthUpTileIndex(in TilemapInfo tilemapInfo) =>
             GetNeighborTileIndex(0, +1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, +1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthUpTileIndex(in TilemapInfo tilemapInfo) =>
             GetNeighborTileIndex(0, -1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(0, -1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthEastUpTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, +1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthEastDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, +1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthWestUpTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, +1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetNorthWestDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, +1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthEastUpTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, -1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthEastDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(+1, -1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthWestUpTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, -1, +1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetSouthWestDownTileIndex(in TilemapInfo tilemapInfo)
             => GetNeighborTileIndex(-1, -1, -1, tilemapInfo);
 
+        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetNeighborTileIndex(int dx, int dy, int dz, in TilemapInfo tilemapInfo)
         {
             FromIndexRelative(value, tilemapInfo, out int x, out int y, out int z);
