@@ -3,8 +3,8 @@ using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Utility;
-using Systems.Utilities.Frustum;
 using Systems.Utilities.Indexing.Grid;
+using Systems.Utilities.Math;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -96,8 +96,7 @@ namespace Systems.Audibility2D.Components
             GridInfo3D tilemapInfo = Tilemap.AsGridInfo();
 
             // Compute camera planes
-            NativeArray<float4> frustrumPlanes = new(6, Allocator.TempJob);
-            gizmosCamera.ExtractFrustumPlanes(ref frustrumPlanes);
+            Frustum3D frustumPlanes = new(gizmosCamera);
 
             // Draw gizmos
             foreach (AudioTileInfo audioTileInfo in _audioTileData)
@@ -106,7 +105,7 @@ namespace Systems.Audibility2D.Components
                 float3 worldTilePosition = audioTileInfo.index.GetWorldPosition(tilemapInfo);
 
                 // Quickly check camera point in view frustrum
-                if (!FrustumUtil.PointInFrustum(worldTilePosition, frustrumPlanes)) continue;
+                if (!frustumPlanes.ContainsPoint(worldTilePosition)) continue;
 
                 Color audibilityNoneColor = AudibilitySettings.Instance.gizmosColorMinAudibility;
                 Color audibilityFullColor = AudibilitySettings.Instance.gizmosColorMaxAudibility;
@@ -115,8 +114,6 @@ namespace Systems.Audibility2D.Components
                     audioTileInfo.currentAudioLevel / (float) AudibilityTools.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
-
-            frustrumPlanes.Dispose();
         }
         
 #region EVENTS_HANDLING

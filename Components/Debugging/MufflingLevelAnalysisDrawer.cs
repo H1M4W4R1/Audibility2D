@@ -2,8 +2,7 @@
 using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Utility;
-using Systems.Utilities.Frustum;
-using Unity.Collections;
+using Systems.Utilities.Math;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -41,8 +40,7 @@ namespace Systems.Audibility2D.Components.Debugging
             float3 worldOrigin = (float3) audioTilemap.CellToWorld(tilemapOrigin) + 0.5f * cellSize;
       
             // Compute camera planes
-            NativeArray<float4> frustumPlanes = new(6, Allocator.TempJob);
-            gizmosCamera.ExtractFrustumPlanes(ref frustumPlanes);
+            Frustum3D frustumPlanes = new(gizmosCamera);
             
             // Prepare analysis data
             for (int x = 0; x < tilemapSize.x; x++)
@@ -60,7 +58,7 @@ namespace Systems.Audibility2D.Components.Debugging
                             worldOrigin + new float3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
 
                         // Quickly check camera point in view frustrum
-                        if (!FrustumUtil.PointInFrustum(worldPosition, frustumPlanes)) continue;
+                        if (!frustumPlanes.ContainsPoint(worldPosition)) continue;
 
                         AudioTile audioTile = audioTilemap.GetTile(cellPosition) as AudioTile;
                         if (ReferenceEquals(audioTile, null)) continue;
@@ -81,8 +79,6 @@ namespace Systems.Audibility2D.Components.Debugging
                     }
                 }
             }
-            
-            frustumPlanes.Dispose();
         }
     }
 }
