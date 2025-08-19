@@ -102,7 +102,7 @@ namespace Systems.Audibility2D.Utility
             Assert.IsNotNull(sources, "Sources array is null");
 
             // Create or update array if necessary
-            ArrayUtil.PerformEfficientAllocation(ref audioSourceComputeData, sources.Length,
+            ArrayUtil.AllocateIfInvalid(ref audioSourceComputeData, sources.Length,
                 allocator);
 
             GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
@@ -181,7 +181,7 @@ namespace Systems.Audibility2D.Utility
             int tilesCount = tilemapSize.x * tilemapSize.y * tilemapSize.z;
 
             // Ensure arrays are initialized 
-            ArrayUtil.PerformEfficientAllocation(ref tileComputeData, tilesCount, allocator);
+            ArrayUtil.AllocateIfInvalid(ref tileComputeData, tilesCount, allocator);
 
             GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
             
