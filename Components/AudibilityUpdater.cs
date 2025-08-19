@@ -5,6 +5,7 @@ using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Utility;
 using Systems.Utilities.Indexing.Grid;
 using Systems.Utilities.Math;
+using Systems.Utilities.Math.Geometry3D;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;

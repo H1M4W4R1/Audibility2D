@@ -3,6 +3,7 @@ using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Utility;
 using Systems.Utilities.Math;
+using Systems.Utilities.Math.Geometry3D;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
