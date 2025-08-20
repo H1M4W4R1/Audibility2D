@@ -51,7 +51,7 @@ namespace Systems.Audibility2D.Data.Tiles
         /// <summary>
         ///     Get tile muffle levels
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AudioLoudnessLevel GetMufflingData()
         {
             if (ReferenceEquals(audioMaterialData, null)) return AudibilityTools.LOUDNESS_NONE;

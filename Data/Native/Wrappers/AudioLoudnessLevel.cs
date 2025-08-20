@@ -67,30 +67,30 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
         /// <summary>
         ///     Convert number into loudness
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator AudioLoudnessLevel(int audioLevel)
         {
             audioLevel = math.clamp(audioLevel, short.MinValue, short.MaxValue);
             return new AudioLoudnessLevel((short) audioLevel);
         }
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator short(AudioLoudnessLevel audioLoudnessLevel) => audioLoudnessLevel.value;
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(AudioLoudnessLevel a, AudioLoudnessLevel b)
             => a.value == b.value;
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(AudioLoudnessLevel a, AudioLoudnessLevel b) => !(a == b);
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(AudioLoudnessLevel other) => value == other.value;
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public override bool Equals(object obj)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public override bool Equals(object obj)
             => obj is AudioLoudnessLevel other && Equals(other);
 
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public override int GetHashCode()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public override int GetHashCode()
             => value.GetHashCode();
     }
 }

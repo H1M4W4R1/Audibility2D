@@ -20,8 +20,8 @@ namespace Systems.Audibility2D.Data
         [Tooltip("Sound loudness will be reduced by this value when reaching this material")]
         public AudioLoudnessLevel MuffleLevel
         {
-            [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] get;
-            [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] private set;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] private set;
         }
 
 #if UNITY_EDITOR

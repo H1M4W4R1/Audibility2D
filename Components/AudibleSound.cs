@@ -39,7 +39,7 @@ namespace Systems.Audibility2D.Components
         /// <summary>
         ///     Get range of this audio source
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public float GetRange() => range;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public float GetRange() => range;
         
         /// <summary>
         ///     Get position of this audio source
@@ -60,6 +60,6 @@ namespace Systems.Audibility2D.Components
         /// <summary>
         ///     Get loudness of this audio source in dB
         /// </summary>
-        [BurstCompile] [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetDecibelLevel() => audioLoudnessLevel;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel GetDecibelLevel() => audioLoudnessLevel;
     }
 }
