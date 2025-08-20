@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Systems.Audibility2D.Data.Native.Wrappers
@@ -14,7 +15,9 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
     [Serializable] [StructLayout(LayoutKind.Explicit)]
     public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel> // 2B
     {
-        [FieldOffset(0)] public short value; // 2B
+        [FieldOffset(0)] 
+        [Range(AudibilityTools.LOUDNESS_NONE, AudibilityTools.LOUDNESS_MAX)]
+        public short value; // 2B
 
         /// <summary>
         ///     Create level from decibel value
