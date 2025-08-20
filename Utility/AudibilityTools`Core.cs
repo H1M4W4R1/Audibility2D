@@ -249,7 +249,7 @@ namespace Systems.Audibility2D.Utility
             newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
             // Detect audio changes to prevent infinite loop
-            if (!Hint.Unlikely(neighbouringTile.currentAudioLevel != newTileLevel)) return;
+            if (Hint.Likely(neighbouringTile.currentAudioLevel == newTileLevel)) return;
 
             // Update audio level based on maximum between current level and new one calculated by muffling values
             neighbouringTile.currentAudioLevel = newTileLevel;
