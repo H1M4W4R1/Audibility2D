@@ -130,111 +130,52 @@ namespace Systems.Audibility2D.Utility
             Index3D currentTileIndex = currentTile.index;
 
             // North
-            CheckNode(currentTileIndex.GetNorthIndex3D(tilemapInfo),
+            int3 northDirection = new int3(0, 1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(northDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, northDirection);
 
             // South
-            CheckNode(currentTileIndex.GetSouthIndex3D(tilemapInfo),
+            int3 southDirection = new int3(0, -1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(southDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, southDirection);
 
             // East
-            CheckNode(currentTileIndex.GetEastIndex3D(tilemapInfo),
+            int3 eastDirection = new int3(1, 0, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(eastDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, eastDirection);
 
             // West
-            CheckNode(currentTileIndex.GetWestIndex3D(tilemapInfo),
+            int3 westDirection = new int3(-1, 0, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(westDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, westDirection);
 
             // North-west
-            CheckNode(currentTileIndex.GetNorthWestIndex3D(tilemapInfo),
+            int3 northWestDirection = new int3(-1, 1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(northWestDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, northWestDirection);
 
             // North-east
-            CheckNode(currentTileIndex.GetNorthEastIndex3D(tilemapInfo),
+            int3 northEastDirection = new int3(1, 1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(northEastDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, northEastDirection);
 
             // South-west
-            CheckNode(currentTileIndex.GetSouthWestIndex3D(tilemapInfo),
+            int3 southWestDirection = new int3(-1, -1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(southWestDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
+                ref currentTile, in currentAudioSource, southWestDirection);
 
             // South-east
-            CheckNode(currentTileIndex.GetSouthEastIndex3D(tilemapInfo),
+            int3 southEastDirection = new int3(1, -1, 0);
+            CheckNode(currentTileIndex.GetNeighborIndex3D(southEastDirection, tilemapInfo),
                 in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-
-#if AUDIBILITY_3D_CHECKS_ENABLED
-            // Vertical
-            CheckNode(currentTileIndex.GetUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            
-            // Up diagonals
-            CheckNode(currentTileIndex.GetNorthUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetSouthUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetEastUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetWestUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-
-            // Down diagonals
-            CheckNode(currentTileIndex.GetNorthDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetSouthDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetEastDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetWestDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            
-            // North corners
-            CheckNode(currentTileIndex.GetNorthEastUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetNorthEastDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetNorthWestUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetNorthWestDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            
-            // South corners
-            CheckNode(currentTileIndex.GetSouthEastUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetSouthEastDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetSouthWestUpIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-            CheckNode(currentTileIndex.GetSouthWestDownIndex3D(tilemapInfo),
-                in tilemapInfo, ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource);
-
-#endif
+                ref currentTile, in currentAudioSource, southEastDirection);
         }
 
         [BurstCompile] private static void CheckNode(
@@ -243,7 +184,8 @@ namespace Systems.Audibility2D.Utility
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
             ref AudioTileInfo currentTile,
-            in AudioSourceInfo currentAudioSource)
+            in AudioSourceInfo currentAudioSource,
+            in int3 direction)
         {
             // Early return
             if (Hint.Unlikely(neighbourTileIndex == Index3D.NONE)) return;
@@ -258,7 +200,8 @@ namespace Systems.Audibility2D.Utility
 
             UpdateAudioLevelForTile(
                 tilemapInfo, ref tilesToUpdateNeighbours,
-                currentTile, ref neighbourTile, currentAudioSource, newLoudness);
+                currentTile, ref neighbourTile, currentAudioSource, newLoudness,
+                direction);
             audioTilesData[neighbourTileIndex] = neighbourTile;
         }
 
@@ -281,22 +224,19 @@ namespace Systems.Audibility2D.Utility
         /// </param>
         /// <param name="currentAudioLevel">
         ///     Audio level in current tile, passed separately to handle source tiles correctly
-        /// </param> 
+        /// </param>
+        /// <param name="direction">Direction of tile change</param>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             in GridInfo3D tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             in AudioTileInfo originalTile,
             ref AudioTileInfo neighbouringTile,
             in AudioSourceInfo currentAudioSource,
-            in AudioLoudnessLevel currentAudioLevel)
+            in AudioLoudnessLevel currentAudioLevel,
+            in int3 direction)
         {
-            // Get positions
-            float3 originalTilePosition = originalTile.index.GetWorldPosition(tilemapInfo);
-            float3 neighbouringTilePosition = neighbouringTile.index.GetWorldPosition(tilemapInfo);
-
-            // Compute distance between tiles to decrease audio level
-            // Unfortunately we can't use distanceSq as it behaves poorly in division scenarios
-            float distance = math.distance(originalTilePosition, neighbouringTilePosition);
+            // Compute distance between tiles
+            float distance = math.length(direction * tilemapInfo.tileSize);
 
             // This will always result in silence, skip this trash ;)
             if (Hint.Unlikely(distance > currentAudioSource.range)) return;

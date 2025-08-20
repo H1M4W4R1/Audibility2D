@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 
 namespace Systems.Audibility2D.Jobs
 {
@@ -44,7 +45,7 @@ namespace Systems.Audibility2D.Jobs
             AudioTileInfo startTile = audioTilesData[audioSourceInfo.tileIndex];
             AudibilityTools.UpdateAudioLevelForTile(tilemapInfo, ref tilesToUpdateNeighbours, 
                 startTile, ref startTile, audioSourceInfo,
-                audioSourceInfo.audioLevel);
+                audioSourceInfo.audioLevel, int3.zero);
             audioTilesData[audioSourceInfo.tileIndex] = startTile;
 
             // Perform update sequence
