@@ -14,8 +14,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
     [Serializable] [StructLayout(LayoutKind.Explicit)]
     public struct AudioLoudnessLevel : IEquatable<AudioLoudnessLevel> // 2B
     {
-        [FieldOffset(0)] 
-        [Range(AudibilityTools.LOUDNESS_NONE, AudibilityTools.LOUDNESS_MAX)]
+        [FieldOffset(0)] [Range(AudibilityTools.LOUDNESS_NONE, AudibilityTools.LOUDNESS_MAX)]
         public short value; // 2B
 
         /// <summary>
@@ -23,7 +22,7 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public AudioLoudnessLevel(int loudnessDb)
         {
-            loudnessDb = math.clamp(loudnessDb, short.MinValue, short.MaxValue);
+            loudnessDb = math.clamp(loudnessDb, AudibilityTools.LOUDNESS_NONE, AudibilityTools.LOUDNESS_MAX);
             value = (short) loudnessDb;
         }
 
@@ -74,7 +73,8 @@ namespace Systems.Audibility2D.Data.Native.Wrappers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator AudioLoudnessLevel(int audioLevel)
         {
-            audioLevel = math.clamp(audioLevel, 0, AudibilityTools.LOUDNESS_MAX);
+            // This will be handled by constructor
+            // audioLevel = math.clamp(audioLevel, 0, AudibilityTools.LOUDNESS_MAX);
             return new AudioLoudnessLevel((short) audioLevel);
         }
 

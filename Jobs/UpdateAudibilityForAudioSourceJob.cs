@@ -3,6 +3,7 @@ using Systems.Audibility2D.Utility;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 
 namespace Systems.Audibility2D.Jobs
@@ -38,7 +39,7 @@ namespace Systems.Audibility2D.Jobs
         [BurstCompile]
         public void Execute(int nAudioSource)
         {
-            NativeList<int> tilesToUpdateNeighbours = new(64, Allocator.Temp);
+            UnsafeList<int> tilesToUpdateNeighbours = new(64, Allocator.Temp);
             AudioSourceInfo audioSourceInfo = audioSourcesData[nAudioSource];
 
             // Skip if tile is outside of map

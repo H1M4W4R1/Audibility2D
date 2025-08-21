@@ -8,6 +8,7 @@ using Systems.Audibility2D.Jobs;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -127,7 +128,7 @@ namespace Systems.Audibility2D.Utility
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
             in AudioSystemSettings audibilitySettings,
             in GridInfo2D tilemapInfo,
-            ref NativeList<int> tilesToUpdateNeighbours,
+            ref UnsafeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
             ref AudioTileInfo currentTile)
         {
@@ -181,7 +182,7 @@ namespace Systems.Audibility2D.Utility
         [BurstCompile] private static void CheckNode(
             in AudioSystemSettings audibilitySettings,
             int neighbourTileIndex,
-            ref NativeList<int> tilesToUpdateNeighbours,
+            ref UnsafeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
             ref AudioTileInfo currentTile,
             in float distance)
@@ -219,7 +220,7 @@ namespace Systems.Audibility2D.Utility
         /// <param name="distance">Distance from last tile</param>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
             in AudioSystemSettings audibilitySettings,
-            ref NativeList<int> tilesToUpdateNeighbours,
+            ref UnsafeList<int> tilesToUpdateNeighbours,
             ref AudioTileInfo neighbouringTile,
             in AudioLoudnessLevel currentAudioLevel,
             float distance)
