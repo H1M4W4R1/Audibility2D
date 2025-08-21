@@ -19,7 +19,7 @@ namespace Systems.Audibility2D.Jobs
         [BurstCompile]
         public void Execute(int index)
         {
-            averageTileLoudnessData[index] = tileData[index].currentAudioLevel.GetAverage();
+            averageTileLoudnessData[index] = tileData[index].currentAudioLevel.GetValue();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Systems.Audibility2D.Jobs
         [BurstCompile] public void Execute(int index)
         {
             AudioTileInfo tile = tileData[index];
-            float normalizedLoudness = tile.currentAudioLevel.GetAverage() / (float) AudibilityTools.LOUDNESS_MAX;
+            float normalizedLoudness = tile.currentAudioLevel.GetValue() / (float) AudibilityTools.LOUDNESS_MAX;
             audioTileDebugData[index] =
                 new AudioTileDebugInfo(tile.index.GetWorldPosition(tilemapInfo), normalizedLoudness);
         }

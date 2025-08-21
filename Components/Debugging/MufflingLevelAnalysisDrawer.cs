@@ -63,7 +63,7 @@ namespace Systems.Audibility2D.Components.Debugging
                     if (ReferenceEquals(audioTile, null)) continue;
 
                     // Compute percentage and remap into 0~1 range
-                    float percentage = (float) audioTile.GetMufflingData().GetAverage() /
+                    float percentage = (float) audioTile.GetMufflingData().GetValue() /
                                        AudibilityTools.LOUDNESS_MAX;
                     percentage = math.remap(-1, 1, 0f, 1f, percentage);
 

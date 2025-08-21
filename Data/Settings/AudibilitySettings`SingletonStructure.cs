@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Systems.Audibility2D.Data.Settings
 {

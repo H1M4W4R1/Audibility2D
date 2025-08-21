@@ -228,10 +228,13 @@ namespace Systems.Audibility2D.Utility
             // Copy current audio level and compute muffling 
             AudioLoudnessLevel newTileLevel = currentAudioLevel;
 
-            // TODO: Replace division with multiplication of sound decay rate per meter
-            //       that will be stored in settings and provided to this method
             newTileLevel = newTileLevel.MuffleBy(distance * audibilitySettings.soundDecayPerUnit);
-            newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
+            
+            // Intention of this check was to update audio level between multiple sources and select the 
+            // loudest sound available, but it also accidentally prevents going negative...
+            //
+            // sometimes code does job by itself
+            newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel); 
 
             // Detect audio changes to prevent infinite loop
             if (Hint.Likely(neighbouringTile.currentAudioLevel == newTileLevel)) return;

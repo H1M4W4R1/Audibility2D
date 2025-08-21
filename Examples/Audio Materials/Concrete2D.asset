@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Concrete2D
   m_EditorClassIdentifier: 
   <MuffleLevel>k__BackingField:
-    value: 100
+    _value: 100
