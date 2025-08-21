@@ -10,7 +10,6 @@
 * Burst
 * Jobs
 * Mathematics
-* [My Utilities package](https://github.com/H1M4W4R1/Utilities-Unity3D)
 
 # Implementation
 To set up 2D mode:
@@ -28,7 +27,7 @@ You can also base on the `OnDrawGizmos` method in `AudibilityUpdater` to impleme
 # Known Limitations
 - Full-world computations are efficient, but rendering debug gizmos for all tiles can significantly impact performance. It is recommended to visualize only selected nodes.  
 - You can improve performance by processing only a limited section of the tileset around your entity. However, this requires using low-level API.
-- The system is primarily tested on XY tilemaps; other layouts (e.g., XZ) may behave unpredictably.
+- The system supports only XY square (or rectangular) tiles.
 
 # Warranty
 Audibility2D is experimental for non-standard use cases. Use at your own risk.
