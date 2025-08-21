@@ -4,8 +4,7 @@
     "references": [
         "Unity.Burst",
         "Unity.Collections",
-        "Unity.Mathematics",
-        "Utilities"
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

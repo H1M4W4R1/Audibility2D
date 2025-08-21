@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Systems.Audibility2D.Data.Settings
 {
@@ -8,7 +10,7 @@ namespace Systems.Audibility2D.Data.Settings
     /// </summary>
     public sealed partial class AudibilitySettings : ScriptableObject
     {
-        private const string RESOURCES_PATH = "AudibilitySettings3D";
+        private const string RESOURCES_PATH = "AudibilitySettings";
         private static AudibilitySettings _instance;
 
         /// <summary>
@@ -28,10 +30,10 @@ namespace Systems.Audibility2D.Data.Settings
         /// </summary>
         private static AudibilitySettings LoadOrCreateSettings()
         {
-            const string PATH = "Assets/Resources/" + RESOURCES_PATH + ".asset";
+            const string PATH = "Assets/Resources/" + RESOURCES_PATH + ".asset"; 
             
-            // Load from Resources in runtime
-            AudibilitySettings settings = Resources.Load<AudibilitySettings>(RESOURCES_PATH);
+            // Load from Resources in runtime  
+            AudibilitySettings settings = Resources.Load<AudibilitySettings>(RESOURCES_PATH); 
 
 #if UNITY_EDITOR
             // If not found, auto-create in Editor
@@ -42,6 +44,7 @@ namespace Systems.Audibility2D.Data.Settings
                 if (!Directory.Exists("Assets/Resources")) Directory.CreateDirectory("Assets/Resources");
                 UnityEditor.AssetDatabase.CreateAsset(settings, PATH);
                 UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
             }
 #endif
 
