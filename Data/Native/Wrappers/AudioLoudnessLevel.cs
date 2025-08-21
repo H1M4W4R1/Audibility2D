@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Systems.Audibility2D.Utility;
-using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;

@@ -4,8 +4,6 @@ using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
-using Systems.Utilities.Collections;
-using Systems.Utilities.Indexing.Grid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -21,7 +19,6 @@ namespace Systems.Audibility2D.Utility
     /// </summary>
     public static partial class AudibilityTools
     {
-     
         /// <summary>
         ///     Get average loudness data from results array
         /// </summary>
@@ -40,7 +37,7 @@ namespace Systems.Audibility2D.Utility
             Assert.IsTrue(debugDataArray.IsCreated, "Debug data array is not created");
             Assert.AreEqual(debugDataArray.Length, tileDataAfterComputing.Length, "Arrays length mismatch");
 
-            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
+            GridInfo2D tilemapInfo = audioTilemap.AsGridInfo();
 
             GetDebugAudioTileDataJob job = new()
             {
@@ -79,7 +76,7 @@ namespace Systems.Audibility2D.Utility
                 math.min(tileDataAfterComputing.Length, 64));
             waitHandle.Complete();
         }
-        
+
         /// <summary>
         ///     Converts tilemap and audio sources array of audio source data for computation
         /// </summary>
@@ -105,7 +102,7 @@ namespace Systems.Audibility2D.Utility
             ArrayUtil.AllocateIfInvalid(ref audioSourceComputeData, sources.Length,
                 allocator);
 
-            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
+            GridInfo2D tilemapInfo = audioTilemap.AsGridInfo();
 
             // This should be pretty performant
             for (int nIndex = 0; nIndex < sources.Length; nIndex++)
@@ -116,7 +113,7 @@ namespace Systems.Audibility2D.Utility
 
                 // Compute tilemap index
                 Vector3Int tilePosition = audioTilemap.WorldToCell(worldPosition); // Do not subtract origin
-                Index3D tileIndex = new(new int3(tilePosition.x, tilePosition.y, tilePosition.z), tilemapInfo);
+                Index2D tileIndex = new(new int2(tilePosition.x, tilePosition.y), tilemapInfo);
 
                 // Assign value
                 audioSourceComputeData[nIndex] =
@@ -133,7 +130,7 @@ namespace Systems.Audibility2D.Utility
         /// </summary>
         [BurstDiscard] internal static void RefreshTileDataArrayAt(
             [NotNull] Tilemap audioTilemap,
-            int3 tilePositionAbsolute,
+            int2 tilePositionAbsolute,
             ref NativeArray<AudioTileInfo> tileComputeData,
             Allocator allocator = Allocator.Persistent)
         {
@@ -145,16 +142,16 @@ namespace Systems.Audibility2D.Utility
             }
 
             // Convert tile data into proper helpers
-            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
-            Index3D tileIndex = new(Index3D.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
-            
+            GridInfo2D tilemapInfo = audioTilemap.AsGridInfo();
+            Index2D tileIndex = new(Index2D.ToIndexAbsolute(tilePositionAbsolute, tilemapInfo));
+
             // Skip some tiles
             if (tileIndex < 0 || tileIndex >= tileComputeData.Length) return;
-            
+
             // Get audio tile at desired location
             AudioTile audioTile = audioTilemap.GetTile<AudioTile>(new Vector3Int(tilePositionAbsolute.x,
-                tilePositionAbsolute.y, tilePositionAbsolute.z));
-            
+                tilePositionAbsolute.y));
+
             // ReSharper disable once Unity.NoNullPropagation
             AudioLoudnessLevel mufflingStrength =
                 audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
@@ -183,31 +180,28 @@ namespace Systems.Audibility2D.Utility
             // Ensure arrays are initialized 
             ArrayUtil.AllocateIfInvalid(ref tileComputeData, tilesCount, allocator);
 
-            GridInfo3D tilemapInfo = audioTilemap.AsGridInfo();
-            
+            GridInfo2D tilemapInfo = audioTilemap.AsGridInfo();
+
             for (int x = 0; x < tilemapSize.x; x++)
             {
                 for (int y = 0; y < tilemapSize.y; y++)
                 {
-                    for (int z = 0; z < tilemapSize.z; z++)
-                    {
-                        // Pre-compute Unity-based data
-                        Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, z);
-                        AudioTile audioTile = audioTilemap.GetTile<AudioTile>(cellPosition);
-                        Index3D tileIndex =
-                            new(Index3D.ToIndexAbsolute(new int3(cellPosition.x, cellPosition.y, cellPosition.z),
-                                tilemapInfo));
+                    // Pre-compute Unity-based data
+                    Vector3Int cellPosition = tilemapOrigin + new Vector3Int(x, y, 0);
+                    AudioTile audioTile = audioTilemap.GetTile<AudioTile>(cellPosition);
+                    Index2D tileIndex =
+                        new(Index2D.ToIndexAbsolute(new int2(cellPosition.x, cellPosition.y),
+                            tilemapInfo));
 
-                        // ReSharper disable once Unity.NoNullPropagation
-                        AudioLoudnessLevel mufflingStrength =
-                            audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
+                    // ReSharper disable once Unity.NoNullPropagation
+                    AudioLoudnessLevel mufflingStrength =
+                        audioTile?.GetMufflingData() ?? LOUDNESS_NONE;
 
-                        // Rota-set variable because C# stupid
-                        AudioTileInfo tileInfo = tileComputeData[tileIndex];
-                        tileInfo.index = tileIndex;
-                        tileInfo.mufflingStrength = mufflingStrength;
-                        tileComputeData[tileIndex] = tileInfo;
-                    }
+                    // Rota-set variable because C# stupid
+                    AudioTileInfo tileInfo = tileComputeData[tileIndex];
+                    tileInfo.index = tileIndex;
+                    tileInfo.mufflingStrength = mufflingStrength;
+                    tileComputeData[tileIndex] = tileInfo;
                 }
             }
         }

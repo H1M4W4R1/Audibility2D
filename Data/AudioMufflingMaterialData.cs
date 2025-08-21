@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
-using Unity.Burst;
 using UnityEngine;
 
 namespace Systems.Audibility2D.Data

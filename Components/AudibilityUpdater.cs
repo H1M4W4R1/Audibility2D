@@ -3,9 +3,6 @@ using Systems.Audibility2D.Data;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Utility;
-using Systems.Utilities.Indexing.Grid;
-using Systems.Utilities.Math;
-using Systems.Utilities.Math.Geometry3D;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -53,7 +50,7 @@ namespace Systems.Audibility2D.Components
         ///     Get info about tile at specified absolute location
         /// </summary>
         public AudioTileInfo GetTileInfo(int3 tileLocationAbsolute) => _audioTileData[
-            Index3D.ToIndexAbsolute(tileLocationAbsolute, Tilemap.AsGridInfo())
+            Index2D.ToIndexAbsolute(tileLocationAbsolute.xy, Tilemap.AsGridInfo())
         ];
 
         /// <summary>
@@ -94,10 +91,11 @@ namespace Systems.Audibility2D.Components
             // to prevent throwing assertion errors when recompiled in background
             if (!_audioTileData.IsCreated) return;
 
-            GridInfo3D tilemapInfo = Tilemap.AsGridInfo();
+            GridInfo2D tilemapInfo = Tilemap.AsGridInfo();
 
             // Compute camera planes
-            Frustum3D frustumPlanes = new(gizmosCamera);
+            NativeArray<float4> frustumPlanes = new(6, Allocator.TempJob);
+            gizmosCamera.ExtractFrustumPlanes(ref frustumPlanes);
 
             // Draw gizmos
             foreach (AudioTileInfo audioTileInfo in _audioTileData)
@@ -106,7 +104,7 @@ namespace Systems.Audibility2D.Components
                 float3 worldTilePosition = audioTileInfo.index.GetWorldPosition(tilemapInfo);
 
                 // Quickly check camera point in view frustrum
-                if (!frustumPlanes.ContainsPoint(worldTilePosition)) continue;
+                if (!FrustumUtil.IsPointInFrustum(worldTilePosition, frustumPlanes)) continue;
 
                 Color audibilityNoneColor = AudibilitySettings.Instance.gizmosColorMinAudibility;
                 Color audibilityFullColor = AudibilitySettings.Instance.gizmosColorMaxAudibility;
@@ -115,13 +113,16 @@ namespace Systems.Audibility2D.Components
                     audioTileInfo.currentAudioLevel / (float) AudibilityTools.LOUDNESS_MAX);
                 Gizmos.DrawSphere(worldTilePosition, 0.2f);
             }
+            
+            // Dispose temporary array
+            frustumPlanes.Dispose();
         }
         
 #region EVENTS_HANDLING
 
         internal void OnTileUpdatedHandler(int3 tilePosition)
         {
-            AudibilityTools.RefreshTileDataArrayAt(Tilemap, tilePosition,
+            AudibilityTools.RefreshTileDataArrayAt(Tilemap, tilePosition.xy,
                 ref _audioTileData);
             //RefreshAudioMufflingCache();
         }

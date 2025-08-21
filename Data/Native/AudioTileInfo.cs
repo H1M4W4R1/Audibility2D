@@ -1,6 +1,5 @@
 ﻿using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
-using Systems.Utilities.Indexing.Grid;
 
 namespace Systems.Audibility2D.Data.Native
 {
@@ -17,7 +16,7 @@ namespace Systems.Audibility2D.Data.Native
         /// <summary>
         ///     Index of this tile in array
         /// </summary>
-        public Index3D index; // 4B
+        public Index2D index; // 4B
 
         /// <summary>
         ///     Muffling level of this tile (used to reduce sound loudness when entering this tile)
@@ -25,7 +24,7 @@ namespace Systems.Audibility2D.Data.Native
         public AudioLoudnessLevel mufflingStrength; // 2B
 
         public AudioTileInfo(
-            Index3D index,
+            Index2D index,
             AudioLoudnessLevel mufflingStrength)
         {
             this.index = index;

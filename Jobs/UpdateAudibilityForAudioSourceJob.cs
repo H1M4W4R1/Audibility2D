@@ -1,11 +1,9 @@
 ﻿using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Utility;
-using Systems.Utilities.Indexing.Grid;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Mathematics;
 
 namespace Systems.Audibility2D.Jobs
 {
@@ -20,7 +18,7 @@ namespace Systems.Audibility2D.Jobs
         /// <summary>
         ///     Tilemap being scanned
         /// </summary>
-        [ReadOnly] public GridInfo3D tilemapInfo;
+        [ReadOnly] public GridInfo2D tilemapInfo;
         
         /// <summary>
         ///     Audio sources information for computation
@@ -43,9 +41,8 @@ namespace Systems.Audibility2D.Jobs
             
             // Get start tile and initialize with audio value
             AudioTileInfo startTile = audioTilesData[audioSourceInfo.tileIndex];
-            AudibilityTools.UpdateAudioLevelForTile(tilemapInfo, ref tilesToUpdateNeighbours, 
-                startTile, ref startTile, audioSourceInfo,
-                audioSourceInfo.audioLevel, int3.zero);
+            AudibilityTools.UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref startTile, audioSourceInfo,
+                audioSourceInfo.audioLevel, 0);
             audioTilesData[audioSourceInfo.tileIndex] = startTile;
 
             // Perform update sequence

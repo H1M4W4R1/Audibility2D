@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Systems.Utilities.Indexing.Grid;
+using Systems.Audibility2D.Data.Native;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
@@ -10,18 +10,16 @@ namespace Systems.Audibility2D.Utility
 {
     public static class TilemapExtensions
     {
-        [BurstDiscard]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static GridInfo3D AsGridInfo([NotNull] this Tilemap tilemap)
+        [BurstDiscard] [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static GridInfo2D AsGridInfo([NotNull] this Tilemap tilemap)
         {
             Vector3Int origin = tilemap.origin;
             Vector3Int size = tilemap.size;
 
             float3 worldPoint = tilemap.GetCellCenterWorld(origin);
-            
-            return new(new int3(origin.x, origin.y, origin.z),
-                new int3(size.x, size.y, size.z), worldPoint, tilemap.cellSize);
+
+            return new(new int2(origin.x, origin.y),
+                new int2(size.x, size.y), worldPoint, ((float3) tilemap.cellSize).xy);
         }
-        
     }
 }

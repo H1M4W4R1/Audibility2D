@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native.Wrappers;
 using Systems.Audibility2D.Utility;
-using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
