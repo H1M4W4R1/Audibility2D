@@ -5,7 +5,7 @@ namespace Systems.Audibility2D.Data.Native
     /// <summary>
     ///     Object to store computation data of audio source for 2D audibility system
     /// </summary>
-    public readonly struct AudioSourceInfo // 10B
+    public readonly struct AudioSourceInfo // 6B
     {
         /// <summary>
         ///     Index of tile in array
@@ -16,17 +16,12 @@ namespace Systems.Audibility2D.Data.Native
         ///     Loudness of this audio source
         /// </summary>
         public readonly AudioLoudnessLevel audioLevel; // 2B
-        
-        /// <summary>
-        ///     Maximum range of this audio source
-        /// </summary>
-        public readonly float range; // 4B
 
-        public AudioSourceInfo(Index2D tileIndex, AudioLoudnessLevel audioLevel, float range)
+
+        public AudioSourceInfo(Index2D tileIndex, AudioLoudnessLevel audioLevel)
         {
             this.tileIndex = tileIndex;
             this.audioLevel = audioLevel;
-            this.range = range;
         }
     }
 }

@@ -20,12 +20,6 @@ namespace Systems.Audibility2D.Components
         private AudioLoudnessLevel audioLoudnessLevel = AudibilityTools.LOUDNESS_MAX;
 
         /// <summary>
-        ///     Range of audio sound in 3D space
-        /// </summary>
-        [SerializeField] [Tooltip("Audio sound range")]
-        private float range;
-        
-        /// <summary>
         ///     Cached transform to reduce computation time
         /// </summary>
         private Transform _transform;
@@ -35,11 +29,6 @@ namespace Systems.Audibility2D.Components
             _transform = transform;
         }
 
-        /// <summary>
-        ///     Get range of this audio source
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public float GetRange() => range;
-        
         /// <summary>
         ///     Get position of this audio source
         /// </summary>

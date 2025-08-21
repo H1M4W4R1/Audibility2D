@@ -20,8 +20,11 @@ namespace Systems.Audibility2D.Data.Settings
                 guiHandler = (searchContext) =>
                 {
                     AudibilitySettings settings = AudibilitySettings.Instance;
-
                     SerializedObject so = new(settings);
+                    EditorGUILayout.LabelField("Sound decay settings", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.soundDecayPerUnit)));
+                    
                     EditorGUILayout.LabelField("Muffling Debug Settings", EditorStyles.boldLabel);
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMinMuffling)));
@@ -34,6 +37,8 @@ namespace Systems.Audibility2D.Data.Settings
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMinAudibility)));
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMaxAudibility)));
+                    
+                    
 
                     so.ApplyModifiedProperties();
                 }

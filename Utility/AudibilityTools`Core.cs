@@ -2,6 +2,7 @@
 using Systems.Audibility2D.Components;
 using Systems.Audibility2D.Data.Native;
 using Systems.Audibility2D.Data.Native.Wrappers;
+using Systems.Audibility2D.Data.Settings;
 using Systems.Audibility2D.Data.Tiles;
 using Systems.Audibility2D.Jobs;
 using Unity.Burst;
@@ -64,14 +65,18 @@ namespace Systems.Audibility2D.Utility
                 Object.FindObjectsByType<AudibleSound>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             RefreshAudioSourcesArray(audioTilemap, sources, ref audioSourceComputeData, allocator);
 
+            // Create audibility settings
+            AudioSystemSettings audibilitySettings = new AudioSystemSettings(AudibilitySettings.Instance);
+
             // Handle computation
-            UpdateAudibilityLevel(tilemapInfo, audioSourceComputeData, ref tileComputeData);
+            UpdateAudibilityLevel(audibilitySettings, tilemapInfo, audioSourceComputeData, ref tileComputeData);
         }
 
         /// <summary>
         ///     Update audibility level for entire map
         /// </summary>
         ///  ///
+        ///  <param name="audibilitySettings">Audibility settings to use</param>
         ///  <param name="tilemapInfo">Tilemap info to update data for</param>
         ///  <param name="audioSourceComputeData">
         ///     Handle for Audio Source Data array, must be filled with proper data
@@ -81,6 +86,7 @@ namespace Systems.Audibility2D.Utility
         ///     Also your output array.
         /// </param>
         [BurstCompile] public static void UpdateAudibilityLevel(
+            in AudioSystemSettings audibilitySettings,
             in GridInfo2D tilemapInfo,
             in NativeArray<AudioSourceInfo> audioSourceComputeData,
             ref NativeArray<AudioTileInfo> tileComputeData)
@@ -93,6 +99,7 @@ namespace Systems.Audibility2D.Utility
 
             UpdateAudibilityForAudioSourceJob updateAudibilityJob = new()
             {
+                audibilitySettings = audibilitySettings,
                 tilemapInfo = tilemapInfo,
                 audioSourcesData = audioSourceComputeData,
                 audioTilesData = tileComputeData
@@ -106,6 +113,7 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Method that computes audio updates for all neighboring tiles of specific tile
         /// </summary>
+        /// <param name="audibilitySettings">Audibility settings to use</param>
         /// <param name="tilemapInfo">Tilemap info to compute data for</param>
         /// <param name="tilesToUpdateNeighbours">
         ///     Reference to list containing indices of tiles which should have their neighbours updated
@@ -116,57 +124,66 @@ namespace Systems.Audibility2D.Utility
         /// <param name="currentTile">
         ///     Reference to tile which neighbours should be checked.
         /// </param>
-        /// <param name="currentAudioSource">
-        ///     Current audio source that is being analyzed
-        /// </param>
         [BurstCompile] internal static void UpdateNeighbourAudioLevelsForTile(
+            in AudioSystemSettings audibilitySettings,
             in GridInfo2D tilemapInfo,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
-            ref AudioTileInfo currentTile,
-            in AudioSourceInfo currentAudioSource)
+            ref AudioTileInfo currentTile)
         {
             Index2D currentTileIndex = currentTile.index;
 
             // North
-            CheckNode(currentTileIndex.GetNorthIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.tileSize.y);
+            CheckNode(audibilitySettings, currentTileIndex.GetNorthIndex2D(tilemapInfo), ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.tileSize.y);
 
             // South
-            CheckNode(currentTileIndex.GetSouthIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.tileSize.y);
+            CheckNode(audibilitySettings, currentTileIndex.GetSouthIndex2D(tilemapInfo), ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.tileSize.y);
 
             // East
-            CheckNode(currentTileIndex.GetEastIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.tileSize.x);
+            CheckNode(audibilitySettings, currentTileIndex.GetEastIndex2D(tilemapInfo), ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.tileSize.x);
 
             // West
-            CheckNode(currentTileIndex.GetWestIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.tileSize.x);
+            CheckNode(audibilitySettings, currentTileIndex.GetWestIndex2D(tilemapInfo), ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.tileSize.x);
 
             // North-west
-            CheckNode(currentTileIndex.GetNorthWestIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.diagonalDistance);
+            CheckNode(audibilitySettings, currentTileIndex.GetNorthWestIndex2D(tilemapInfo),
+                ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.diagonalDistance);
 
             // North-east
-            CheckNode(currentTileIndex.GetNorthEastIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.diagonalDistance);
+            CheckNode(audibilitySettings, currentTileIndex.GetNorthEastIndex2D(tilemapInfo),
+                ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.diagonalDistance);
 
             // South-west
-            CheckNode(currentTileIndex.GetSouthWestIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.diagonalDistance);
+            CheckNode(audibilitySettings, currentTileIndex.GetSouthWestIndex2D(tilemapInfo),
+                ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.diagonalDistance);
 
             // South-east
-            CheckNode(currentTileIndex.GetSouthEastIndex2D(tilemapInfo), ref tilesToUpdateNeighbours, ref audioTilesData,
-                ref currentTile, in currentAudioSource, tilemapInfo.diagonalDistance);
+            CheckNode(audibilitySettings, currentTileIndex.GetSouthEastIndex2D(tilemapInfo),
+                ref tilesToUpdateNeighbours,
+                ref audioTilesData,
+                ref currentTile, tilemapInfo.diagonalDistance);
         }
 
         [BurstCompile] private static void CheckNode(
+            in AudioSystemSettings audibilitySettings,
             int neighbourTileIndex,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref NativeArray<AudioTileInfo> audioTilesData,
             ref AudioTileInfo currentTile,
-            in AudioSourceInfo currentAudioSource,
             in float distance)
         {
             // Early return
@@ -180,7 +197,8 @@ namespace Systems.Audibility2D.Utility
             AudioLoudnessLevel newLoudness = currentTile.currentAudioLevel;
             newLoudness.MuffleBy(currentTile.mufflingStrength);
 
-            UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref neighbourTile, currentAudioSource, newLoudness,
+            UpdateAudioLevelForTile(audibilitySettings,
+                ref tilesToUpdateNeighbours, ref neighbourTile, newLoudness,
                 distance);
             audioTilesData[neighbourTileIndex] = neighbourTile;
         }
@@ -188,32 +206,30 @@ namespace Systems.Audibility2D.Utility
         /// <summary>
         ///     Method used to update audio level of specific tile
         /// </summary>
+        /// <param name="audibilitySettings">Audibility settings to use</param>
         /// <param name="tilesToUpdateNeighbours">
         ///     Reference to list containing indices of tiles which should have their neighbours updated
         /// </param>
         /// <param name="neighbouringTile">
         ///     Reference to tile that should be updated.
         /// </param>
-        /// <param name="currentAudioSource">
-        ///     Current audio source that is being analyzed
-        /// </param>
         /// <param name="currentAudioLevel">
         ///     Audio level in current tile, passed separately to handle source tiles correctly
         /// </param>
         /// <param name="distance">Distance from last tile</param>
         [BurstCompile] internal static void UpdateAudioLevelForTile(
+            in AudioSystemSettings audibilitySettings,
             ref NativeList<int> tilesToUpdateNeighbours,
             ref AudioTileInfo neighbouringTile,
-            in AudioSourceInfo currentAudioSource,
             in AudioLoudnessLevel currentAudioLevel,
             float distance)
         {
             // Copy current audio level and compute muffling 
             AudioLoudnessLevel newTileLevel = currentAudioLevel;
-            
+
             // TODO: Replace division with multiplication of sound decay rate per meter
             //       that will be stored in settings and provided to this method
-            newTileLevel = newTileLevel.MuffleBy(distance / currentAudioSource.range * LOUDNESS_MAX);
+            newTileLevel = newTileLevel.MuffleBy(distance * audibilitySettings.soundDecayPerUnit);
             newTileLevel = AudioLoudnessLevel.Max(newTileLevel, neighbouringTile.currentAudioLevel);
 
             // Detect audio changes to prevent infinite loop

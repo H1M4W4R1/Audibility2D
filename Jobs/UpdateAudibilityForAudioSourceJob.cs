@@ -16,6 +16,11 @@ namespace Systems.Audibility2D.Jobs
     public struct UpdateAudibilityForAudioSourceJob : IJobParallelFor
     {
         /// <summary>
+        ///     Audibility system settings
+        /// </summary>
+        [ReadOnly] public AudioSystemSettings audibilitySettings;
+        
+        /// <summary>
         ///     Tilemap being scanned
         /// </summary>
         [ReadOnly] public GridInfo2D tilemapInfo;
@@ -41,7 +46,7 @@ namespace Systems.Audibility2D.Jobs
             
             // Get start tile and initialize with audio value
             AudioTileInfo startTile = audioTilesData[audioSourceInfo.tileIndex];
-            AudibilityTools.UpdateAudioLevelForTile(ref tilesToUpdateNeighbours, ref startTile, audioSourceInfo,
+            AudibilityTools.UpdateAudioLevelForTile(audibilitySettings, ref tilesToUpdateNeighbours, ref startTile,
                 audioSourceInfo.audioLevel, 0);
             audioTilesData[audioSourceInfo.tileIndex] = startTile;
 
@@ -51,9 +56,11 @@ namespace Systems.Audibility2D.Jobs
                 // Perform update sequence
                 int tileIndex = tilesToUpdateNeighbours[0];
                 AudioTileInfo tile = audioTilesData[tileIndex];
-                AudibilityTools.UpdateNeighbourAudioLevelsForTile(tilemapInfo,
+                AudibilityTools.UpdateNeighbourAudioLevelsForTile(
+                    audibilitySettings,
+                    tilemapInfo,
                     ref tilesToUpdateNeighbours,
-                    ref audioTilesData, ref tile, audioSourceInfo);
+                    ref audioTilesData, ref tile);
 
                 // Remove tiles from update
                 tilesToUpdateNeighbours.RemoveAt(0);

@@ -32,7 +32,7 @@ namespace Systems.Audibility2D.Data.Settings
         {
             const string PATH = "Assets/Resources/" + RESOURCES_PATH + ".asset"; 
             
-            // Load from Resources in runtime  
+            // Load from Resources in runtime
             AudibilitySettings settings = Resources.Load<AudibilitySettings>(RESOURCES_PATH); 
 
 #if UNITY_EDITOR

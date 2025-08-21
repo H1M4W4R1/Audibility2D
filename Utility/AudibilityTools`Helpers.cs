@@ -117,7 +117,7 @@ namespace Systems.Audibility2D.Utility
 
                 // Assign value
                 audioSourceComputeData[nIndex] =
-                    new AudioSourceInfo(tileIndex, source.GetDecibelLevel(), source.GetRange());
+                    new AudioSourceInfo(tileIndex, source.GetDecibelLevel());
             }
 
             Assert.AreEqual(sources.Length, audioSourceComputeData.Length,
