@@ -13,6 +13,7 @@ namespace Systems.Audibility2D.Data.Settings
         [SerializeField] public Color gizmosColorMaxMuffling = Color.green;
         [SerializeField] public Color gizmosColorMinAudibility = Color.red;
         [SerializeField] public Color gizmosColorMaxAudibility = Color.green;
+        [SerializeField] public float gizmosSphereSize = 0.15f;
         [SerializeField] [Tooltip("How many decibels will decay per unit of distance")]
         [Range(AudibilityTools.LOUDNESS_NONE, AudibilityTools.LOUDNESS_MAX)]
         public short soundDecayPerUnit = (short) (AudibilityTools.LOUDNESS_MAX * 1 / 25f);

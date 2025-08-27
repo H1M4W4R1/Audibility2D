@@ -25,14 +25,13 @@ namespace Systems.Audibility2D.Data.Settings
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.soundDecayPerUnit)));
                     
-                    EditorGUILayout.LabelField("Muffling Debug Settings", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Debug Settings", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(
+                        so.FindProperty(nameof(AudibilitySettings.gizmosSphereSize)));
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMinMuffling)));
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMaxMuffling)));
-
-                    EditorGUILayout.LabelField("", EditorStyles.boldLabel);
-                    EditorGUILayout.LabelField("Audibility Debug Settings", EditorStyles.boldLabel);
                     EditorGUILayout.PropertyField(
                         so.FindProperty(nameof(AudibilitySettings.gizmosColorMinAudibility)));
                     EditorGUILayout.PropertyField(

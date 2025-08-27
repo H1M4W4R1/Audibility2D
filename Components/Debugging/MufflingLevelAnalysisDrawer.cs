@@ -74,7 +74,7 @@ namespace Systems.Audibility2D.Components.Debugging
                     // Compute gizmo color
                     Gizmos.color = Color.Lerp(mufflingNoneColor, mufflingFullColor, percentage);
 
-                    Gizmos.DrawSphere(worldPosition, 0.15f);
+                    Gizmos.DrawSphere(worldPosition, AudibilitySettings.Instance.gizmosSphereSize);
                 }
             }
 

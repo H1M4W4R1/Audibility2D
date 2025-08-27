@@ -111,7 +111,7 @@ namespace Systems.Audibility2D.Components
                 
                 Gizmos.color = Color.Lerp(audibilityNoneColor, audibilityFullColor,
                     audioTileInfo.currentAudioLevel / (float) AudibilityTools.LOUDNESS_MAX);
-                Gizmos.DrawSphere(worldTilePosition, 0.2f);
+                Gizmos.DrawSphere(worldTilePosition, AudibilitySettings.Instance.gizmosSphereSize);
             }
             
             // Dispose temporary array
