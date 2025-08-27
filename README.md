@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Audibility2D • <a href="https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/wiki">GitHub Wiki</a></h1>
+  <h1>Audibility2D</h1>
   <img src="https://github.com/H1M4W4R1/AudibilitySystem-Unity3D/blob/master/Images/screenshot.png" alt="Preview screenshot"/>
 </div>
 
