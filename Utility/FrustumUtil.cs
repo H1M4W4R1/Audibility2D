@@ -75,12 +75,12 @@ namespace Systems.Audibility2D.Utility
             float3 fbr = farCenter - up * halfFarHeight + rightV * halfFarWidth;
 
             // Planes
-            CreatePlane(camPos, nbl, fbl, out float4 left);
-            CreatePlane(camPos, fbr, nbr, out float4 right);
-            CreatePlane(camPos, ntr, ftr, out float4 top);
-            CreatePlane(camPos, fbl, nbl, out float4 bottom);
-            CreatePlane(nbl, ntr, ntl, out float4 nearP);
-            CreatePlane(ftr, fbr, ftl, out float4 farP);
+            CreatePlane(ntl, ftl, fbl, out float4 left);
+            CreatePlane(ftl, ntr, ftr, out float4 top);
+            CreatePlane(ftr, ntr, nbr, out float4 right);
+            CreatePlane(fbr, nbl, fbl, out float4 bottom);
+            CreatePlane(ftl, ftr, fbr, out float4 nearP);
+            CreatePlane(nbr, ntr, ntl, out float4 farP);
 
             planes[0] = left;
             planes[1] = top;
