@@ -205,13 +205,13 @@ namespace Systems.Audibility2D.Data.Native
 
         [BurstCompile] public int GetNeighborIndex2D(int dx, int dy, in GridInfo2D gridInfo)
         {
-            FromIndexRelative(value, gridInfo, out int x, out int y);
+            // Compute new index by shifting it by x rows and y columns
+            // using simple math to prevent any divisions
+            int newIndex = value + dx * gridInfo.size.y + dy;
 
-            int nx = x + dx;
-            int ny = y + dy;
-
-            return Hint.Likely(nx >= 0 && nx < gridInfo.size.x && ny >= 0 && ny < gridInfo.size.y)
-                ? ToIndexRelative(nx, ny, gridInfo)
+            // Check if new index is within bounds
+            return Hint.Likely(newIndex >= 0 && newIndex < gridInfo.size.x * gridInfo.size.y)
+                ? newIndex
                 : NONE;
         }
 
